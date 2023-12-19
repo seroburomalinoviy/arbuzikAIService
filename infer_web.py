@@ -1985,7 +1985,7 @@ def whethercrepeornah(radio):
     return {"visible": mango, "__type__": "update"}
 
 
-if __name__=='__main__':
+if __name__ == "__main__":
     # Change your Gradio Theme here. 👇 👇 👇 👇 Example: " theme='HaleyCH/HaleyCH_Theme' "
     with gr.Blocks(theme=gr.themes.Soft(), title="Mangio-RVC-Web 💻") as app:
         gr.HTML("<h1> The Mangio-RVC-Fork 💻 </h1>")
@@ -2007,7 +2007,9 @@ if __name__=='__main__':
                 # Other RVC stuff
                 with gr.Row():
                     # sid0 = gr.Dropdown(label=i18n("推理音色"), choices=sorted(names), value=check_for_name())
-                    sid0 = gr.Dropdown(label=i18n("推理音色"), choices=sorted(names), value="")
+                    sid0 = gr.Dropdown(
+                        label=i18n("推理音色"), choices=sorted(names), value=""
+                    )
                     # input_audio_path2
 
                     refresh_button = gr.Button(
@@ -2028,7 +2030,9 @@ if __name__=='__main__':
 
                 with gr.Group():
                     gr.Markdown(
-                        value=i18n("男转女推荐+12key, 女转男推荐-12key, 如果音域爆炸导致音色失真也可以自己调整到合适音域. ")
+                        value=i18n(
+                            "男转女推荐+12key, 女转男推荐-12key, 如果音域爆炸导致音色失真也可以自己调整到合适音域. "
+                        )
                     )
                     with gr.Row():
                         with gr.Column():
@@ -2088,7 +2092,9 @@ if __name__=='__main__':
                             filter_radius0 = gr.Slider(
                                 minimum=0,
                                 maximum=7,
-                                label=i18n(">=3则使用对harvest音高识别的结果使用中值滤波，数值为滤波半径，使用可以削弱哑音"),
+                                label=i18n(
+                                    ">=3则使用对harvest音高识别的结果使用中值滤波，数值为滤波半径，使用可以削弱哑音"
+                                ),
                                 value=3,
                                 step=1,
                                 interactive=True,
@@ -2262,7 +2268,9 @@ if __name__=='__main__':
                         )
                 with gr.Group():
                     gr.Markdown(
-                        value=i18n("批量转换, 输入待转换音频文件夹, 或上传多个音频文件, 在指定文件夹(默认opt)下输出转换的音频. ")
+                        value=i18n(
+                            "批量转换, 输入待转换音频文件夹, 或上传多个音频文件, 在指定文件夹(默认opt)下输出转换的音频. "
+                        )
                     )
                     with gr.Row():
                         with gr.Column():
@@ -2282,7 +2290,9 @@ if __name__=='__main__':
                             filter_radius1 = gr.Slider(
                                 minimum=0,
                                 maximum=7,
-                                label=i18n(">=3则使用对harvest音高识别的结果使用中值滤波，数值为滤波半径，使用可以削弱哑音"),
+                                label=i18n(
+                                    ">=3则使用对harvest音高识别的结果使用中值滤波，数值为滤波半径，使用可以削弱哑音"
+                                ),
                                 value=3,
                                 step=1,
                                 interactive=True,
@@ -2354,7 +2364,8 @@ if __name__=='__main__':
                                 + "/audios/",
                             )
                             inputs = gr.File(
-                                file_count="multiple", label=i18n("也可批量输入音频文件, 二选一, 优先读文件夹")
+                                file_count="multiple",
+                                label=i18n("也可批量输入音频文件, 二选一, 优先读文件夹"),
                             )
                         with gr.Row():
                             format1 = gr.Radio(
@@ -2417,10 +2428,13 @@ if __name__=='__main__':
                                 value=((os.getcwd()).replace("\\", "/") + "/audios/"),
                             )
                             wav_inputs = gr.File(
-                                file_count="multiple", label=i18n("也可批量输入音频文件, 二选一, 优先读文件夹")
+                                file_count="multiple",
+                                label=i18n("也可批量输入音频文件, 二选一, 优先读文件夹"),
                             )  #####
                         with gr.Column():
-                            model_choose = gr.Dropdown(label=i18n("模型"), choices=uvr5_names)
+                            model_choose = gr.Dropdown(
+                                label=i18n("模型"), choices=uvr5_names
+                            )
                             agg = gr.Slider(
                                 minimum=0,
                                 maximum=20,
@@ -2513,7 +2527,9 @@ if __name__=='__main__':
                         but1 = gr.Button(i18n("处理数据"), variant="primary")
                         info1 = gr.Textbox(label=i18n("输出信息"), value="")
                         but1.click(
-                            preprocess_dataset, [trainset_dir4, exp_dir1, sr2, np7], [info1]
+                            preprocess_dataset,
+                            [trainset_dir4, exp_dir1, sr2, np7],
+                            [info1],
                         )
                 with gr.Group():
                     step2b = gr.Markdown(

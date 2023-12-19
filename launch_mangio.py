@@ -9,24 +9,24 @@ logger = logging.Logger(__name__)
 
 infer_parameters = {
     # get VC first
-    'model_name': 'kasparova_by_Nstudio.pth',
-    'source_audio_path': 'mysource/voice_for_test.wav',
-    'output_file_name': 'TEST_OUT.wav',
-    'feature_index_path': 'logs/test/kasparova.index',
+    "model_name": "kasparova_by_Nstudio.pth",
+    "source_audio_path": "mysource/voice_for_test.wav",
+    "output_file_name": "TEST_OUT.wav",
+    "feature_index_path": "logs/test/kasparova.index",
     # Get parameters for inference
-    'speaker_id': 0,
-    'transposition': -2,
-    'f0_method': 'harvest',
-    'crepe_hop_length': 160,
-    'harvest_median_filter': 3,
-    'resample': 0,
-    'mix': 1,
-    'feature_ratio': 0.95,
-    'protection_amnt': 0.33,
-    'protect1': 0.45,
-    'DoFormant': True,
-    'Timbre': 8.0,
-    'Quefrency': 1.2
+    "speaker_id": 0,
+    "transposition": -2,
+    "f0_method": "harvest",
+    "crepe_hop_length": 160,
+    "harvest_median_filter": 3,
+    "resample": 0,
+    "mix": 1,
+    "feature_ratio": 0.95,
+    "protection_amnt": 0.33,
+    "protect1": 0.45,
+    "DoFormant": True,
+    "Timbre": 8.0,
+    "Quefrency": 1.2,
 }
 
 
@@ -47,7 +47,7 @@ def starter_infer(
     protect1: float = 0.5,
     DoFormant: bool = False,
     Timbre: float = 0.0,
-    Quefrency: float = 0.0
+    Quefrency: float = 0.0,
 ):
     if not DoFormant:
         Quefrency = 0.0
@@ -64,7 +64,7 @@ def starter_infer(
     try:
         vc_data = get_vc(model_name, protection_amnt, protect1)
     except Exception as e:
-        logger.error(f'[vc_data error] {e.__name__}\n{e}')
+        logger.error(f"[vc_data error] {e.__name__}\n{e}")
     logger.info(vc_data)
     logger.info("[Mangio-RVC] starter_infer: Performing inference...")
 
@@ -86,7 +86,7 @@ def starter_infer(
             crepe_hop_length,
         )
     except Exception as e:
-        logger.error(f'[vc_single error] {e.__name__}\n{e}')
+        logger.error(f"[vc_single error] {e.__name__}\n{e}")
 
     if "Success." in conversion_data[0]:
         logger.info(
@@ -100,14 +100,16 @@ def starter_infer(
                 conversion_data[1][1],
             )
         except Exception as e:
-            logger.error(f'[wavfile error] {e.__name__}\n{e}')
+            logger.error(f"[wavfile error] {e.__name__}\n{e}")
         logger.info(
             "[Mangio-RVC] starter_infer: Finished! Saved output to %s/%s"
             % ("audio-outputs", output_file_name)
         )
 
     else:
-        logger.info("[Mangio-RVC] starter_infer: Inference failed. Here's the traceback: ")
+        logger.info(
+            "[Mangio-RVC] starter_infer: Inference failed. Here's the traceback: "
+        )
         logger.info(conversion_data[0])
 
 
