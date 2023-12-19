@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils import timezone
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import MinValueValidator
 
 
 class User(models.Model):
@@ -53,6 +53,6 @@ class Category(models.Model):
 
     class Meta:
         verbose_name = 'Category'
-        berbose_name_plural = 'Categories'
+        verbose_name_plural = 'Categories'
 
 
