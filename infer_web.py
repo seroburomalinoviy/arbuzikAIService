@@ -1984,8 +1984,9 @@ def whethercrepeornah(radio):
 
     return {"visible": mango, "__type__": "update"}
 
+if __name__ == '__main__':
 
-if __name__ == "__main__":
+
     # Change your Gradio Theme here. 👇 👇 👇 👇 Example: " theme='HaleyCH/HaleyCH_Theme' "
     with gr.Blocks(theme=gr.themes.Soft(), title="Mangio-RVC-Web 💻") as app:
         gr.HTML("<h1> The Mangio-RVC-Fork 💻 </h1>")
