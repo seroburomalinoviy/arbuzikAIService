@@ -16,7 +16,7 @@ infer_parameters = {
     # Get parameters for inference
     "speaker_id": 0,
     "transposition": -2,
-    "f0_method": "harvest",
+    "f0_method": "rmvp",
     "crepe_hop_length": 160,
     "harvest_median_filter": 3,
     "resample": 0,
