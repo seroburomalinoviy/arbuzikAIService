@@ -1,4 +1,4 @@
-from infer_web import vc_single, get_vc
+from infer_web_without_cli import vc_single, get_vc
 from my_utils import load_audio, CSVutil
 import scipy.io.wavfile as wavfile
 
