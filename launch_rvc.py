@@ -1,10 +1,11 @@
 from infer_web_without_cli import vc_single, get_vc
 from my_utils import load_audio, CSVutil
 import scipy.io.wavfile as wavfile
+from time import perf_counter
 
-import logging
+# import logging
 
-logger = logging.Logger(__name__)
+# logger = logging.Logger(__name__)
 
 
 infer_parameters = {
@@ -60,13 +61,17 @@ def starter_infer(
             "csvdb/formanting.csv", "w+", "formanting", DoFormant, Quefrency, Timbre
         )
 
-    logger.info("[Mangio-RVC] starter_infer: Starting the inference...")
+    print("[Mangio-RVC] starter_infer: Starting the inference...")
+    # logger.info("[Mangio-RVC] starter_infer: Starting the inference...")
     try:
         vc_data = get_vc(model_name, protection_amnt, protect1)
     except Exception as e:
-        logger.error(f"[vc_data error] {e.__name__}\n{e}")
-    logger.info(vc_data)
-    logger.info("[Mangio-RVC] starter_infer: Performing inference...")
+        print(f"[vc_data error] {e.__name__}\n{e}")
+        # logger.error(f"[vc_data error] {e.__name__}\n{e}")
+    print(vc_data)
+    print("[Mangio-RVC] starter_infer: Performing inference...")
+    # logger.info(vc_data)
+    # logger.info("[Mangio-RVC] starter_infer: Performing inference...")
 
     try:
         conversion_data = vc_single(
@@ -86,10 +91,15 @@ def starter_infer(
             crepe_hop_length,
         )
     except Exception as e:
-        logger.error(f"[vc_single error] {e.__name__}\n{e}")
+        # logger.error(f"[vc_single error] {e.__name__}\n{e}")
+        print(f"[vc_single error] {e.__name__}\n{e}")
 
     if "Success." in conversion_data[0]:
-        logger.info(
+        # logger.info(
+        #     "[Mangio-RVC] starter_infer: Inference succeeded. Writing to %s/%s..."
+        #     % ("audio-outputs", output_file_name)
+        # )
+        print(
             "[Mangio-RVC] starter_infer: Inference succeeded. Writing to %s/%s..."
             % ("audio-outputs", output_file_name)
         )
@@ -100,17 +110,29 @@ def starter_infer(
                 conversion_data[1][1],
             )
         except Exception as e:
-            logger.error(f"[wavfile error] {e.__name__}\n{e}")
-        logger.info(
+            # logger.error(f"[wavfile error] {e.__name__}\n{e}")
+            print(f"[wavfile error] {e.__name__}\n{e}")
+        print(
             "[Mangio-RVC] starter_infer: Finished! Saved output to %s/%s"
             % ("audio-outputs", output_file_name)
         )
+        # logger.info(
+        #     "[Mangio-RVC] starter_infer: Finished! Saved output to %s/%s"
+        #     % ("audio-outputs", output_file_name)
+        # )
 
     else:
-        logger.info(
+        print(
             "[Mangio-RVC] starter_infer: Inference failed. Here's the traceback: "
         )
-        logger.info(conversion_data[0])
+        print(conversion_data[0])
+        # logger.info(
+        #     "[Mangio-RVC] starter_infer: Inference failed. Here's the traceback: "
+        # )
+        # logger.info(conversion_data[0])
 
 
-starter_infer(**infer_parameters)
+if __name__=='__main__':
+    start = perf_counter()
+    starter_infer(**infer_parameters)
+    print(f'finished for: {perf_counter() - start}')
