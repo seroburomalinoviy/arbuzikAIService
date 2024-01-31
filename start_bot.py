@@ -7,10 +7,11 @@ from telegram.ext import ApplicationBuilder
 from bot.handlers.setup import init_handlers
 
 logger = logging.getLogger(__name__)
-load_dotenv()
+logging.getLogger("httpx").setLevel(logging.WARNING)
 
 
-async def main() -> None:
+def main() -> None:
+    load_dotenv()
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s >>> %(funcName)s(%(lineno)d)",
