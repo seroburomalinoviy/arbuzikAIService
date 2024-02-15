@@ -3,12 +3,12 @@ import logging
 from dotenv import load_dotenv
 from ast import literal_eval
 
-from bot.structures.base_classes import BaseCommandHandler
-from bot.logic import messages, keyboards
-from bot.logic.constants import (START_ROUTES, AUDIO)
+from django.bot.structures.base_classes import BaseCommandHandler
+from django.bot.logic import messages, keyboards
+from django.bot.logic.constants import (START_ROUTES, AUDIO)
 
-from telegram.ext import ContextTypes, ConversationHandler, CommandHandler
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import ContextTypes, ConversationHandler
+from telegram import Update, InlineKeyboardMarkup
 
 load_dotenv()
 logger = logging.getLogger(__name__)

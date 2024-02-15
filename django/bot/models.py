@@ -42,42 +42,55 @@ class Voice(models.Model):
         ('female', 'Female')
     ]
 
-    title = models.CharField('Voice title',
-                             max_length=200,
-                             editable=True)
-    description = models.TextField('Voice description',
-                                   max_length=400,
-                                   editable=True,
-                                   blank=True)
-
-    category = models.ForeignKey('Category', on_delete=models.CASCADE)
-    subcategory = models.ForeignKey('Subcategory', on_delete=models.CASCADE)
-    image = models.ImageField('Image',
-                              upload_to='images/',
-                              editable=True,
-                              null=True,
-                              blank=True,
-                              )
-    file_path = models.FilePathField('voice file',
-                                     path='voices/',
-                                     allow_folders=True)
-
-    gender = models.CharField('Gender', choices=gender_choice, max_length=10, default='Male')
+    title = models.CharField(
+        'Voice title',
+        max_length=200,
+        editable=True
+    )
+    description = models.TextField(
+        'Voice description',
+        max_length=400,
+        editable=True,
+        blank=True
+    )
+    category = models.ForeignKey(
+        'Category',
+        on_delete=models.CASCADE
+    )
+    subcategory = models.ForeignKey(
+        'Subcategory',
+        on_delete=models.CASCADE
+    )
+    image = models.ImageField(
+        'Image',
+        upload_to='images/',  # need set
+        editable=True,
+        null=True,
+        blank=True
+    )
+    file_path = models.FilePathField(
+        'voice file',
+        path='voices/',  # need set
+        allow_folders=True
+    )
+    gender = models.CharField(
+        'Gender',
+        choices=gender_choice,
+        max_length=10,
+        default='Male'
+    )
 
     def __str__(self):
         return self.title
 
 
 class Category(models.Model):
-    # index = models.CharField('index of category',
-    #                          max_length=500,
-    #                          editable=True,
-    #                          unique=True)
-    title = models.CharField('category title',
-                            max_length=200,
-                            editable=True,
-                            unique=True)
-    subcategories = models.ForeignKey('Subcategory', blank=True, on_delete=models.CASCADE)
+    title = models.CharField(
+        'Name',
+        max_length=200,
+        editable=True,
+        unique=True
+    )
 
     def __str__(self):
         return self.title
@@ -88,10 +101,12 @@ class Category(models.Model):
 
 
 class Subcategory(models.Model):
-    title = models.CharField('Title',
-                             max_length=200,
-                             editable=True,
-                             unique=True)
+    title = models.CharField(
+        'Name',
+        max_length=200,
+        editable=True,
+        unique=True
+    )
 
     class Meta:
         verbose_name = 'Subcategory'

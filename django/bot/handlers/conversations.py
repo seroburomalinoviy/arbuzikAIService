@@ -1,13 +1,13 @@
-from bot.structures.base_classes import BaseConversationHandler
-from bot.handlers.commands import TestHandler, CancelHandler, StartHandler
+from django.bot.structures.base_classes import BaseConversationHandler
+from django.bot.handlers.commands import TestHandler, CancelHandler, StartHandler
 
-from bot.logic import processors
+from django.bot.logic import processors
 
-from bot.logic.constants import (
+from django.bot.logic.constants import (
 AUDIO, PARAMETRS, START_ROUTES
 )
 
-from telegram.ext import CommandHandler, MessageHandler, filters, ConversationHandler, CallbackQueryHandler
+from telegram.ext import CommandHandler, MessageHandler, filters, CallbackQueryHandler
 
 
 class TestConversationHandler(BaseConversationHandler):

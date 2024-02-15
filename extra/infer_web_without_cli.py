@@ -8,12 +8,11 @@ import signal
 
 now_dir = os.getcwd()
 sys.path.append(now_dir)
-import traceback, pdb
+import traceback
 import warnings
 
 import numpy as np
 import torch
-import re
 
 os.environ["OPENBLAS_NUM_THREADS"] = "1"
 os.environ["no_proxy"] = "localhost, 127.0.0.1, ::1"
@@ -27,7 +26,7 @@ import faiss
 import ffmpeg
 import gradio as gr
 import soundfile as sf
-from config import Config
+from django.config import Config
 from fairseq import checkpoint_utils
 from i18n import I18nAuto
 from lib.infer_pack.models import (
@@ -58,8 +57,6 @@ warnings.filterwarnings("ignore")
 torch.manual_seed(114514)
 
 logging.getLogger("numba").setLevel(logging.WARNING)
-
-import csv
 
 if not os.path.isdir("csvdb/"):
     os.makedirs("csvdb")

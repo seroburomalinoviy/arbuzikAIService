@@ -3,10 +3,10 @@ import logging
 from dotenv import load_dotenv
 import os
 
-from bot.logic.constants import (
-AUDIO, PARAMETRS, START_ROUTES
+from django.bot.logic.constants import (
+    PARAMETRS, START_ROUTES
 )
-from bot.logic import messages, keyboards
+from django.bot.logic import messages, keyboards
 
 from telegram import Update, InlineKeyboardMarkup
 from telegram.ext import ContextTypes, ConversationHandler

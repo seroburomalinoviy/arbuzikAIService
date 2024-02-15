@@ -1,6 +1,7 @@
 # Custom
-.env
+django/.env
 .ogg
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -106,7 +107,7 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
+django/.env
 .venv
 env/
 venv/
