@@ -1,1 +1,0 @@
-AUDIO, PARAMETRS = range(2)
