@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.core.validators import MinValueValidator
+from config.settings import MEDIA_URL
 
 
 class User(models.Model):
@@ -70,7 +71,7 @@ class Voice(models.Model):
     )
     file_path = models.FilePathField(
         'voice file',
-        path='voices/',  # need set
+        path=MEDIA_URL +'voices/',  # need set
         allow_folders=True
     )
     gender = models.CharField(

@@ -6,7 +6,7 @@ from telegram import Update
 
 class BaseCommandHandler(ABC):
     @abstractmethod
-    def __call__(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+    async def __call__(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         pass
 
 

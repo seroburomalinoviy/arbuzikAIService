@@ -1,14 +1,14 @@
-import pika
 import logging
 from dotenv import load_dotenv
 import os
 
-from django.bot.logic.constants import (
+from bot.logic import message_text, keyboards
+from bot.amqp_driver import push_amqp_message
+from bot.logic.constants import (
     PARAMETRS, START_ROUTES
 )
-from django.bot.logic import messages, keyboards
 
-from telegram import Update, InlineKeyboardMarkup
+from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import ContextTypes, ConversationHandler
 
 load_dotenv()
@@ -27,13 +27,21 @@ async def subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     query = update.callback_query
     await query.answer()
+
     if is_member.status in allowed_user_statuses:
-
-
         await query.message.reply_text(
-            messages.menu,
-            reply_markup=InlineKeyboardMarkup(keyboards.categories)
+            messages.demo_rights,
+
+            reply_markup=InlineKeyboardMarkup(
+                [
+                    [
+                        InlineKeyboardButton("⚡ Подписки", callback_data=str(1)),
+                        InlineKeyboardButton("⏩ Перейти к выбору голосов", callback_data=str(2)),
+                    ]
+                ]
+            )
         )
+
         return START_ROUTES
     elif is_member.status in unresolved_user_statuses:
         await query.message.reply_text(
@@ -68,22 +76,7 @@ async def get_parameters(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"The command I collected:\n\n{command}\n\nStart script ..."
     )
 
-    credentials = pika.PlainCredentials(
-        os.environ.get('RABBIT_USER'),
-        os.environ.get('RABBIT_PASSWORD'))
-    connection = pika.BlockingConnection(
-        pika.ConnectionParameters(
-            os.environ.get('RABBIT_HOST'),
-            int(os.environ.get('RABBIT_PORT')
-            ),
-        '/', credentials, heartbeat=0, socket_timeout=7)
-    )
-    channel = connection.channel()
-    channel.queue_declare(queue='hello')
-    channel.basic_publish(exchange='',
-                          routing_key='hello',
-                          body=f'{command}')
-    connection.close()
+    await push_amqp_message(update.effective_user.id)
 
     return ConversationHandler.END
 

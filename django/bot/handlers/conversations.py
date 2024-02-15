@@ -1,9 +1,9 @@
-from django.bot.structures.base_classes import BaseConversationHandler
-from django.bot.handlers.commands import TestHandler, CancelHandler, StartHandler
+from bot.structures.base_classes import BaseConversationHandler
+from bot.handlers.commands import TestHandler, CancelHandler, StartHandler
 
-from django.bot.logic import processors
+from bot.logic import processors
 
-from django.bot.logic.constants import (
+from bot.logic.constants import (
 AUDIO, PARAMETRS, START_ROUTES
 )
 

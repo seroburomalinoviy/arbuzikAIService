@@ -1,5 +1,5 @@
 import telegram.ext as tg_ext
-from django.bot.handlers.conversations import TestConversationHandler, MainConversationHandler
+from bot.handlers.conversations import TestConversationHandler, MainConversationHandler
 
 
 def init_handlers(application: tg_ext.Application):
