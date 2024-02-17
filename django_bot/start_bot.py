@@ -7,7 +7,7 @@ from telegram.ext import ApplicationBuilder
 from telegram import Update
 
 from bot.handlers.setup import init_handlers
-# from bot.ampq_listener import amqp_start
+from bot.amqp_driver import amqp_listener
 
 logger = logging.getLogger(__name__)
 logging.getLogger("httpx").setLevel(logging.WARNING)
@@ -27,8 +27,8 @@ def main() -> None:
     application = init_handlers(application)
 
     # async rabbit listener
-    # loop = asyncio.get_event_loop()
-    # loop.create_task(_start())
+    loop = asyncio.get_event_loop()
+    loop.create_task(amqp_listener())
 
     application.run_polling(allowed_updates=Update.ALL_TYPES)
 

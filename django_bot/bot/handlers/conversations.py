@@ -25,13 +25,17 @@ class TestConversationHandler(BaseConversationHandler):
 
 
 class MainConversationHandler(BaseConversationHandler):
-
     def entrypoints(self):
         return [CommandHandler("start", StartHandler())]
 
     def states(self):
         return {
-            START_ROUTES: [CallbackQueryHandler(processors.subscription, pattern="sub_0")]
+            START_ROUTES: [
+                CallbackQueryHandler(processors.subscription, pattern="^step_0$"),
+                CallbackQueryHandler(processors.category_menu, pattern="^step_2$"),
+                CallbackQueryHandler(processors.subcategory_menu, pattern="^category_"),
+                # CallbackQueryHandler(processors.voice_menu, pattern="back_category")
+            ],
         }
 
     def fallbacks(self):

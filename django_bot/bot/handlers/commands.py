@@ -31,8 +31,8 @@ class TestHandler(BaseCommandHandler):
 class StartHandler(BaseCommandHandler):
     async def __call__(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(
-            messages.subscription_question,
-            reply_markup=InlineKeyboardMarkup(keyboards.subscription)
+            message_text.subscription_question,
+            reply_markup=InlineKeyboardMarkup(keyboards.check_subscription)
         )
         return START_ROUTES
 

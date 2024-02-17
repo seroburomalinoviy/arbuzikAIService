@@ -1,7 +1,6 @@
 from django.db import models
 from django.utils import timezone
 from django.core.validators import MinValueValidator
-from config.settings import MEDIA_URL
 
 
 class User(models.Model):
@@ -54,13 +53,11 @@ class Voice(models.Model):
         editable=True,
         blank=True
     )
-    category = models.ForeignKey(
-        'Category',
-        on_delete=models.CASCADE
-    )
+
     subcategory = models.ForeignKey(
         'Subcategory',
-        on_delete=models.CASCADE
+        on_delete=models.SET_NULL,
+        null=True
     )
     image = models.ImageField(
         'Image',
@@ -71,7 +68,7 @@ class Voice(models.Model):
     )
     file_path = models.FilePathField(
         'voice file',
-        path=MEDIA_URL +'voices/',  # need set
+        path='media/voices/',  # need set
         allow_folders=True
     )
     gender = models.CharField(
@@ -107,6 +104,12 @@ class Subcategory(models.Model):
         max_length=200,
         editable=True,
         unique=True
+    )
+    categories = models.ForeignKey(
+        'Category',
+        blank=True,
+        on_delete=models.SET_NULL,
+        null=True
     )
 
     class Meta:
