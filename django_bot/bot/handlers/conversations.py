@@ -34,6 +34,8 @@ class MainConversationHandler(BaseConversationHandler):
                 CallbackQueryHandler(processors.subscription, pattern="^step_0$"),
                 CallbackQueryHandler(processors.category_menu, pattern="^step_2$"),
                 CallbackQueryHandler(processors.subcategory_menu, pattern="^category_"),
+                CallbackQueryHandler(processors.search_all, pattern="^search_all$"),
+                CallbackQueryHandler(processors.category_menu, pattern="^back_category$")
                 # CallbackQueryHandler(processors.voice_menu, pattern="back_category")
             ],
         }

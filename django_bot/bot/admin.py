@@ -16,5 +16,5 @@ class GenreAdmin(admin.ModelAdmin):
 @admin.register(Subcategory)
 class GenreAdmin(admin.ModelAdmin):
     empty_value_display = "-empty-"
-    list_display = ['title', 'categories']
+    list_display = ['title', 'category']
 

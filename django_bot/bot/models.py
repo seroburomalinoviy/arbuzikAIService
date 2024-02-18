@@ -89,6 +89,13 @@ class Category(models.Model):
         editable=True,
         unique=True
     )
+    description = models.TextField(
+        'Description',
+        max_length=500,
+        editable=True,
+        null=True,
+        blank=True
+    )
 
     def __str__(self):
         return self.title
@@ -105,7 +112,7 @@ class Subcategory(models.Model):
         editable=True,
         unique=True
     )
-    categories = models.ForeignKey(
+    category = models.ForeignKey(
         'Category',
         blank=True,
         on_delete=models.SET_NULL,

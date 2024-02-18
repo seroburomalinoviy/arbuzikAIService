@@ -28,8 +28,18 @@ unresolved_user_statuses = ['kicked', 'restricted', 'left']
 
 
 @sync_to_async
-def get_objects(Model):
-    return list(Model.objects.all())
+def get_objects(model) -> list:
+    return list(model.objects.all())
+
+
+@sync_to_async
+def get_object_by_id(model, _id: int):
+    return model.objects.get(id=_id)
+
+
+@sync_to_async
+def filter_subcategories(model, _id: int) -> list:
+    return list(model.objects.filter(category_id=_id))
 
 
 # STEP_0 - SUBSCRIPTION
@@ -64,15 +74,20 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     categories = await get_objects(Category)
     len_cat = len(categories)
-    keyboard = []
 
+    keyboard = [keyboards.search_all_voices]  # add button
     async for i, _ in a.enumerate(categories[0:int(len_cat/2)]):
         keyboard.append(
             [
-            InlineKeyboardButton(categories[i].title, callback_data='category_' + str(categories[i].id)),
-            InlineKeyboardButton(categories[i+1].title, callback_data='category_' + str(categories[i+1].id))
+                InlineKeyboardButton(categories[i].title,
+                                     callback_data='category_' + str(categories[i].id)),
+                InlineKeyboardButton(categories[int(len_cat/2)+i].title,
+                                     callback_data='category_' + str(categories[int(len_cat/2)+i].id))
             ]
         )
+    if len_cat % 2 != 0:
+        keyboard.append([InlineKeyboardButton(categories[len_cat - 1].title,
+                                              callback_data='subcategory_' + str(categories[len_cat - 1].id))])
 
     await query.message.reply_text(
             message_text.category_menu,
@@ -80,7 +95,35 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
     return START_ROUTES
 
-async def subcategory_menu():
+
+async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+
+    category_id = int(query.data.split('category_')[1])
+    category = await get_object_by_id(Category, category_id)
+    subcategories = await filter_subcategories(Subcategory, category_id)
+
+    len_subc = len(subcategories)
+    keyboard = []
+    async for i, _ in a.enumerate(subcategories[0:int(len_subc/2)]):
+        keyboard.append(
+            [
+                InlineKeyboardButton(subcategories[i].title,
+                                     callback_data='subcategory_' + str(subcategories[i].id)),
+                InlineKeyboardButton(subcategories[int(len_subc/2)+i].title,
+                                     callback_data='subcategory_' + str(subcategories[int(len_subc/2)+i].id))
+            ]
+        )
+    keyboard.append(keyboards.back_to_category)  # add button
+
+    await query.message.reply_text(
+        category.title + '\n' + category.description,
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )
+
+
+async def search_all():
     pass
 
 

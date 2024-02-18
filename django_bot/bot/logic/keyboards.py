@@ -1,7 +1,11 @@
 from telegram import InlineKeyboardButton
 
+search_all_voices = [
+        InlineKeyboardButton('🔍 Поиск по всем голосам', callback_data='search_all')
+    ]
+
 back_to_category = [
-    InlineKeyboardButton('⏪ Вернуться назад', callback_data='category_back')
+    InlineKeyboardButton('⏪ Вернуться назад', callback_data='back_category')
 ]
 
 check_subscription = [
