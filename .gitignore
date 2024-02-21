@@ -2,6 +2,7 @@
 django_bot/.env
 django_bot/.env.dev
 .ogg
+.DS_Store
 
 
 # Byte-compiled / optimized / DLL files
