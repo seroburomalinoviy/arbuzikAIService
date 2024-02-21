@@ -51,13 +51,12 @@ class Voice(models.Model):
         'Voice description',
         max_length=400,
         editable=True,
-        blank=True
+        blank=True,
+        default='Описание'
     )
-
     subcategory = models.ForeignKey(
         'Subcategory',
-        on_delete=models.SET_NULL,
-        null=True
+        on_delete=models.CASCADE
     )
     image = models.ImageField(
         'Image',
@@ -93,8 +92,7 @@ class Category(models.Model):
         'Description',
         max_length=500,
         editable=True,
-        null=True,
-        blank=True
+        default='Описание'
     )
 
     def __str__(self):
@@ -110,6 +108,10 @@ class Subcategory(models.Model):
         'Name',
         max_length=200,
         editable=True,
+        unique=True
+    )
+    slug = models.SlugField(
+        'slug',
         unique=True
     )
     category = models.ForeignKey(

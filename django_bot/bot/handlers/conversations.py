@@ -4,10 +4,10 @@ from bot.handlers.commands import TestHandler, CancelHandler, StartHandler
 from bot.logic import processors
 
 from bot.logic.constants import (
-AUDIO, PARAMETRS, START_ROUTES
+AUDIO, PARAMETRS, START_ROUTES, END_ROUTES
 )
 
-from telegram.ext import CommandHandler, MessageHandler, filters, CallbackQueryHandler
+from telegram.ext import CommandHandler, MessageHandler, filters, CallbackQueryHandler, InlineQueryHandler
 
 
 class TestConversationHandler(BaseConversationHandler):
@@ -33,11 +33,14 @@ class MainConversationHandler(BaseConversationHandler):
             START_ROUTES: [
                 CallbackQueryHandler(processors.subscription, pattern="^step_0$"),
                 CallbackQueryHandler(processors.category_menu, pattern="^step_2$"),
-                CallbackQueryHandler(processors.subcategory_menu, pattern="^category_"),
                 CallbackQueryHandler(processors.search_all, pattern="^search_all$"),
-                CallbackQueryHandler(processors.category_menu, pattern="^back_category$")
-                # CallbackQueryHandler(processors.voice_menu, pattern="back_category")
+                CallbackQueryHandler(processors.subcategory_menu, pattern="^category_"),
+                CallbackQueryHandler(processors.category_menu, pattern="^back_category$"),
+                InlineQueryHandler(processors.inline_query),
             ],
+            END_ROUTES: [
+
+            ]
         }
 
     def fallbacks(self):
