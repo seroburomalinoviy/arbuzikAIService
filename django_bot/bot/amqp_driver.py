@@ -1,7 +1,9 @@
+import logging
 import os
+from dotenv import load_dotenv
 import aio_pika
 
-import logging
+load_dotenv()
 
 logger = logging.getLogger(__name__)
 
@@ -24,14 +26,6 @@ async def push_amqp_message(user_id):
             aio_pika.Message(body=payload.encode()),
             routing_key=routing_key,
         )
-
-import asyncio
-import logging
-import os
-from dotenv import load_dotenv
-load_dotenv()
-
-import aio_pika
 
 
 async def amqp_listener():

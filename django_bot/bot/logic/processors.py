@@ -3,6 +3,8 @@ from dotenv import load_dotenv
 import os
 import asyncstdlib as a
 from uuid import uuid4
+from asgiref.sync import sync_to_async
+import django
 
 from bot.logic import message_text, keyboards
 from bot.amqp_driver import push_amqp_message
@@ -10,16 +12,13 @@ from bot.logic.constants import (
     PARAMETRS, START_ROUTES, END_ROUTES
 )
 
-from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton, InlineQueryResultArticle, InputTextMessageContent
+from telegram import (Update, InlineKeyboardMarkup, InlineKeyboardButton, InlineQueryResultArticle,
+                      InputTextMessageContent)
 from telegram.ext import ContextTypes, ConversationHandler
 
+
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
-import django
-
 django.setup()
-
-from asgiref.sync import sync_to_async
-
 from bot.models import Voice, Category, Subcategory
 
 load_dotenv()
@@ -85,6 +84,7 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.answer()
 
     categories = await get_objects(Category)
+    context.user_data['categories'] = categories
     len_cat = len(categories)
 
     keyboard = [keyboards.search_all_voices]  # add button
@@ -93,16 +93,17 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         keyboard.append(
             [
                 InlineKeyboardButton(categories[i].title,
-                                     callback_data='category_' + str(categories[i].id)
+                                     callback_data='category_' + str(categories[i].id) + '_' + str(i)
                                      ),
                 InlineKeyboardButton(categories[int(len_cat / 2) + i].title,
-                                     callback_data='category_' + str(categories[int(len_cat / 2) + i].id))
+                                     callback_data='category_' + str(categories[int(len_cat / 2) + i].id) + '_' + str(int(len_cat / 2) + i)
+                                    )
             ]
         )
 
     if len_cat % 2 != 0:
         keyboard.append([InlineKeyboardButton(categories[len_cat - 1].title,
-                                              callback_data='category_' + str(categories[len_cat - 1].id)
+                                              callback_data='category_' + str(categories[len_cat - 1].id) + '_' + str(len_cat - 1)
                                               )
                          ])
 
@@ -118,8 +119,9 @@ async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
 
-    category_id = query.data.split('category_')[1]
+    _, category_id, num = query.data.split('_')
     subcategories = await filter_subcategories(Subcategory, int(category_id))
+    context.user_data['subcategories'] = subcategories
 
     len_subc = len(subcategories)
     keyboard = []
@@ -144,12 +146,14 @@ async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
     keyboard.append(keyboards.back_to_category)  # add button
 
+    categories = context.user_data.get('categories')
+    title, description = categories[int(num)].title, categories[int(num)].description
     await query.message.reply_text(
-        'Title' + '\n' + 'description',
+        title + '\n' + description,
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
 
-    return START_ROUTES
+    return ConversationHandler.END
 
 
 # INLINE_MODE - QUERY
@@ -161,33 +165,42 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     subcategory = await get_subcategory_by_slug(slug)
     voices = await get_voices_by_sub_id(subcategory.id)
     category = await get_category_by_id(subcategory.category_id)
+    # category = context.user_data.get('categories')
+
+    context.user_data['voices'] = voices
     # todo: проверка голоса в избранном, в зависимости от этого отдавать кнопку избранное/удалить из избранного
 
     results = []
-    async for _, voice in a.enumerate(voices):
+    async for num, voice in a.enumerate(voices):
         results.append(
             InlineQueryResultArticle(
                 id=str(uuid4()),
                 title=voice.title,
                 description=voice.description,
                 thumbnail_url="https://img.icons8.com/2266EE/search",
+                # input_message_content=InputTextMessageContent('Загружаю...')
                 input_message_content=InputTextMessageContent(message_text.voice_preview.format(voice_name=voice.title)),
                 reply_markup=InlineKeyboardMarkup(
                     [
                         [
-                            InlineKeyboardButton('⏪ Вернуться в меню', callback_data="^step_2$"),
-                            InlineKeyboardButton('🔴Начать запись', callback_data="^record_" + str(voice.id)),
+                            InlineKeyboardButton('⏪ Вернуться в меню', callback_data="ttt"),
+                            InlineKeyboardButton('🔴Начать запись', callback_data="record_" + str(voice.id)),
 
                         ],
                         [
-                            InlineKeyboardButton('⬅️ Вернуться назад', callback_data="^category_" + str(category.id)),
-                            InlineKeyboardButton('⭐ В избранное', callback_data="^favorite-add$"),
+                            InlineKeyboardButton('⬅️ Вернуться назад', callback_data="category_" + str(category.id)),
+                            InlineKeyboardButton('⭐ В избранное', callback_data="favorite-add"),
                         ]
                     ]
                 ),
             )
     )
     await update.inline_query.answer(results)
+
+
+async def voice_info(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    logger.info('hereeeeeeeee')
+
     return START_ROUTES
 
 

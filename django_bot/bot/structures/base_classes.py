@@ -12,13 +12,13 @@ class BaseCommandHandler(ABC):
 
 class BaseConversationHandler(ABC):
     @abstractmethod
-    async def entrypoints(self):
+    def entrypoints(self):
         pass
 
     @abstractmethod
-    async def states(self):
+    def states(self):
         pass
 
     @abstractmethod
-    async def fallbacks(self):
+    def fallbacks(self):
         pass
