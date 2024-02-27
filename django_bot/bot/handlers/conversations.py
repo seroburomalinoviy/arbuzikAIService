@@ -32,15 +32,10 @@ class MainConversationHandler(BaseConversationHandler):
     def states(self):
         return {
             START_ROUTES: [
-                CallbackQueryHandler(processors.subscription, pattern="^step_0$"),
-                CallbackQueryHandler(processors.category_menu, pattern="^step_2$"),
+                CallbackQueryHandler(processors.subscription, pattern="^subscription"),
+                CallbackQueryHandler(processors.category_menu, pattern="^category_menu$"),
                 CallbackQueryHandler(processors.search_all, pattern="^search_all$"),
                 CallbackQueryHandler(processors.subcategory_menu, pattern="^category_"),
-                CallbackQueryHandler(processors.category_menu, pattern="^back_category$"),
-                # InlineQueryHandler(processors.inline_query),
-            ],
-            END_ROUTES: [
-                CallbackQueryHandler(processors.voice_info, pattern="^ttt")
             ]
         }
 
@@ -51,13 +46,20 @@ class MainConversationHandler(BaseConversationHandler):
 class VoiceConversationHandler(BaseConversationHandler):
 
     def entrypoints(self):
-        # return [MessageHandler(filters.Regex(f'^{message_text.voice_preview[:25]}'), processors.voice_info)]
-        return [CallbackQueryHandler(processors.voice_info, pattern="^ttt$")]
+        return [
+                    CallbackQueryHandler(processors.voice_set, pattern='^record_'),
+                    CallbackQueryHandler(processors.category_menu, pattern='^category_menu'),
+                    CallbackQueryHandler(processors.subcategory_menu, pattern='^category_'),
+                    CallbackQueryHandler(processors.subcategory_menu, pattern='^favorite-add'),
+            ]
+
 
     def states(self):
         return {
             START_ROUTES: [
-                CallbackQueryHandler(processors.voice_info, pattern="^category_"),
+                CallbackQueryHandler(processors.voice_set, pattern="^voice_set"),
+                CallbackQueryHandler(processors.category_menu, pattern="^category_menu$"),
+                CallbackQueryHandler(processors.subcategory_menu, pattern="^category_"),
             ]
         }
 

@@ -13,7 +13,7 @@ from bot.logic.constants import (
 )
 
 from telegram import (Update, InlineKeyboardMarkup, InlineKeyboardButton, InlineQueryResultArticle,
-                      InputTextMessageContent)
+                      InputTextMessageContent, InlineQueryResultsButton)
 from telegram.ext import ContextTypes, ConversationHandler
 
 
@@ -29,28 +29,18 @@ unresolved_user_statuses = ['kicked', 'restricted', 'left']
 
 
 @sync_to_async
-def get_category_by_id(_id: int):
-    return Category.objects.get(id=_id)
-
-
-@sync_to_async()
-def get_voices_by_sub_id(_id: int):
-    return list(Voice.objects.filter(subcategory_id=_id))
-
-
-@sync_to_async
-def get_objects(model) -> list:
+def get_all_objects(model) -> list:
     return list(model.objects.all())
 
 
 @sync_to_async
-def get_subcategory_by_slug(slug: str):
-    return Subcategory.objects.get(slug=slug)
+def get_object(model, **kwargs):
+    return model.objects.get(**kwargs)
 
 
 @sync_to_async
-def filter_subcategories(model, _id: int) -> list:
-    return list(model.objects.filter(category_id=_id))
+def filter_objects(model, **kwargs) -> list:
+    return list(model.objects.filter(**kwargs))
 
 
 # STEP_0 - SUBSCRIPTION
@@ -62,16 +52,17 @@ async def subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
     logger.info(f'User {is_member.user} is {is_member.status}')
 
     query = update.callback_query
-    await query.answer()
 
     if is_member.status in allowed_user_statuses:
-        await query.message.reply_text(
+        await query.answer()
+        await query.edit_message_text(
             message_text.demo_rights,
             reply_markup=InlineKeyboardMarkup(keyboards.is_subscribed)
         )
         return START_ROUTES
     elif is_member.status in unresolved_user_statuses:
-        await query.message.reply_text(
+        await query.answer(text='Сначала подпишись :)')
+        await update.message.reply_text(
             message_text.subscription_check,
             reply_markup=InlineKeyboardMarkup(keyboards.check_subscription)
         )
@@ -83,8 +74,7 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
 
-    categories = await get_objects(Category)
-    context.user_data['categories'] = categories
+    categories = await get_all_objects(Category)
     len_cat = len(categories)
 
     keyboard = [keyboards.search_all_voices]  # add button
@@ -93,21 +83,21 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         keyboard.append(
             [
                 InlineKeyboardButton(categories[i].title,
-                                     callback_data='category_' + str(categories[i].id) + '_' + str(i)
+                                     callback_data='category_' + str(categories[i].id)
                                      ),
                 InlineKeyboardButton(categories[int(len_cat / 2) + i].title,
-                                     callback_data='category_' + str(categories[int(len_cat / 2) + i].id) + '_' + str(int(len_cat / 2) + i)
+                                     callback_data='category_' + str(categories[int(len_cat / 2) + i].id)
                                     )
             ]
         )
 
     if len_cat % 2 != 0:
         keyboard.append([InlineKeyboardButton(categories[len_cat - 1].title,
-                                              callback_data='category_' + str(categories[len_cat - 1].id) + '_' + str(len_cat - 1)
+                                              callback_data='category_' + str(categories[len_cat - 1].id)
                                               )
                          ])
 
-    await query.message.reply_text(
+    await query.edit_message_text(
         message_text.category_menu,
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
@@ -119,9 +109,8 @@ async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
 
-    _, category_id, num = query.data.split('_')
-    subcategories = await filter_subcategories(Subcategory, int(category_id))
-    context.user_data['subcategories'] = subcategories
+    category_id = int(query.data.split('category_')[1])
+    subcategories = await filter_objects(Subcategory, category_id=category_id)
 
     len_subc = len(subcategories)
     keyboard = []
@@ -144,16 +133,15 @@ async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
                                      )
             ]
         )
-    keyboard.append(keyboards.back_to_category)  # add button
+    keyboard.append(keyboards.category_menu)  # add button
 
-    categories = context.user_data.get('categories')
-    title, description = categories[int(num)].title, categories[int(num)].description
-    await query.message.reply_text(
-        title + '\n' + description,
+    category = await get_object(Category, id=category_id)
+    await query.edit_message_text(
+        category.title + '\n' + category.description,
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
 
-    return ConversationHandler.END
+    return START_ROUTES
 
 
 # INLINE_MODE - QUERY
@@ -162,12 +150,11 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     if not slug:
         return
 
-    subcategory = await get_subcategory_by_slug(slug)
-    voices = await get_voices_by_sub_id(subcategory.id)
-    category = await get_category_by_id(subcategory.category_id)
-    # category = context.user_data.get('categories')
+    subcategory = await get_object(Subcategory, slug=slug)
+    voices = await filter_objects(Voice, subcategory_id=subcategory.id)
+    category = await get_object(Category, id=subcategory.category_id)
 
-    context.user_data['voices'] = voices
+    # context.user_data['voices'] = voices
     # todo: проверка голоса в избранном, в зависимости от этого отдавать кнопку избранное/удалить из избранного
 
     results = []
@@ -178,13 +165,12 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
                 title=voice.title,
                 description=voice.description,
                 thumbnail_url="https://img.icons8.com/2266EE/search",
-                # input_message_content=InputTextMessageContent('Загружаю...')
                 input_message_content=InputTextMessageContent(message_text.voice_preview.format(voice_name=voice.title)),
                 reply_markup=InlineKeyboardMarkup(
                     [
                         [
-                            InlineKeyboardButton('⏪ Вернуться в меню', callback_data="ttt"),
-                            InlineKeyboardButton('🔴Начать запись', callback_data="record_" + str(voice.id)),
+                            InlineKeyboardButton('⏪ Вернуться в меню', callback_data='category_menu'),
+                            InlineKeyboardButton('🔴Начать запись', callback_data="record_" + str(voice.id) + '_' + voice.title),
 
                         ],
                         [
@@ -194,18 +180,30 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
                     ]
                 ),
             )
-    )
-    await update.inline_query.answer(results)
+        )
+    await update.inline_query.answer(results, cache_time=1)
+    return ConversationHandler.END
 
 
-async def voice_info(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
     logger.info('hereeeeeeeee')
+    query = update.callback_query
+    await query.answer()
 
+    context.user_data['voice_id'] = query.data.split('_')[1]
+    context.user_data['voice_title'] = query.data.split('_')[2]
+    await query.edit_message_text(
+        message_text.voice_set.format(name=context.user_data['voice_title']),
+        reply_markup=InlineKeyboardMarkup(keyboards.voice_set)
+    )
     return START_ROUTES
 
 
-async def search_all():
-    pass
+
+async def search_all(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    logger.info('check')
+    query = update.callback_query
+    await query.answer()
 
 
 # for TestHandler

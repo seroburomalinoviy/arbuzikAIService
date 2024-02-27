@@ -7,7 +7,6 @@ def init_handlers(application: tg_ext.Application):
     test = TestConversationHandler()
     main = MainConversationHandler()
     voice = VoiceConversationHandler()
-    inline_mode = inline_query
 
     application.add_handler(
         tg_ext.ConversationHandler(
@@ -16,14 +15,6 @@ def init_handlers(application: tg_ext.Application):
             fallbacks=test.fallbacks()
         )
     )
-
-    # application.add_handler(
-    #     tg_ext.ConversationHandler(
-    #         entry_points=voice.entrypoints(),
-    #         states=voice.states(),
-    #         fallbacks=voice.fallbacks()
-    #     )
-    # )
 
     application.add_handler(
         tg_ext.ConversationHandler(
@@ -34,8 +25,17 @@ def init_handlers(application: tg_ext.Application):
         )
     )
 
+    application.add_handler(tg_ext.InlineQueryHandler(inline_query))
+
     application.add_handler(
-        tg_ext.InlineQueryHandler(inline_mode)
+        tg_ext.ConversationHandler(
+            entry_points=voice.entrypoints(),
+            states=voice.states(),
+            fallbacks=voice.fallbacks(),
+            per_message=True,
+            per_chat=False
+
+        )
     )
 
     return application
