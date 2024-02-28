@@ -197,12 +197,7 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         )
     await update.inline_query.answer(results, cache_time=1, auto_pagination=True)
 
-    if context.user_data.get('subcategory_inline_mes_id'):
-        # logger.info(f'{context.user_data.get("subcategory_inline_mes_id")=}')
-        await context.bot.delete_message( await inline_query(update, context),
-            message_id=context.user_data.get('subcategory_inline_mes_id'))
-                                         # chat_id=context.user_data.get('subcategory_chat_id'))
-    else:
+    if not context.user_data.get('subcategory_inline_mes_id'):
         await context.bot.delete_message(message_id=context.user_data.get('subcategory_mes_id'),
                                          chat_id=context.user_data.get('subcategory_chat_id'))
 
