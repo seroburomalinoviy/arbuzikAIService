@@ -7,7 +7,7 @@ voice_set = [
                     InlineKeyboardButton('+1', callback_data='voice_set_add'),
                 ],
                 [
-                    InlineKeyboardButton('⏪ Вернуться назад', callback_data='voice_preview'),
+                    # InlineKeyboardButton('⏪ Вернуться назад', callback_data='voice_preview'),
                     InlineKeyboardButton('⏪ Вернуться в меню', callback_data='category_menu')
                 ]
     ]
