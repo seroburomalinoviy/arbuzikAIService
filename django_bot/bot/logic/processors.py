@@ -140,6 +140,18 @@ async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         category.title + '\n' + category.description,
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
+    if query.message:
+        logger.info(f'{query.message.message_id=}')
+    elif query.inline_message_id:
+        logger.info(f'{query.inline_message_id=}')
+    else:
+        logger.info(f'{update.message.message_id=}')
+
+
+    context.user_data['subcategory_inline_mes_id'] = query.inline_message_id if query.inline_message_id else None
+    if query.message:
+        context.user_data['subcategory_mes_id'] = query.message.message_id
+        context.user_data['subcategory_chat_id'] = query.message.chat.id
 
     return START_ROUTES
 
@@ -153,10 +165,12 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     subcategory = await get_object(Subcategory, slug=slug)
     voices = await filter_objects(Voice, subcategory_id=subcategory.id)
     category = await get_object(Category, id=subcategory.category_id)
+    context.user_data['subcategory_id'] = subcategory.id
+    context.user_data['category_id'] = category.id
 
-    # context.user_data['voices'] = voices
     # todo: проверка голоса в избранном, в зависимости от этого отдавать кнопку избранное/удалить из избранного
 
+    # todo: вызов функции которая удаляет предыдущее сообщение!
     results = []
     async for num, voice in a.enumerate(voices):
         results.append(
@@ -181,8 +195,43 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
                 ),
             )
         )
-    await update.inline_query.answer(results, cache_time=1)
+    await update.inline_query.answer(results, cache_time=1, auto_pagination=True)
+
+    if context.user_data.get('subcategory_inline_mes_id'):
+        # logger.info(f'{context.user_data.get("subcategory_inline_mes_id")=}')
+        await context.bot.delete_message( await inline_query(update, context),
+            message_id=context.user_data.get('subcategory_inline_mes_id'))
+                                         # chat_id=context.user_data.get('subcategory_chat_id'))
+    else:
+        await context.bot.delete_message(message_id=context.user_data.get('subcategory_mes_id'),
+                                         chat_id=context.user_data.get('subcategory_chat_id'))
+
     return ConversationHandler.END
+
+
+async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    voice_id = context.user_data.get('voice_id')
+    voice_title = context.user_data.get('voice_title')
+    category_id = context.user_data['category_id']
+
+    await query.edit_message_text(
+        message_text.voice_preview.format(voice_name=voice_title),
+        reply_markup=InlineKeyboardMarkup(
+            [
+                [
+                    InlineKeyboardButton('⏪ Вернуться в меню', callback_data='category_menu'),
+                    InlineKeyboardButton('🔴Начать запись', callback_data="record_" + str(voice_id) + '_' + voice_title),
+
+                ],
+                [
+                    InlineKeyboardButton('⬅️ Вернуться назад', callback_data="category_" + str(category_id)),
+                    InlineKeyboardButton('⭐ В избранное', callback_data="favorite-add"),
+                ]
+            ]
+        )
+    )
 
 
 async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -190,14 +239,16 @@ async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
 
+    logger.info(f'{update.chosen_inline_result=}')
+
     context.user_data['voice_id'] = query.data.split('_')[1]
     context.user_data['voice_title'] = query.data.split('_')[2]
+
     await query.edit_message_text(
         message_text.voice_set.format(name=context.user_data['voice_title']),
         reply_markup=InlineKeyboardMarkup(keyboards.voice_set)
     )
     return START_ROUTES
-
 
 
 async def search_all(update: Update, context: ContextTypes.DEFAULT_TYPE):
