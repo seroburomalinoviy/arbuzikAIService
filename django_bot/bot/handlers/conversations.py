@@ -46,24 +46,17 @@ class MainConversationHandler(BaseConversationHandler):
 class VoiceConversationHandler(BaseConversationHandler):
 
     def entrypoints(self):
-        return [
-                    CallbackQueryHandler(processors.voice_set, pattern='^record_'),
-                    CallbackQueryHandler(processors.category_menu, pattern='^category_menu'),
-                    CallbackQueryHandler(processors.subcategory_menu, pattern='^category_'),
-                    CallbackQueryHandler(processors.subcategory_menu, pattern='^favorite-add'),
-            ]
+        return [MessageHandler(filters.TEXT, processors.voice_preview)]
 
 
     def states(self):
         return {
             START_ROUTES: [
-                CallbackQueryHandler(processors.voice_set, pattern="^record_"),
+                MessageHandler(filters.TEXT, processors.voice_preview),
+                CallbackQueryHandler(processors.voice_set, pattern="^record$"),
                 CallbackQueryHandler(processors.category_menu, pattern="^category_menu$"),
-                CallbackQueryHandler(processors.subcategory_menu, pattern="^category_"),
-                CallbackQueryHandler(processors.voice_preview, pattern="^voice_preview"),
-                CallbackQueryHandler(processors.pitch_setting, pattern="^voice_set_sub$"),
-                CallbackQueryHandler(processors.pitch_setting, pattern="^voice_set_add$"),
-                CallbackQueryHandler(processors.voice_set_0, pattern="^voice_set_0$"),
+                CallbackQueryHandler(processors.voice_preview, pattern="^voice_preview$"),
+
             ]
         }
 
