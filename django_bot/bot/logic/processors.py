@@ -173,8 +173,12 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
 
 
 async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.message.text:
+    if update.message:
         context.user_data['voice_title'] = update.message.text
+        if context.user_data.get(f'pitch_{update.message.text}'):
+            pass
+        else:
+            context.user_data[f'pitch_{update.message.text}'] = 0
 
     await update.message.reply_text(
         message_text.voice_preview,
@@ -198,16 +202,32 @@ async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
 
+    voice_title = context.user_data.get('voice_title')
+    pitch = context.user_data.get(f'pitch_{voice_title}') if context.user_data.get(f'pitch_{voice_title}') else "0"
+
     await query.edit_message_text(
-        message_text.voice_set.format(name=context.user_data['voice_title']),
-        reply_markup=InlineKeyboardMarkup(keyboards.voice_set)
+        message_text.voice_set.format(name=voice_title),
+        reply_markup=InlineKeyboardMarkup(
+            [
+                [
+                    InlineKeyboardButton('-1', callback_data='voice_set_sub'),
+                    InlineKeyboardButton(str(pitch), callback_data='voice_set_0'),
+                    InlineKeyboardButton('+1', callback_data='voice_set_add'),
+                ],
+                [
+                    InlineKeyboardButton('⏪ Вернуться в меню', callback_data='category_menu')
+                ]
+            ]
+        )
     )
     return START_ROUTES
 
 
 async def voice_set_0(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
-    await query.answer(f'Тональность {context.user_data.get("pitch")}')
+    voice_title = context.user_data.get('voice_title')
+    pitch = context.user_data.get(f'pitch_{voice_title}') if context.user_data.get(f'pitch_{voice_title}') else "0"
+    await query.answer(f'Тональность {pitch}')
     return START_ROUTES
 
 
@@ -215,22 +235,25 @@ async def pitch_setting(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
 
+    voice_title = context.user_data.get('voice_title')
+
     if query.data == 'voice_set_sub':
-        context.user_data['pitch'] -= 1
+        context.user_data[f'pitch_{voice_title}'] -= 1
     elif query.data == 'voice_set_add':
-        context.user_data['pitch'] += 1
+        context.user_data[f'pitch_{voice_title}'] += 1
+
+    pitch = str(context.user_data.get(f'pitch_{voice_title}'))
 
     await query.edit_message_text(
-        message_text.voice_set.format(name=context.user_data['voice_title']),
+        message_text.voice_set.format(name=voice_title),
         reply_markup=InlineKeyboardMarkup(
             [
                 [
                     InlineKeyboardButton('-1', callback_data='voice_set_sub'),
-                    InlineKeyboardButton(str(context.user_data.get('pitch')), callback_data='voice_set_0'),
+                    InlineKeyboardButton(pitch, callback_data='voice_set_0'),
                     InlineKeyboardButton('+1', callback_data='voice_set_add'),
                 ],
                 [
-                    InlineKeyboardButton('⏪ Вернуться назад', callback_data='voice_preview'),
                     InlineKeyboardButton('⏪ Вернуться в меню', callback_data='category_menu')
                 ]
             ]
@@ -244,14 +267,21 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     path = f'media/user_voices/{voice.file_id}'
     await voice.download_to_drive(path)
     logger.info(f'The voice file with id {voice.file_id} downloaded to {path}')
+
+    await update.message.reply_text(
+        message_text.conversation_end,
+        reply_markup=InlineKeyboardMarkup(keyboards.check_status)
+    )
     # todo: write to db
 
     # send to raabbit file/filename and pitch
 
     # send the status message to user
 
+
 async def audio_process():
     pass
+
 
 async def search_all(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
