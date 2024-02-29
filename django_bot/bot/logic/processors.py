@@ -272,11 +272,14 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
         message_text.conversation_end,
         reply_markup=InlineKeyboardMarkup(keyboards.check_status)
     )
+
+    voice_title = context.user_data.get('voice_title')
+    pitch = context.user_data.get(f'pitch_{voice_title}')
+    await push_amqp_message(path, pitch)
     # todo: write to db
 
     # send to raabbit file/filename and pitch
 
-    # send the status message to user
 
 
 async def audio_process():
