@@ -1,3 +1,4 @@
+import copy
 import logging
 from dotenv import load_dotenv
 import os
@@ -140,13 +141,6 @@ async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         category.title + '\n' + category.description,
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
-    if query.message:
-        logger.info(f'{query.message.message_id=}')
-    elif query.inline_message_id:
-        logger.info(f'{query.inline_message_id=}')
-    else:
-        logger.info(f'{update.message.message_id=}')
-
 
     context.user_data['subcategory_inline_mes_id'] = query.inline_message_id if query.inline_message_id else None
     if query.message:
@@ -165,7 +159,7 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     subcategory = await get_object(Subcategory, slug=slug)
     voices = await filter_objects(Voice, subcategory_id=subcategory.id)
     category = await get_object(Category, id=subcategory.category_id)
-    context.user_data['subcategory_id'] = subcategory.id
+    context.user_data['slug'] = slug
     context.user_data['category_id'] = category.id
 
     # todo: проверка голоса в избранном, в зависимости от этого отдавать кнопку избранное/удалить из избранного
@@ -230,14 +224,12 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    logger.info('hereeeeeeeee')
     query = update.callback_query
     await query.answer()
 
-    logger.info(f'{update.chosen_inline_result=}')
-
     context.user_data['voice_id'] = query.data.split('_')[1]
     context.user_data['voice_title'] = query.data.split('_')[2]
+    context.user_data['pitch'] = 0
 
     await query.edit_message_text(
         message_text.voice_set.format(name=context.user_data['voice_title']),
@@ -246,8 +238,55 @@ async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return START_ROUTES
 
 
+async def voice_set_0(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer(f'Тональность {context.user_data.get("pitch")}')
+    return START_ROUTES
+
+
+async def pitch_setting(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+
+    if query.data == 'voice_set_sub':
+        context.user_data['pitch'] -= 1
+    elif query.data == 'voice_set_add':
+        context.user_data['pitch'] += 1
+
+    await query.edit_message_text(
+        message_text.voice_set.format(name=context.user_data['voice_title']),
+        reply_markup=InlineKeyboardMarkup(
+            [
+                [
+                    InlineKeyboardButton('-1', callback_data='voice_set_sub'),
+                    InlineKeyboardButton(str(context.user_data.get('pitch')), callback_data='voice_set_0'),
+                    InlineKeyboardButton('+1', callback_data='voice_set_add'),
+                ],
+                [
+                    InlineKeyboardButton('⏪ Вернуться назад', callback_data='voice_preview'),
+                    InlineKeyboardButton('⏪ Вернуться в меню', callback_data='category_menu')
+                ]
+            ]
+        )
+    )
+    return START_ROUTES
+
+
+async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    voice = await update.message.voice.get_file()
+    path = f'media/user_voices/{voice.file_id}'
+    await voice.download_to_drive(path)
+    logger.info(f'The voice file with id {voice.file_id} downloaded to {path}')
+    # todo: write to db
+
+    # send to raabbit file/filename and pitch
+
+    # send the status message to user
+
+async def audio_process():
+    pass
+
 async def search_all(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    logger.info('check')
     query = update.callback_query
     await query.answer()
 

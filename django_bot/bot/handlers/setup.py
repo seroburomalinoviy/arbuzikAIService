@@ -1,5 +1,5 @@
 import telegram.ext as tg_ext
-from bot.handlers.conversations import TestConversationHandler, MainConversationHandler, VoiceConversationHandler
+from bot.handlers.conversations import TestConversationHandler, MainConversationHandler, VoiceConversationHandler, AudioConversationHandler
 from bot.logic.processors import inline_query
 
 
@@ -7,6 +7,7 @@ def init_handlers(application: tg_ext.Application):
     test = TestConversationHandler()
     main = MainConversationHandler()
     voice = VoiceConversationHandler()
+    audio = AudioConversationHandler()
 
     application.add_handler(
         tg_ext.ConversationHandler(
@@ -35,6 +36,14 @@ def init_handlers(application: tg_ext.Application):
             per_message=True,
             per_chat=False
 
+        )
+    )
+
+    application.add_handler(
+        tg_ext.ConversationHandler(
+            entry_points=audio.entrypoints(),
+            states=audio.states(),
+            fallbacks=audio.fallbacks(),
         )
     )
 

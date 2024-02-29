@@ -7,7 +7,7 @@ from bot.logic.constants import (
 AUDIO, PARAMETRS, START_ROUTES, END_ROUTES
 )
 
-from telegram.ext import CommandHandler, MessageHandler, filters, CallbackQueryHandler, InlineQueryHandler
+from telegram.ext import CommandHandler, MessageHandler, filters, CallbackQueryHandler
 
 
 class TestConversationHandler(BaseConversationHandler):
@@ -61,8 +61,30 @@ class VoiceConversationHandler(BaseConversationHandler):
                 CallbackQueryHandler(processors.category_menu, pattern="^category_menu$"),
                 CallbackQueryHandler(processors.subcategory_menu, pattern="^category_"),
                 CallbackQueryHandler(processors.voice_preview, pattern="^voice_preview"),
+                CallbackQueryHandler(processors.pitch_setting, pattern="^voice_set_sub$"),
+                CallbackQueryHandler(processors.pitch_setting, pattern="^voice_set_add$"),
+                CallbackQueryHandler(processors.voice_set_0, pattern="^voice_set_0$"),
             ]
         }
 
     def fallbacks(self):
+        # todo: try change on cancel handler command
         return [CallbackQueryHandler(processors.category_menu, pattern="^back_category$")]
+
+
+class AudioConversationHandler(BaseConversationHandler):
+
+    def entrypoints(self):
+        return [
+                MessageHandler(filters.VOICE & ~filters.COMMAND, processors.voice_process),
+                MessageHandler(filters.AUDIO & ~filters.COMMAND, processors.audio_process)
+        ]
+
+    def states(self):
+        return {
+
+        }
+
+    def fallbacks(self):
+        return [CommandHandler("cancel", CancelHandler())]
+
