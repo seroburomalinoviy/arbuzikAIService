@@ -51,6 +51,8 @@ services:
       - bot
     restart:
       always
+    env_file:
+      - .env
 
 
 
