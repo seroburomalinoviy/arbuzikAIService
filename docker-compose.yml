@@ -33,8 +33,6 @@ services:
     depends_on:
       - rabbitmq
       - postgres
-    volumes:
-      - media:/app
     restart:
       always
 
@@ -55,8 +53,6 @@ services:
     env_file:
       - .env
 
-volumes:
-  media:
 
 
 
