@@ -40,7 +40,7 @@ services:
   django:
     build: .
     container_name: django
-    command: sh -c 'cd django_bot && python manage.py migrate &&
+    command: sh -c 'cd django_bot && python manage.py makemigrations && python manage.py migrate &&
       python manage.py runserver 0.0.0.0:3000'
     ports:
       - 3000:3000
