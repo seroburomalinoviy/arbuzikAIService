@@ -61,7 +61,7 @@ class Voice(models.Model):
     )
     image = models.ImageField(
         'Image',
-        upload_to='/app/django_bot',  # todo: need set
+        upload_to='images/',  # todo: need set
         editable=True,
         null=True,
         blank=True
