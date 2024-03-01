@@ -1,0 +1,1 @@
+echo "from django.contrib.auth.models import User; u, _ = User.objects.get_or_create(username='admin'); u.is_superuser = True; u.is_staff = True; u.email = 'admin@example.com'; u.set_password('admin'); u.save();" | python manage.py shell
