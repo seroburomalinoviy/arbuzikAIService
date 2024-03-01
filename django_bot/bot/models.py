@@ -68,7 +68,7 @@ class Voice(models.Model):
     )
     file_path = models.FilePathField(
         'voice file',
-        path=settings.BASE_DIR,
+        path='/app/django_bot',
         allow_folders=True,
         null=True,
         blank=True  # todo: change on Prod
