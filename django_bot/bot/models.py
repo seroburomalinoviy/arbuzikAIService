@@ -1,6 +1,9 @@
 from django.db import models
 from django.utils import timezone
 from django.core.validators import MinValueValidator
+from django.core.files.storage import FileSystemStorage
+
+fs = FileSystemStorage(location='/media/voices')
 
 
 class User(models.Model):
@@ -67,7 +70,7 @@ class Voice(models.Model):
     )
     file_path = models.FilePathField(
         'voice file',
-        path='media/voices/',
+        storage=fs,
         allow_folders=True,
         null=True,
         blank=True  # todo: change on Prod
