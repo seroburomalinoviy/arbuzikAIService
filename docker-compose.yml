@@ -57,6 +57,9 @@ services:
     env_file:
       - .env
 
+volumes:
+  media:
+
 
 
 
