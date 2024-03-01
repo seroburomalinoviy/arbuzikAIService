@@ -3,7 +3,7 @@ from django.utils import timezone
 from django.core.validators import MinValueValidator
 from django.core.files.storage import FileSystemStorage
 
-fs = FileSystemStorage(location='voices/')
+fs = FileSystemStorage(location='/media/voices/')
 
 
 class User(models.Model):
