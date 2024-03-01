@@ -264,9 +264,9 @@ async def pitch_setting(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     voice = await update.message.voice.get_file()
-    path = f'media/user_voices/{voice.file_id}'
-    await voice.download_to_drive(path)
-    logger.info(f'The voice file with id {voice.file_id} downloaded to {path}')
+    # path = f'media/user_voices/{voice.file_id}'
+    await voice.download_to_drive()
+    logger.info(f'The voice file with id {voice.file_id} downloaded to {voice.file_path}')
 
     await update.message.reply_text(
         message_text.conversation_end,
