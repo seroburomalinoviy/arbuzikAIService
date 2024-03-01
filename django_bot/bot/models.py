@@ -67,8 +67,10 @@ class Voice(models.Model):
     )
     file_path = models.FilePathField(
         'voice file',
-        path='media/voices/',  # need set
-        allow_folders=True
+        path='media/voices/',
+        allow_folders=True,
+        null=True,
+        blank=True  # todo: change on Prod
     )
     gender = models.CharField(
         'Gender',
