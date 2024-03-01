@@ -5,7 +5,7 @@ django_bot/.env.dev
 .DS_Store
 .zed
 django_bot/bot/migrations/
-
+reload.sh
 
 
 
