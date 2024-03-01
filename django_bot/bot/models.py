@@ -61,14 +61,14 @@ class Voice(models.Model):
     )
     image = models.ImageField(
         'Image',
-        upload_to='images/',  # need set
+        upload_to='images/',  # todo: need set
         editable=True,
         null=True,
         blank=True
     )
     file_path = models.FilePathField(
         'voice file',
-        path='/app/django_bot',
+        path='/app/django_bot',  # todo: need set
         allow_folders=True,
         null=True,
         blank=True  # todo: change on Prod
