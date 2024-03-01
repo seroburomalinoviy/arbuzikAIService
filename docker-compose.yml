@@ -49,7 +49,6 @@ services:
       - 3000:3000
     volumes:
       - ./:/app
-      - media:/app
     depends_on:
       - postgres
       - bot
@@ -57,9 +56,6 @@ services:
       always
     env_file:
       - .env
-
-volumes:
-  media:
 
 
 
