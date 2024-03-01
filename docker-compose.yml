@@ -56,7 +56,7 @@ services:
       always
     env_file:
       - .env
-      -
+
 volumes:
   media:
 
