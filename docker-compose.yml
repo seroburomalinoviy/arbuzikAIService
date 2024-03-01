@@ -41,12 +41,10 @@ services:
   django:
     build: .
     container_name: django
-    command: sh -c """cd django_bot &&
+    command: sh -c 'cd django_bot &&
       python manage.py makemigrations bot && 
       python manage.py migrate &&
-      python manage.py runserver 0.0.0.0:3000 &&
-      python manage.py shell &&
-      echo "from django.contrib.auth.models import User; u, _ = User.objects.get_or_create(username='admin'); u.is_superuser = True; u.is_staff = True; u.email = 'admin@example.com'; u.set_password('admin'); u.save();""""
+      python manage.py runserver 0.0.0.0:3000'
     ports:
       - 3000:3000
     volumes:
