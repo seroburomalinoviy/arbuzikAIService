@@ -33,19 +33,22 @@ services:
     depends_on:
       - rabbitmq
       - postgres
+    volumes:
+      - media:/app
     restart:
       always
-
 
   django:
     build: .
     container_name: django
-    command: sh -c 'cd django_bot && python manage.py makemigrations && python manage.py migrate &&
-      python manage.py runserver 0.0.0.0:3000'
+    command: sh -c 'python django_bot/manage.py makemigrations && 
+      python django_bot/manage.py migrate &&
+      python django_bot/manage.py runserver 0.0.0.0:3000'
     ports:
       - 3000:3000
     volumes:
       - ./:/app
+      - media:/app
     depends_on:
       - postgres
       - bot
@@ -53,6 +56,9 @@ services:
       always
     env_file:
       - .env
+      -
+volumes:
+  media:
 
 
 
