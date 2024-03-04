@@ -56,10 +56,17 @@ services:
   redis:
     build: .
     container_name: redis
-    command:
-      sh -c 'python test_redis.py'
+    image: "redis:alpine"
+
+    command: sh -c 'redis-server --requirepass sOmE_sEcUrE_pAsS &&
+      python test_redis.py'
     ports:
       - "6379:6379"
+    volumes:
+      - $PWD/redis.conf:/usr/local/etc/redis/redis.conf
+      - $HOME/redis/data:/data
+    environment:
+      - REDIS_REPLICATION_MODE=master
     depends_on:
       - bot
     restart:
