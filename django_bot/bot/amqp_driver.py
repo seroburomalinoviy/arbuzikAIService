@@ -51,7 +51,7 @@ async def amqp_listener():
         async with queue.iterator() as queue_iter:
             async for message in queue_iter:
                 async with message.process():
-                    print(message.body)
+                    logger.info(f'Message I got: {message.body}')
 
                     if queue.name in message.body.decode():
                         break

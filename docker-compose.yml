@@ -23,8 +23,8 @@ services:
       - RABBITMQ_DEFAULT_PASS=${RABBIT_PASSWORD}
       - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit disk_free_limit 2147483648
     ports:
-      - 15672:15672
-      - 5672:5672
+      - "15672:15672"
+      - "5672:5672"
 
   bot:
     build: .
@@ -44,9 +44,23 @@ services:
       python manage.py migrate &&
       python manage.py runserver 0.0.0.0:3000'
     ports:
-      - 3000:3000
+      - "3000:3000"
     depends_on:
       - postgres
+      - bot
+    restart:
+      always
+    env_file:
+      - .env
+
+  redis:
+    build: .
+    container_name: redis
+    command:
+      sh -c 'python test_redis.py'
+    ports:
+      - "6379:6379"
+    depends_on:
       - bot
     restart:
       always

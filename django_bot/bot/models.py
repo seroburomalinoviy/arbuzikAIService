@@ -57,18 +57,18 @@ class Voice(models.Model):
     )
     subcategory = models.ForeignKey(
         'Subcategory',
-        on_delete=models.CASCADE
+        on_delete=models.SET_NULL
     )
     image = models.ImageField(
         'Image',
-        upload_to='images/',  # todo: need set
+        upload_to='images/',  # todo: set volume
         editable=True,
         null=True,
         blank=True
     )
     file_path = models.FilePathField(
         'voice file',
-        path='/app/django_bot',  # todo: need set
+        path='/app/django_bot',  # todo: set volume
         allow_folders=True,
         null=True,
         blank=True  # todo: change on Prod
