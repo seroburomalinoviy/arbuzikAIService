@@ -57,7 +57,8 @@ class Voice(models.Model):
     )
     subcategory = models.ForeignKey(
         'Subcategory',
-        on_delete=models.SET_NULL
+        on_delete=models.SET_NULL,
+        null=True
     )
     image = models.ImageField(
         'Image',
