@@ -58,7 +58,7 @@ services:
     container_name: redis
     image: "redis:alpine"
 
-    command: sh -c 'python test_redis.py'
+    command: sh -c 'redis-server --requirepass sOmE_sEcUrE_pAsS'
     ports:
       - "6379:6379"
     volumes:
