@@ -55,24 +55,24 @@ services:
 
   redis:
     container_name: redis
-    image: "redis:latest"
+    image: redis
 
-    ports:
-      - "6379:6379"
-    volumes:
-      - ./redis.conf:/usr/local/etc/redis/redis.conf
-      - $HOME/redis/data:/root/redis
-    environment:
-      - REDIS_REPLICATION_MODE=master
-      - REDIS_PASSWOED=vanya
-      - REDIS_PORT=6379
-      - REDIS_DATABASES=1
-    depends_on:
-      - bot
-    restart:
-      always
-    env_file:
-      - .env
+    # ports:
+    #   - "6379:6379"
+    # volumes:
+    #   - ./redis.conf:/usr/local/etc/redis/redis.conf
+    #   - $HOME/redis/data:/root/redis
+    # environment:
+    #   - REDIS_REPLICATION_MODE=master
+    #   - REDIS_PASSWOED=vanya
+    #   - REDIS_PORT=6379
+    #   - REDIS_DATABASES=1
+    # depends_on:
+    #   - bot
+    # restart:
+    #   always
+    # env_file:
+    #   - .env
 
 
 
