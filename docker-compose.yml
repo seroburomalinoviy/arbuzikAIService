@@ -58,7 +58,7 @@ services:
     container_name: redis
     image: "redis:alpine"
 
-    command: sh -c 'redis-server --requirepass sOmE_sEcUrE_pAsS'
+    command: redis-server 
     ports:
       - "6379:6379"
     volumes:
