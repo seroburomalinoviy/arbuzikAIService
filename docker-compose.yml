@@ -54,7 +54,6 @@ services:
       - .env
 
   redis:
-    build: .
     container_name: redis
     image: "redis:latest"
 
