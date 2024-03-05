@@ -54,9 +54,9 @@ services:
       - .env
 
   redis:
-    container_name: redis
+    # container_name: redis
     image: redis
-    command: "-l -p 6379 -v"
+    # command: "redis-server -l -p 6379 -v"
     # ports:
     #   - "6379:6379"
     # volumes:
