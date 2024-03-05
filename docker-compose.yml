@@ -62,7 +62,7 @@ services:
       - "6379:6379"
     volumes:
       - ./redis.conf:/usr/local/etc/redis/redis.conf
-      - $HOME/redis/data:/data
+      - $HOME/redis/data:/root/redis
     environment:
       - REDIS_REPLICATION_MODE=master
       - REDIS_PASSWOED=vanya
