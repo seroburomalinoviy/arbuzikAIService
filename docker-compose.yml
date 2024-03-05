@@ -67,8 +67,8 @@ services:
     #   - REDIS_PASSWOED=vanya
     #   - REDIS_PORT=6379
     #   - REDIS_DATABASES=1
-    # depends_on:
-    #   - bot
+    depends_on:
+      - bot
     restart:
       always
     # env_file:
