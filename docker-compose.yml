@@ -55,10 +55,9 @@ services:
 
   redis:
     build: .
-    container_name: redis
+    container_name: redis:latest
     image: "redis:alpine"
 
-    command: redis-server 
     ports:
       - "6379:6379"
     volumes:
@@ -66,6 +65,9 @@ services:
       - $HOME/redis/data:/data
     environment:
       - REDIS_REPLICATION_MODE=master
+      - REDIS_PASSWOED=vanya
+      - REDIS_PORT=6379
+      - REDIS_DATABASES=1
     depends_on:
       - bot
     restart:
