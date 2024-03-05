@@ -56,7 +56,7 @@ services:
   redis:
     # container_name: redis
     image: redis
-    # command: "redis-server -l -p 6379 -v"
+    command: sh -c 'redis-cli -h redis '
     # ports:
     #   - "6379:6379"
     # volumes:
