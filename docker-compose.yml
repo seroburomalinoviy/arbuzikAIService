@@ -55,21 +55,24 @@ services:
 
   redis:
     container_name: redis
-    image: redis:latest
-    ports:
-     - "6379:6379"
+    image: redis
+    command: sh -c 'redis-server --save 20 1 --loglevel warning --requirepass nana'
+    # ports:
+    #   - "6379:6379"
     volumes:
-       - ./redis.conf:/usr/local/etc/redis/redis.conf
-       - $HOME/redis/data:/root/redis
-    command: sh -c 'redis-server /usr/local/etc/redis/redis.conf'
-#    environment:
-#       - REDIS_PASSWORD=${REDIS_PASSWORD}
-#       - REDIS_PORT=${REDIS_PORT}
-#       - REDIS_DATABASES=${REDIS_DATABASES}
-#    depends_on:
-#      - bot
-#    env_file:
-#       - .env
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+      - $HOME/redis/data:/root/redis
+    # environment:
+    #   - REDIS_REPLICATION_MODE=master
+    #   - REDIS_PASSWOED=vanya
+    #   - REDIS_PORT=6379
+    #   - REDIS_DATABASES=1
+    # depends_on:
+    #   - bot
+    # restart:
+    #   always
+    # env_file:
+    #   - .env
 
 
 
