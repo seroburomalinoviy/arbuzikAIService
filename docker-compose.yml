@@ -56,7 +56,8 @@ services:
   redis:
     container_name: redis
     image: redis
-    command: sh -c 'redis-server --save 20 1 --loglevel warning --requirepass nana'
+    # command: sh -c 'redis-server --save 20 1 --loglevel warning --requirepass nana'
+    command: ["redis-server"]
     # ports:
     #   - "6379:6379"
     volumes:
