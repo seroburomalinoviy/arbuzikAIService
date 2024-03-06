@@ -67,8 +67,6 @@ services:
        - REDIS_DATABASES=${REDIS_DATABASES}
     depends_on:
       - bot
-    # restart:
-    #   always
     env_file:
        - .env
 
