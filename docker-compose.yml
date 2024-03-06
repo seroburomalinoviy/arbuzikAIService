@@ -59,18 +59,17 @@ services:
     ports:
      - "6379:6379"
     volumes:
-       - ./redis.conf:/usr/local/etc/redis/redis.conf
+#       - ./redis.conf:/usr/local/etc/redis/redis.conf
        - $HOME/redis/data:/root/redis
-    command: sh -c 'redis'
+#    command: sh -c 'redis'
 #    environment:
 #       - REDIS_PASSWORD=${REDIS_PASSWORD}
 #       - REDIS_PORT=${REDIS_PORT}
 #       - REDIS_DATABASES=${REDIS_DATABASES}
-    depends_on:
-      - bot
-    env_file:
-       - .env
-    restart: always
+#    depends_on:
+#      - bot
+#    env_file:
+#       - .env
 
 
 
