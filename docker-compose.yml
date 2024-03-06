@@ -61,7 +61,7 @@ services:
     volumes:
        - ./redis.conf:/usr/local/etc/redis/redis.conf
        - $HOME/redis/data:/root/redis
-    command: "redis-server /usr/local/etc/redis/redis.conf"
+    command: sh -c 'redis-server /usr/local/etc/redis/redis.conf'
     environment:
        - REDIS_PASSWORD=${REDIS_PASSWORD}
        - REDIS_PORT=${REDIS_PORT}
