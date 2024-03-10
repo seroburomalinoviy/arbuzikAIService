@@ -15,25 +15,25 @@ class User(models.Model):
         max_length=100
     )
     user_name = models.CharField(
-        'telegram user name',
+        'telegram username',
         max_length=100
     )
     subscription_status = models.CharField(
-        'Sub status',
+        'Статус подписки',
         max_length=200,
         editable=True
     )
     subscription_final_date = models.DateTimeField(
-        'subscription final date',
+        'Дата окончания подписки',
         # default=timezone.now
     )
     subscription_usage_limit = models.IntegerField(
-        'days limit',
+        'Осталось до конце подписки',
         default=1,
         validators=[MinValueValidator(0)]
     )
     pitch = models.IntegerField(
-        'pitch',
+        'Pitch',
         default=0,
         validators=[MinValueValidator(-150), MaxValueValidator(150)],
         blank=True,
@@ -41,7 +41,7 @@ class User(models.Model):
         null=True
     )
     subscription = models.ForeignKey(
-        'Subscription',
+        'Подписка',
         null=True,
         on_delete=models.SET_NULL
     )
@@ -51,31 +51,31 @@ class User(models.Model):
         return self.nick_name
 
     class Meta:
-        verbose_name = 'User'
-        verbose_name_plural = 'Users'
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
 
 
 class Subscription(models.Model):
     title = models.CharField(
-        'subscription name',
+        'Название подписки',
         max_length=250,
         editable=True,
         unique=True
         )
     time_voice_limit = models.IntegerField(
-        'limit time of voice in sec',
+        'Ограничение аудиофайла, сек',
         default=30,
         editable=True,
         validators=[MinValueValidator(0)]
     )
     price = models.FloatField(
-        'price',
+        'Цена',
         default=1.0,
         editable=True,
         validators=[MinValueValidator(-1.0)]
     )
     days_limit = models.IntegerField(
-        'limit of days',
+        'Дней в подписке',
         default=1,
         editable=True
     )
@@ -87,8 +87,8 @@ class Subscription(models.Model):
         return self.title
 
     class Meta:
-        verbose_name = 'title'
-        verbose_name_plural = 'titles'
+        verbose_name = 'Подписка'
+        verbose_name_plural = 'Подписки'
 
 
 class Voice(models.Model):
@@ -98,38 +98,38 @@ class Voice(models.Model):
     ]
 
     title = models.CharField(
-        'Voice title',
+        'Название голоса',
         max_length=200,
         editable=True
     )
     description = models.TextField(
-        'Voice description',
+        'Описание голоса',
         max_length=400,
         editable=True,
         blank=True,
         default='Описание'
     )
     subcategory = models.ForeignKey(
-        'Subcategory',
+        'Подкатегория',
         on_delete=models.SET_NULL,
         null=True
     )
     image = models.ImageField(
-        'Image',
+        'Картинка',
         upload_to='images/',  # todo: set volume
         editable=True,
         null=True,
         blank=True
     )
     file_path = models.FilePathField(
-        'voice file',
+        'Путь',
         path='/app/django_bot',  # todo: set volume
         allow_folders=True,
         null=True,
         blank=True  # todo: change on Prod
     )
     gender = models.CharField(
-        'Gender',
+        'Пол',
         choices=gender_choice,
         max_length=10,
         default='Male'
@@ -138,10 +138,14 @@ class Voice(models.Model):
     def __str__(self):
         return self.title
 
+    class Meta:
+        verbose_name = 'Голос'
+        verbose_name_plural = 'Голоса'
+
 
 class Category(models.Model):
     title = models.CharField(
-        'Name',
+        'Название категории',
         max_length=200,
         editable=True,
         unique=True
@@ -157,13 +161,13 @@ class Category(models.Model):
         return self.title
 
     class Meta:
-        verbose_name = 'Category'
-        verbose_name_plural = 'Categories'
+        verbose_name = 'Категория'
+        verbose_name_plural = 'Категории'
 
 
 class Subcategory(models.Model):
     title = models.CharField(
-        'Name',
+        'Название подкатегории',
         max_length=200,
         editable=True,
         unique=True
@@ -180,8 +184,8 @@ class Subcategory(models.Model):
     )
 
     class Meta:
-        verbose_name = 'Subcategory'
-        verbose_name_plural = 'Subcategories'
+        verbose_name = 'Подкатегория'
+        verbose_name_plural = 'Подкатегории'
 
     def __str__(self):
         return self.title
