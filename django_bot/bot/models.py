@@ -1,24 +1,57 @@
 from django.db import models
 from django.utils import timezone
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.conf import settings
 
 
 class User(models.Model):
-    telegram_id = models.CharField('telegram id', max_length=250, unique=True, editable=False, blank=False)
-    user_name = models.CharField('user name', max_length=250, blank=True, editable=False, unique=False)
-    subscription_status = models.CharField('Sub status', max_length=200, blank=False, unique=False, editable=True)
-    subscription_final_date = models.DateTimeField('subscription final date', default=timezone.now)
-    subscription_usage_limit = models.IntegerField('days limit', default=1, validators=[MinValueValidator(0)])
-    tune = models.CharField('tune', max_length=300, blank=True, editable=True, unique=False, null=True)
-    subscription = models.ForeignKey('Subscription', on_delete=models.CASCADE)
+    telegram_id = models.CharField(
+        'telegram id',
+        max_length=250,
+        unique=True
+    )
+    nick_name = models.CharField(
+        'telegram nick name',
+        max_length=100
+    )
+    user_name = models.CharField(
+        'telegram user name',
+        max_length=100
+    )
+    subscription_status = models.CharField(
+        'Sub status',
+        max_length=200,
+        editable=True
+    )
+    subscription_final_date = models.DateTimeField(
+        'subscription final date',
+        # default=timezone.now
+    )
+    subscription_usage_limit = models.IntegerField(
+        'days limit',
+        default=1,
+        validators=[MinValueValidator(0)]
+    )
+    pitch = models.IntegerField(
+        'pitch',
+        validators=[MinValueValidator(-150), MaxValueValidator(150)],
+        blank=True,
+        editable=True,
+        null=True
+    )
+    subscription = models.ForeignKey(
+        'Subscription',
+        null=True,
+        on_delete=models.SET_NULL
+    )
+    voices = models.ManyToManyField('Voice')
 
     def __str__(self):
-        return self.user_name
+        return self.nick_name
 
     class Meta:
-        verbose_name = 'user'
-        verbose_name_plural = 'users'
+        verbose_name = 'User'
+        verbose_name_plural = 'Users'
 
 
 class Subscription(models.Model):

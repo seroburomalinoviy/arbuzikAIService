@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Voice, Subcategory
+from .models import Category, Voice, Subcategory, User
 
 
 class SubcategoryInline(admin.TabularInline):
@@ -20,7 +20,13 @@ class GenreAdmin(admin.ModelAdmin):
 
 @admin.register(Subcategory)
 class GenreAdmin(admin.ModelAdmin):
-    empty_value_display = "-empty-"
+    empty_value_display = "<пусто>"
     list_display = ['title', 'category', 'slug']
+
+
+@admin.register(User)
+class UserAdmin(admin.ModelAdmin):
+    empty_value_display = "<пусто>"
+    list_display = ['nick_name', 'subscription_status', 'subscription_final_date']
 
 
