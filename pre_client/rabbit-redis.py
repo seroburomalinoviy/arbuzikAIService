@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 async def create_task(user_id, pitch, filename):
     # todo: определить какие данные получаем
-    # todo: использовать хеш таблицы
+    # todo: использовать хеш таблицы redis'a
     # дока https://aioredis.readthedocs.io/en/latest/getting-started/
     redis = aioredis.from_url("redis://localhost")
     await redis.hset("hash", mapping={"username": "value1", "pitch": 123, "filename": "qwerty"})
