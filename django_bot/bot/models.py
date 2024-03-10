@@ -79,6 +79,7 @@ class Subscription(models.Model):
         default=1,
         editable=True
     )
+    image_cover = models.ImageField('Обложка подписки')
     available_voices = models.ManyToManyField('Voice')
     available_categories = models.ManyToManyField('Category')
     available_subcategories = models.ManyToManyField('Subcategory')
