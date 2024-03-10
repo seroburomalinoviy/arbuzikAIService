@@ -34,6 +34,7 @@ class User(models.Model):
     )
     pitch = models.IntegerField(
         'pitch',
+        default=0,
         validators=[MinValueValidator(-150), MaxValueValidator(150)],
         blank=True,
         editable=True,
@@ -55,19 +56,39 @@ class User(models.Model):
 
 
 class Subscription(models.Model):
-    name = models.CharField('sub name', max_length=250, blank=False, editable=True, unique=False)
-    time_voice_limit = models.IntegerField('limit of voice\'s time', default=30, blank=False, editable=True, validators=[MinValueValidator(0)])
-    price = models.FloatField('price of sub', default=1.0, blank=False, editable=True, validators=[MinValueValidator(0.0)])
-    days_limit = models.IntegerField('limit of days', default=1, blank=False, null=True, editable=True)
-    voices = models.ForeignKey('Voice', on_delete=models.CASCADE)
-    category = models.ForeignKey('Category', on_delete=models.CASCADE)
+    title = models.CharField(
+        'subscription name',
+        max_length=250,
+        editable=True,
+        unique=True
+        )
+    time_voice_limit = models.IntegerField(
+        'limit time of voice in sec',
+        default=30,
+        editable=True,
+        validators=[MinValueValidator(0)]
+    )
+    price = models.FloatField(
+        'price',
+        default=1.0,
+        editable=True,
+        validators=[MinValueValidator(-1.0)]
+    )
+    days_limit = models.IntegerField(
+        'limit of days',
+        default=1,
+        editable=True
+    )
+    available_voices = models.ManyToManyField('Voice')
+    available_categories = models.ManyToManyField('Category')
+    available_subcategories = models.ManyToManyField('Subcategory')
 
     def __str__(self):
-        return self.name
+        return self.title
 
     class Meta:
-        verbose_name = 'subscription'
-        verbose_name_plural = 'subscriptions'
+        verbose_name = 'title'
+        verbose_name_plural = 'titles'
 
 
 class Voice(models.Model):

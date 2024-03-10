@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Voice, Subcategory, User
+from .models import Category, Voice, Subcategory, User, Subscription
 
 
 class SubcategoryInline(admin.TabularInline):
@@ -28,5 +28,11 @@ class GenreAdmin(admin.ModelAdmin):
 class UserAdmin(admin.ModelAdmin):
     empty_value_display = "<пусто>"
     list_display = ['nick_name', 'subscription_status', 'subscription_final_date']
+
+
+@admin.register(Subscription)
+class SubscriptionAdmin(admin.ModelAdmin):
+    empty_value_display = "<пусто>"
+    list_display = ['title', 'time_voice_limit', 'days_limit', 'price']
 
 
