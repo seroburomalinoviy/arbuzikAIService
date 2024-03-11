@@ -68,7 +68,7 @@ services:
   preclient:
     container_name: preclient
     build: .
-    command: ['python pre_client/rabbit-redis.py']
+    command: [sh -c 'python pre_client/rabbit-redis.py']
     env_file:
       - .env
     # restart:
