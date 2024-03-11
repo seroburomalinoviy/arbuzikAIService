@@ -22,14 +22,14 @@ async def create_task(user_id, pitch, filename):
 
 
 async def task_listener():
-
+    logger.info('Start task listener')
     connection = await aio_pika.connect_robust(
         host=os.environ.get('RABBIT_HOST'),
         port=int(os.environ.get('RABBIT_PORT')),
         login=os.environ.get('RABBIT_USER'),
         password=os.environ.get('RABBIT_PASSWORD'),
     )
-
+    logger.info('add connection')
     queue_name = "bot-to-rvc"
 
     async with connection:
@@ -49,4 +49,5 @@ async def task_listener():
 
 
 if '__name__' == '__main__':
+    logger.info('Start preclient!')
     asyncio.run(task_listener())
