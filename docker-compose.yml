@@ -71,8 +71,8 @@ services:
     command: sh -c 'python pre_client/rabbit-redis.py'
     env_file:
       - .env
-    restart:
-      always
+    # restart:
+    #   always
     depends_on:
       - redis
 
