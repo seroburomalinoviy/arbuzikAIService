@@ -8,7 +8,7 @@ class User(models.Model):
     telegram_id = models.CharField(
         'telegram id',
         max_length=250,
-        unique=True
+        primary_key=True
     )
     nick_name = models.CharField(
         'telegram nick name',
@@ -41,7 +41,7 @@ class User(models.Model):
         null=True
     )
     subscription = models.ForeignKey(
-        'Подписка',
+        'Subscription',
         null=True,
         on_delete=models.SET_NULL
     )
@@ -111,7 +111,7 @@ class Voice(models.Model):
         default='Описание'
     )
     subcategory = models.ForeignKey(
-        'Подкатегория',
+        'Subcategory',
         on_delete=models.SET_NULL,
         null=True
     )
