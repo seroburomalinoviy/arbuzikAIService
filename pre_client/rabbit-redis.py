@@ -1,5 +1,5 @@
 import asyncio
-import aioredis
+from redis import asyncio as aioredis
 import logging
 import os
 from dotenv import load_dotenv
