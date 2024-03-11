@@ -8,7 +8,7 @@ import aio_pika
 load_dotenv()
 
 logger = logging.getLogger(__name__)
-
+logger.info('Start preclient!')
 
 async def create_task(user_id, pitch, filename):
     # todo: определить какие данные получаем
