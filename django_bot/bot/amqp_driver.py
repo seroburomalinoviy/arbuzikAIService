@@ -17,7 +17,7 @@ async def push_amqp_message(user_id, pitch, voice_path):
     )
     queue_name = "bot-to-rvc"
     routing_key = "bot-to-rvc"
-    payload = user_id + '_' + str(voice_path) + '_' + str(pitch)
+    payload = str(user_id) + '_' + str(voice_path) + '_' + str(pitch)
     exchange_name = ''
 
     async with connection:
