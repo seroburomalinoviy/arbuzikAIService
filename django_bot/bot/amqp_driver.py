@@ -8,7 +8,7 @@ load_dotenv()
 logger = logging.getLogger(__name__)
 
 
-async def push_amqp_message(voice_path, pitch):
+async def push_amqp_message(user_id, pitch, voice_path):
     connection = await aio_pika.connect_robust(
         host=os.environ.get('RABBIT_HOST'),
         port=int(os.environ.get('RABBIT_PORT')),
@@ -17,7 +17,7 @@ async def push_amqp_message(voice_path, pitch):
     )
     queue_name = "bot-to-rvc"
     routing_key = "bot-to-rvc"
-    payload = str(voice_path) + '_' + str(pitch)
+    payload = user_id + '_' + str(voice_path) + '_' + str(pitch)
     exchange_name = ''
 
     async with connection:
