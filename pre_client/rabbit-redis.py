@@ -15,11 +15,10 @@ async def create_task(user_id, pitch, filename):
     # todo: использовать хеш таблицы redis'a
     # дока https://aioredis.readthedocs.io/en/latest/getting-started/
     redis = aioredis.from_url(
-        url=f"redis://{os.environ.get('REDIS_HOST')}",
-        username=os.environ.get('REDIS_USER'),
-        password=os.environ.get('REDIS_PASSWORD')
+        url=f"redis://localhost"
     )
-    await redis.hset("hash", mapping={"username": "value1", "pitch": 123, "filename": "qwerty"})
+    await redis.hset(f"{user_id}", mapping={"pitch": f"{pitch}", "filename": f"{filename}"})
+    logger.info('message added to redis')
 
 
 async def task_listener():

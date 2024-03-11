@@ -15,8 +15,8 @@ async def push_amqp_message(voice_path, pitch):
         login=os.environ.get('RABBIT_USER'),
         password=os.environ.get('RABBIT_PASSWORD'),
     )
-    queue_name = "bot_rvc"
-    routing_key = "bot_rvc"
+    queue_name = "bot-to-rvc"
+    routing_key = "bot-to-rvc"
     payload = str(voice_path) + '_' + str(pitch)
     exchange_name = ''
 
@@ -36,7 +36,7 @@ async def amqp_listener():
         password=os.environ.get('RABBIT_PASSWORD'),
     )
 
-    queue_name = "rvc_to_bot"
+    queue_name = "rvc-to-bot"
 
     async with connection:
         # Creating channel
