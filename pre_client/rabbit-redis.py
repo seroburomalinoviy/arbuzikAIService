@@ -64,4 +64,5 @@ async def task_listener():
 
 if __name__ == '__main__':
     logger.info('Start task listener')
+    print('\n\n\nSTART PRECLIENT\n\n\n')
     asyncio.run(task_listener())
