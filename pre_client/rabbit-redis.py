@@ -48,13 +48,14 @@ async def task_listener():
         channel = await connection.channel()
         await channel.set_qos(prefetch_count=10)
         queue = await channel.declare_queue(queue_name, durable=True, auto_delete=True)
-
+        logger.info('get queue from rabbit')
         async with queue.iterator() as queue_iter:
             async for message in queue_iter:
                 async with message.process():
                     logger.info(f'Message I got: {message.body}')
+                    logger.info(f'message.decode() I got: {message.body.decode()}')
 
-                    await create_task(*message.body)
+                    # await create_task(*message.body)
 
                     if queue.name in message.body.decode():
                         break
