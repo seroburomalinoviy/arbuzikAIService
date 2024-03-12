@@ -48,6 +48,6 @@ async def task_listener():
                         break
 
 
-if '__name__' == '__main__':
-    logger.info('Start preclient!')
+
+if __name__ == '__main__':
     asyncio.run(task_listener())
