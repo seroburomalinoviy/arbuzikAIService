@@ -5,7 +5,7 @@ import os
 from dotenv import load_dotenv
 import aio_pika
 
-# logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 import sentry_sdk
 
