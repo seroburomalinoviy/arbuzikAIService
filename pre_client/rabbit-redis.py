@@ -63,6 +63,11 @@ async def task_listener():
 
 
 if __name__ == '__main__':
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s >>> %(funcName)s(%(lineno)d)",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
     logger.info('Start task listener')
     print('\n\n\nSTART PRECLIENT\n\n\n')
     asyncio.run(task_listener())
