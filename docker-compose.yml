@@ -75,6 +75,7 @@ services:
       always
     depends_on:
       - redis
+      - rabbitmq
 
 
 
