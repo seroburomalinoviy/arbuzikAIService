@@ -5,10 +5,22 @@ import os
 from dotenv import load_dotenv
 import aio_pika
 
-load_dotenv()
+# logger = logging.getLogger(__name__)
 
-logger = logging.getLogger(__name__)
-logger.info('Start preclient!')
+import sentry_sdk
+
+sentry_sdk.init(
+    dsn="https://674f9f3c6530ddb20607dd9a42413fa4@o4506896610885632.ingest.us.sentry.io/4506896620978176",
+    # Set traces_sample_rate to 1.0 to capture 100%
+    # of transactions for performance monitoring.
+    traces_sample_rate=1.0,
+    # Set profiles_sample_rate to 1.0 to profile 100%
+    # of sampled transactions.
+    # We recommend adjusting this value in production.
+    profiles_sample_rate=1.0,
+)
+
+load_dotenv()
 
 async def create_task(user_id, pitch, filename):
     # todo: определить какие данные получаем
