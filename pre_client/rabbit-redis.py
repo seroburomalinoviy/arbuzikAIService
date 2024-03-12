@@ -63,4 +63,5 @@ async def task_listener():
 
 
 if __name__ == '__main__':
+    logger.info('Start task listener')
     asyncio.run(task_listener())
