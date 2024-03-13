@@ -4,19 +4,19 @@ import logging
 import os
 from dotenv import load_dotenv
 import aio_pika
+import sentry_sdk
 
 logger = logging.getLogger(__name__)
 
-import sentry_sdk
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s >>> %(funcName)s(%(lineno)d)",
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
 
 sentry_sdk.init(
     dsn="https://674f9f3c6530ddb20607dd9a42413fa4@o4506896610885632.ingest.us.sentry.io/4506896620978176",
-    # Set traces_sample_rate to 1.0 to capture 100%
-    # of transactions for performance monitoring.
     traces_sample_rate=1.0,
-    # Set profiles_sample_rate to 1.0 to profile 100%
-    # of sampled transactions.
-    # We recommend adjusting this value in production.
     profiles_sample_rate=1.0,
 )
 
@@ -24,36 +24,34 @@ load_dotenv()
 
 
 async def create_task(user_id, filename, pitch):
-    # дока https://aioredis.readthedocs.io/en/latest/getting-started/
+    # https://aioredis.readthedocs.io/en/latest/getting-started/
     logger.info(f'redis input args: {user_id=}, {filename=}, {pitch=}')
     redis = aioredis.from_url(
         url=f"redis://2.56.91.74"  # todo: можем ли использовать сеть докеров? Оптимально?
     )
     await redis.hset(f"key-{user_id}", mapping={"pitch": f"{pitch}", "voice-raw": f"{filename}"})
-    logger.info('message added to redis')
+    logger.debug('message added to redis')
 
 
 async def task_listener():
-    logger.info('Start task listener')
+    logger.debug('Start task listener')
     connection = await aio_pika.connect_robust(
         host=os.environ.get('RABBIT_HOST'),
         port=int(os.environ.get('RABBIT_PORT')),
         login=os.environ.get('RABBIT_USER'),
         password=os.environ.get('RABBIT_PASSWORD'),
     )
-    logger.info('add connection')
+    logger.debug('Connection with rabbitmq established')
     queue_name = "bot-to-rvc"
 
     async with connection:
         channel = await connection.channel()
         await channel.set_qos(prefetch_count=10)
         queue = await channel.declare_queue(queue_name, durable=True, auto_delete=True)
-        logger.info('get queue from rabbit')
+        logger.debug('get queue from rabbit')
         async with queue.iterator() as queue_iter:
             async for message in queue_iter:
                 async with message.process():
-                    logger.info(f'Message I got: {message.body}')
-                    logger.info(f'message.decode() I got: {message.body.decode()}')
 
                     await create_task(*message.body.decode().split("_"))
 
@@ -61,13 +59,5 @@ async def task_listener():
                         break
 
 
-
 if __name__ == '__main__':
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s >>> %(funcName)s(%(lineno)d)",
-        datefmt="%Y-%m-%d %H:%M:%S",
-    )
-    logger.info('Start task listener')
-    print('\n\n\nSTART PRECLIENT\n\n\n')
     asyncio.run(task_listener())
