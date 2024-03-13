@@ -77,7 +77,3 @@ services:
       - redis
       - rabbitmq
 
-
-
-
-

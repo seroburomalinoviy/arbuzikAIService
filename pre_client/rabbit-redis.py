@@ -24,8 +24,8 @@ load_dotenv()
 
 async def create_task(user_id, pitch, filename):
     # todo: определить какие данные получаем
-    # todo: использовать хеш таблицы redis'a
     # дока https://aioredis.readthedocs.io/en/latest/getting-started/
+    logger.info(f'redis inpiut args: {user_id=}, {pitch=}, {filename=}')
     redis = aioredis.from_url(
         url=f"redis://localhost"
     )
@@ -55,7 +55,7 @@ async def task_listener():
                     logger.info(f'Message I got: {message.body}')
                     logger.info(f'message.decode() I got: {message.body.decode()}')
 
-                    # await create_task(*message.body)
+                    await create_task(*message.body.decode().split("_"))
 
                     if queue.name in message.body.decode():
                         break
