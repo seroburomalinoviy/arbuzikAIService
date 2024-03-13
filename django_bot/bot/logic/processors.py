@@ -265,7 +265,8 @@ async def pitch_setting(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     voice = await update.message.voice.get_file()
     user_id = update.message.from_user.id
-    voice_path = Path(f'{voices_to_process}/{user_id}')
+    voice_path = Path(f'{voices_to_process}/{user_id}.ogg')
+    voice_filename = f'{user_id}.ogg'
     voice_title = context.user_data.get('voice_title')
     pitch = context.user_data.get(f'pitch_{voice_title}')
 
@@ -277,7 +278,7 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup=InlineKeyboardMarkup(keyboards.check_status)
     )
 
-    await push_amqp_message(user_id, voice_path, pitch)
+    await push_amqp_message(user_id, voice_filename, pitch)
     # todo: write to db
 
 

@@ -22,14 +22,14 @@ sentry_sdk.init(
 
 load_dotenv()
 
-async def create_task(user_id, pitch, filename):
-    # todo: определить какие данные получаем
+
+async def create_task(user_id, filename, pitch):
     # дока https://aioredis.readthedocs.io/en/latest/getting-started/
-    logger.info(f'redis inpiut args: {user_id=}, {pitch=}, {filename=}')
+    logger.info(f'redis input args: {user_id=}, {filename=}, {pitch=}')
     redis = aioredis.from_url(
         url=f"redis://2.56.91.74"
     )
-    await redis.hset(f"{user_id}", mapping={"pitch": f"{pitch}", "filename": f"{filename}"})
+    await redis.hset(f"key-{user_id}", mapping={"pitch": f"{pitch}", "voice-raw": f"{filename}"})
     logger.info('message added to redis')
 
 

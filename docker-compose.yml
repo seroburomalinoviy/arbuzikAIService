@@ -35,6 +35,7 @@ services:
       - postgres
     restart:
       always
+    # todo: add volume for voices
 
   django:
     build: .
@@ -78,4 +79,6 @@ services:
     depends_on:
       - redis
       - rabbitmq
+
+    # todo: add volume for voices
 
