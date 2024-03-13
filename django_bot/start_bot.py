@@ -22,9 +22,10 @@ def main() -> None:
         datefmt="%Y-%m-%d %H:%M:%S",
     )
 
-    os.makedirs(f'{constants.voices_to_process}', exist_ok=True)  # for RVC
-    os.makedirs(f'{constants.voice_collection}', exist_ok=True)  # for CMS
-    os.makedirs(f'{constants.image_covers}', exist_ok=True)  # for CMS
+    os.makedirs(os.environ.get('VOICES_VOLUME_RAW'), exist_ok=True)  # todo: transfer to bot entrypoint
+    os.makedirs(os.environ.get('VOICES_VOLUME_PROCESSED'), exist_ok=True)  # todo: transfer to bot entrypoint
+    os.makedirs('/app/media/voices', exist_ok=True)  # todo: transfer to CMS entrypoint
+    os.makedirs('/app/media/covers', exist_ok=True)  # todo: transfer to CMS entrypoint
 
     TOKEN = os.environ.get('BOT_TOKEN')
     application = ApplicationBuilder().token(TOKEN).build()

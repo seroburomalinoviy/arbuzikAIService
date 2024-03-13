@@ -10,7 +10,7 @@ import django
 from bot.logic import message_text, keyboards
 from bot.amqp_driver import push_amqp_message
 from bot.logic.constants import (
-    PARAMETRS, START_ROUTES, END_ROUTES, voices_to_process
+    PARAMETRS, START_ROUTES, END_ROUTES
 )
 
 from telegram import (Update, InlineKeyboardMarkup, InlineKeyboardButton, InlineQueryResultArticle,
@@ -265,8 +265,10 @@ async def pitch_setting(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     voice = await update.message.voice.get_file()
     user_id = update.message.from_user.id
-    voice_path = Path(f'{voices_to_process}/{user_id}.ogg')
+    voice_volume = os.environ.get('VOICES_VOLUME_RAW')
     voice_filename = f'{user_id}.ogg'
+    voice_path = Path(voice_volume + voice_filename)
+
     voice_title = context.user_data.get('voice_title')
     pitch = context.user_data.get(f'pitch_{voice_title}')
 

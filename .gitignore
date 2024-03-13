@@ -1,5 +1,5 @@
 # Custom
-django_bot/.env
+.env
 django_bot/.env.dev
 .ogg
 .DS_Store
@@ -113,7 +113,7 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-django_bot/.env
+.env
 .venv
 env/
 venv/
