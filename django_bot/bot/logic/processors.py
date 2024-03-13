@@ -275,7 +275,7 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     voice_title = context.user_data.get('voice_title')
     pitch = context.user_data.get(f'pitch_{voice_title}')
-    await push_amqp_message(update.effective_user.id, pitch, voice.file_path)
+    await push_amqp_message(update.effective_user.id, pitch, voice.file_id)
     # todo: write to db
 
     # send to raabbit file/filename and pitch
