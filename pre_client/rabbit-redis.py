@@ -27,7 +27,7 @@ async def create_task(user_id, filename, pitch):
     # дока https://aioredis.readthedocs.io/en/latest/getting-started/
     logger.info(f'redis input args: {user_id=}, {filename=}, {pitch=}')
     redis = aioredis.from_url(
-        url=f"redis://2.56.91.74"
+        url=f"redis://2.56.91.74"  # todo: можем ли использовать сеть докеров? Оптимально?
     )
     await redis.hset(f"key-{user_id}", mapping={"pitch": f"{pitch}", "voice-raw": f"{filename}"})
     logger.info('message added to redis')
