@@ -21,9 +21,9 @@ def main() -> None:
         datefmt="%Y-%m-%d %H:%M:%S",
     )
 
-    os.makedirs('/media/user_voices', exist_ok=True)
-    os.makedirs('/media/voices', exist_ok=True)
-    os.makedirs('/media/images', exist_ok=True)
+    os.makedirs('user-voices', exist_ok=True)  # todo: общее место созадния дерикторий
+    os.makedirs('media/voices', exist_ok=True)
+    os.makedirs('media/images', exist_ok=True)
 
     TOKEN = os.environ.get('BOT_TOKEN')
     application = ApplicationBuilder().token(TOKEN).build()

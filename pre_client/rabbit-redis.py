@@ -27,7 +27,7 @@ async def create_task(user_id, pitch, filename):
     # дока https://aioredis.readthedocs.io/en/latest/getting-started/
     logger.info(f'redis inpiut args: {user_id=}, {pitch=}, {filename=}')
     redis = aioredis.from_url(
-        url=f"redis://localhost"
+        url=f"redis://2.56.91.74"
     )
     await redis.hset(f"{user_id}", mapping={"pitch": f"{pitch}", "filename": f"{filename}"})
     logger.info('message added to redis')

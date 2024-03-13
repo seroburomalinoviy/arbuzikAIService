@@ -1,4 +1,4 @@
-import copy
+from pathlib import Path
 import logging
 from dotenv import load_dotenv
 import os
@@ -264,8 +264,7 @@ async def pitch_setting(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     voice = await update.message.voice.get_file()
-    # path = f'media/user_voices/{voice.file_id}'
-    await voice.download_to_drive()
+    await voice.download_to_drive(custom_path=Path('/app/user-voices'))
     logger.info(f'The voice file with id {voice.file_id} downloaded to {voice.file_path}')
 
     await update.message.reply_text(
@@ -275,7 +274,7 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     voice_title = context.user_data.get('voice_title')
     pitch = context.user_data.get(f'pitch_{voice_title}')
-    await push_amqp_message(update.effective_user.id, pitch, voice.file_id)
+    await push_amqp_message(update.effective_user.id, voice.file_id, pitch)
     # todo: write to db
 
     # send to raabbit file/filename and pitch
