@@ -23,14 +23,16 @@ sentry_sdk.init(
 load_dotenv()
 
 
-async def create_task(user_id, filename, pitch):
+async def create_task(payload):
     # https://aioredis.readthedocs.io/en/latest/getting-started/
-    logger.info(f'redis input args: {user_id=}, {filename=}, {pitch=}')
+    logger.info(f'redis input args: {payload}')
     redis = aioredis.from_url(
-        url=f"redis://2.56.91.74"  # todo: можем ли использовать сеть докеров? Оптимально?
+        url=f"redis://{os.environ.get('REDIS_HOST')}"  # todo: можем ли использовать сеть докеров? Оптимально?
     )
-    await redis.hset(f"key-{user_id}", mapping={"pitch": f"{pitch}", "voice-raw": f"{filename}"})
-    logger.debug('message added to redis')
+    pubsub = redis.pubsub()
+    await pubsub.subscribe("channel:raw-data")
+    await redis.publish("channel:raw-data", payload)
+    logger.debug('message send to redis')
 
 
 async def task_listener():
@@ -53,7 +55,7 @@ async def task_listener():
             async for message in queue_iter:
                 async with message.process():
 
-                    await create_task(*message.body.decode().split("_"))
+                    await create_task(message.body.decode())
 
                     if queue.name in message.body.decode():
                         break
