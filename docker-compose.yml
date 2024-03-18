@@ -27,7 +27,9 @@ services:
       - "5672:5672"
 
   bot:
-    build: .
+    build:
+      context: .
+      dockerfile: django_bot.Dockerfile
     container_name: bot
     command: sh -c 'python django_bot/start_bot.py'
     depends_on:
@@ -38,7 +40,9 @@ services:
     # todo: add volume for voices
 
   django:
-    build: .
+    build:
+      context: .
+      dockerfile: django_bot.Dockerfile
     container_name: django
     command: sh -c 'cd django_bot &&
       python manage.py makemigrations bot && 
@@ -70,8 +74,10 @@ services:
 
   preclient:
     container_name: preclient
-    build: .
-    command: ["python", "preclient/main.py"]
+    build:
+      context: .
+      dockerfile: preclient.Dockerfile
+    command: ["python", "main.py"]
     env_file:
       - .env
     restart:
@@ -84,8 +90,10 @@ services:
 
   client:
     container_name: client
-    build: .
-    command: ["python", "client/main.py"]
+    build:
+      context: .
+      dockerfile: client.Dockerfile
+    command: ["python", "main.py"]
     env_file:
       - .env
 #    restart:
