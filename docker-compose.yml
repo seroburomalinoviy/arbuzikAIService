@@ -71,7 +71,7 @@ services:
   preclient:
     container_name: preclient
     build: .
-    command: ["python", "preclient/rabbit-redis.py"]
+    command: ["python", "preclient/main.py"]
     env_file:
       - .env
     restart:
@@ -81,4 +81,16 @@ services:
       - rabbitmq
 
     # todo: add volume for voices
+
+  client:
+    container_name: client
+    build: .
+    command: ["python", "client/main.py"]
+    env_file:
+      - .env
+#    restart:
+#      always
+    depends_on:
+      - preclient
+      - redis
 
