@@ -1,9 +1,11 @@
-from redis import asyncio as aioredis
-import asyncio
-from dotenv import load_dotenv
 import logging
 import os
+import asyncio
+
 import async_timeout
+from redis import asyncio as aioredis
+from dotenv import load_dotenv
+
 
 
 load_dotenv()
