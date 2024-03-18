@@ -29,7 +29,7 @@ services:
   bot:
     build: ./django_bot
     container_name: bot
-    command: sh -c 'python django_bot/start_bot.py'
+    command: ["python", "start_bot.py"]
     depends_on:
       - rabbitmq
       - postgres
@@ -40,10 +40,9 @@ services:
   django:
     build: ./django_bot
     container_name: django
-    command: sh -c 'cd django_bot &&
-      python manage.py makemigrations bot && 
-      python manage.py migrate &&
-      python manage.py runserver 0.0.0.0:3000'
+    command: sh -c 'python manage.py makemigrations bot && 
+                    python manage.py migrate &&
+                    python manage.py runserver 0.0.0.0:3000'
     ports:
       - "3000:3000"
     depends_on:
