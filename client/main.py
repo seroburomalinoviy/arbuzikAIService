@@ -5,11 +5,34 @@ import asyncio
 import async_timeout
 from redis import asyncio as aioredis
 from dotenv import load_dotenv
+from time import perf_counter
 
-
+from launch_rvc import starter_infer
 
 load_dotenv()
 logger = logging.getLogger(__name__)
+
+infer_parameters = {
+    # get VC first
+    "model_name": "example.pth",
+    "source_audio_path": "mysource/voice_for_test.wav",
+    "output_file_name": "TEST_OUT.wav",
+    "feature_index_path": "logs/test/kasparova.index",
+    # Get parameters for inference
+    "speaker_id": 0,
+    "transposition": -2,
+    "f0_method": "rmvpe", #harvest
+    "crepe_hop_length": 160,
+    "harvest_median_filter": 3,
+    "resample": 0,
+    "mix": 1,
+    "feature_ratio": 0.95,
+    "protection_amnt": 0.33,
+    "protect1": 0.45,
+    "DoFormant": True,
+    "Timbre": 8.0,
+    "Quefrency": 1.2,
+}
 
 
 async def reader(channel: aioredis.client.PubSub):
@@ -20,8 +43,26 @@ async def reader(channel: aioredis.client.PubSub):
                 if message is not None:
 
                     # call Mangio-RVC
-                    user_id, pitch, filename = message.get("data").decode().split('_')
-                    logger.info(f'Message delivered: {user_id=}, {pitch=}, {filename}')
+
+                    user_id, filename, pitch = message.get("data").decode().split('_')
+                    logger.info(f'Message delivered: {user_id=}, {pitch=}, {filename=}')
+
+                    infer_parameters['model_name'] = 'test.pth'
+                    infer_parameters['source_audio_path'] = filename
+                    infer_parameters['output_file_name'] = user_id
+                    infer_parameters['feature_index_path'] = 'test.index'
+                    infer_parameters['transposition'] = pitch
+
+                    logger.info(f"infer parameters: {infer_parameters['model_name']=},"
+                                f" {infer_parameters['source_audio_path']=},"
+                                f"{infer_parameters['output_file_name']=}"
+                                f"{infer_parameters['feature_index_path']=}"
+                                f"{infer_parameters['transposition']=}"
+                                )
+
+                    start = perf_counter()
+                    starter_infer(**infer_parameters)
+                    logger.info(f'finished for: {perf_counter() - start}')
 
                 await asyncio.sleep(0.01)
         except asyncio.TimeoutError:
@@ -43,7 +84,7 @@ async def main():
 
 if __name__ == "__main__":
     logging.basicConfig(
-        level=logging.INFO,
+        level=logging.DEBUG,
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s >>> %(funcName)s(%(lineno)d)",
         datefmt="%Y-%m-%d %H:%M:%S"
     )
