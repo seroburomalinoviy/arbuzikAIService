@@ -35,6 +35,8 @@ services:
       - postgres
     restart:
       always
+    env_file:
+      - .env
     # todo: add volume for voices
 
   django:
