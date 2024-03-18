@@ -20,7 +20,7 @@ async def reader(channel: aioredis.client.PubSub):
                 if message is not None:
 
                     # call Mangio-RVC
-                    user_id, pitch, filename = message.get("data").decode()
+                    user_id, pitch, filename = message.get("data").decode().split('_')
                     logger.info(f'Message delivered: {user_id=}, {pitch=}, {filename}')
 
                 await asyncio.sleep(0.01)
