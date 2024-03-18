@@ -38,7 +38,7 @@ async def main():
 
     pubsub = redis.pubsub()
     await pubsub.subscribe("channel:raw-data")
-    await reader(pubsub)
+    await asyncio.create_task(reader(pubsub))
 
 
 if __name__ == "__main__":
