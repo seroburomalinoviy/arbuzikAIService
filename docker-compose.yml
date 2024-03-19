@@ -57,8 +57,8 @@ services:
     env_file:
       - .env
     volumes:
-      - media-data:/app/media/covers/
-      - media-data:${VOICES_VOLUME}
+      - $HOME/media-data:/app/media/covers/
+      - $HOME/media-data:${VOICES_VOLUME}
 
   redis:
     container_name: redis
@@ -100,9 +100,9 @@ services:
       - preclient
       - redis
     volumes:
-      - media-data:${VOICES_VOLUME}
-      - media-data:${USER_VOICES_PROCESSED_VOLUME}
-      - media-data:${USER_VOICES_RAW_VOLUME}
+      - $HOME/media-data:${VOICES_VOLUME}
+      - $HOME/media-data:${USER_VOICES_PROCESSED_VOLUME}
+      - $HOME/media-data:${USER_VOICES_RAW_VOLUME}
 
 volumes:
   media-data:
