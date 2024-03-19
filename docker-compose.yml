@@ -38,8 +38,8 @@ services:
     env_file:
       - .env
     volumes:
-      - media-data/user-voices/raw/:${USER_VOICES_PROCESSED_VOLUME}
-      - media-data/user-voices/processed/:${USER_VOICES_RAW_VOLUME}
+      - media-data:${USER_VOICES_PROCESSED_VOLUME}
+      - media-data:${USER_VOICES_RAW_VOLUME}
 
   django:
     build: ./django_bot
