@@ -37,7 +37,9 @@ services:
       always
     env_file:
       - .env
-    # todo: add volume for voices
+    volumes:
+      - $HOME/media-data/${USER_VOICES_PROCESSED_VOLUME}:${USER_VOICES_PROCESSED_VOLUME}
+      - $HOME/media-data/${USER_VOICES_RAW_VOLUME}:${USER_VOICES_RAW_VOLUME}
 
   django:
     build: ./django_bot
@@ -54,6 +56,9 @@ services:
       always
     env_file:
       - .env
+    volumes:
+      - $HOME/media-data:/app/media/covers/
+      - $HOME/media-data/${VOICES_VOLUME}:${VOICES_VOLUME}
 
   redis:
     container_name: redis
@@ -94,4 +99,11 @@ services:
     depends_on:
       - preclient
       - redis
+    volumes:
+      - $HOME/media-data/${VOICES_VOLUME}:${VOICES_VOLUME}
+      - $HOME/media-data/${USER_VOICES_PROCESSED_VOLUME}:${USER_VOICES_PROCESSED_VOLUME}
+      - $HOME/media-data/${USER_VOICES_RAW_VOLUME}:${USER_VOICES_RAW_VOLUME}
+
+volumes:
+  media-data:
 

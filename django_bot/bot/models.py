@@ -1,7 +1,12 @@
+import os
+from dotenv import load_dotenv
+
 from django.db import models
 from django.utils import timezone
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.conf import settings
+
+load_dotenv()
 
 
 class User(models.Model):
@@ -117,14 +122,14 @@ class Voice(models.Model):
     )
     image = models.ImageField(
         'Картинка',
-        upload_to='images/',  # todo: set volume
+        upload_to='covers/',
         editable=True,
         null=True,
         blank=True
     )
     file_path = models.FilePathField(
         'Путь',
-        path='/app/django_bot',  # todo: set volume
+        path=os.environ.get("VOICES_VOLUME"),
         allow_folders=True,
         null=True,
         blank=True  # todo: change on Prod
