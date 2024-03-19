@@ -9,7 +9,7 @@ RUN pip install --upgrade pip
 RUN pip install --upgrade setuptools wheel
 # RUN pip install --upgrade pip
 RUN pip install faiss-gpu 
-RUN pip install fairseq
+# RUN pip install fairseq
 RUN pip install gradio
 RUN pip install ffmpeg
 RUN pip install ffmpeg-python
