@@ -26,40 +26,6 @@ services:
       - "15672:15672"
       - "5672:5672"
 
-  bot:
-    build: ./django_bot
-    container_name: bot
-    command: ["python", "start_bot.py"]
-    depends_on:
-      - rabbitmq
-      - postgres
-    restart:
-      always
-    env_file:
-      - .env
-    volumes:
-      - $HOME/media-data/${USER_VOICES_PROCESSED_VOLUME}:${USER_VOICES_PROCESSED_VOLUME}
-      - $HOME/media-data/${USER_VOICES_RAW_VOLUME}:${USER_VOICES_RAW_VOLUME}
-
-  django:
-    build: ./django_bot
-    container_name: django
-    command: sh -c 'python manage.py makemigrations bot && 
-                    python manage.py migrate &&
-                    python manage.py runserver 0.0.0.0:3000'
-    ports:
-      - "3000:3000"
-    depends_on:
-      - postgres
-      - bot
-    restart:
-      always
-    env_file:
-      - .env
-    volumes:
-      - $HOME/media-data:/app/media/covers/
-      - $HOME/media-data/${VOICES_VOLUME}:${VOICES_VOLUME}
-
   redis:
     container_name: redis
     image: redis
@@ -103,6 +69,40 @@ services:
       - $HOME/media-data/${VOICES_VOLUME}:${VOICES_VOLUME}
       - $HOME/media-data/${USER_VOICES_PROCESSED_VOLUME}:${USER_VOICES_PROCESSED_VOLUME}
       - $HOME/media-data/${USER_VOICES_RAW_VOLUME}:${USER_VOICES_RAW_VOLUME}
+
+  bot:
+    build: ./django_bot
+    container_name: bot
+    command: ["python", "start_bot.py"]
+    depends_on:
+      - rabbitmq
+      - postgres
+    restart:
+      always
+    env_file:
+      - .env
+    volumes:
+      - $HOME/media-data/${USER_VOICES_PROCESSED_VOLUME}:${USER_VOICES_PROCESSED_VOLUME}
+      - $HOME/media-data/${USER_VOICES_RAW_VOLUME}:${USER_VOICES_RAW_VOLUME}
+
+  django:
+    build: ./django_bot
+    container_name: django
+    command: sh -c 'python manage.py makemigrations bot && 
+                    python manage.py migrate &&
+                    python manage.py runserver 0.0.0.0:3000'
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+      - bot
+    restart:
+      always
+    env_file:
+      - .env
+    volumes:
+      - $HOME/media-data:/app/media/covers/
+      - $HOME/media-data/${VOICES_VOLUME}:${VOICES_VOLUME}
 
 volumes:
   media-data:
