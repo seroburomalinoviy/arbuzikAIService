@@ -70,6 +70,7 @@ async def reader(channel: aioredis.client.PubSub):
 
 
 async def main():
+    logger.info(f'\nSTART MAIN\n')
     try:
         redis = aioredis.from_url(
             url=f"redis://{os.environ.get('REDIS_HOST')}",
@@ -79,8 +80,8 @@ async def main():
 
     pubsub = redis.pubsub()
     await pubsub.subscribe("channel:raw-data")
+    logger.info(f'GET REDIS SUBSCRIBE')
     await asyncio.create_task(reader(pubsub))
-
 
 if __name__ == "__main__":
     logging.basicConfig(
