@@ -6,6 +6,7 @@ django_bot/.env.dev
 .zed
 django_bot/bot/migrations/
 reload.sh
+docker-overlay==docker_id.sh
 
 
 
