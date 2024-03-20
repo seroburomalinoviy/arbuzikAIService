@@ -19,7 +19,8 @@ sentry_sdk.init(
     profiles_sample_rate=1.0,
 )
 
-async def push_amqp_message(user_id, pitch, voice_path):
+
+async def push_amqp_message(payload):
     connection = await aio_pika.connect_robust(
         host=os.environ.get('RABBIT_HOST'),
         port=int(os.environ.get('RABBIT_PORT')),
@@ -29,7 +30,6 @@ async def push_amqp_message(user_id, pitch, voice_path):
     logger.info('Connected to rabbit')
     queue_name = "bot-to-rvc"
     routing_key = "bot-to-rvc"
-    payload = str(user_id) + '_' + str(pitch) + '_' + str(voice_path)
     exchange_name = ''
 
     async with connection:

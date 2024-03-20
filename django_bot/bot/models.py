@@ -127,8 +127,8 @@ class Voice(models.Model):
         null=True,
         blank=True
     )
-    file_path = models.FilePathField(
-        'Путь',
+    model_path = models.FilePathField(
+        'Путь к модели',
         path=os.environ.get("VOICES_VOLUME"),
         allow_folders=True,
         null=True,
