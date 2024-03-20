@@ -45,14 +45,14 @@ async def reader(channel: aioredis.client.PubSub):
 
                     # call Mangio-RVC
 
-                    user_id, voice_path, pitch, voice_model_path, extension = message.get("data").decode().split('_')
-                    logger.info(f'Message delivered: {user_id=}, {pitch=}, {voice_path=}, {voice_model_path=}, {extension=}')
+                    voice_filename, pitch, voice_model_path, extension = message.get("data").decode().split('_')
+                    logger.info(f'Message delivered: {voice_filename=}, {pitch=}, {voice_model_path=}, {extension=}')
                     # await find_model_files(voice_model_path)
 
                     infer_parameters['model_name'] = 'test.pth'
                     infer_parameters['feature_index_path'] = 'test.index'
-                    infer_parameters['source_audio_path'] = voice_path
-                    infer_parameters['output_file_name'] = Path(os.environ.get('USER_VOICES_PROCESSED_VOLUME') + '/' + user_id + extension)
+                    infer_parameters['source_audio_path'] = Path(os.environ.get('USER_VOICES_RAW_VOLUME') + '/' + voice_filename + extension)
+                    infer_parameters['output_file_name'] = voice_filename + extension
                     infer_parameters['transposition'] = pitch
 
                     logger.info(f"infer parameters: {infer_parameters['model_name']=},"

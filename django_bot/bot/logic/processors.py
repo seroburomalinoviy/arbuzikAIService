@@ -267,14 +267,14 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = str(update.message.from_user.id)
     voice_volume = os.environ.get('VOICES_VOLUME_RAW')  # path to volume for raw voice file
     extension = '.ogg'
-    voice_filename = user_id + extension
-    voice_path = Path(voice_volume + voice_filename)
+    voice_filename = user_id  # raw voice file name
+    voice_path = Path(voice_volume + voice_filename + extension)
     voice_title = context.user_data.get('voice_title')
     pitch = context.user_data.get(f'pitch_{voice_title}')
     voice_obj = await get_object(Voice, title=voice_title)
     voice_model_path = voice_obj.model_path
 
-    await voice.download_to_drive(custom_path=voice_path)
+    await voice.download_to_drive(custom_path=voice_path)  # download voice file to host
     logger.info(f'The voice file with name {user_id} downloaded to {voice_path}')
 
     await update.message.reply_text(
@@ -282,7 +282,7 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup=InlineKeyboardMarkup(keyboards.check_status)
     )
 
-    payload = f"{user_id}_{voice_filename}_{pitch}_{voice_model_path}_{extension}"
+    payload = f"{voice_filename}_{pitch}_{voice_model_path}_{extension}"
 
     await push_amqp_message(payload)
     # todo: write to db
