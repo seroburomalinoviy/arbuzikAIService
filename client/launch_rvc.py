@@ -1,5 +1,5 @@
-from infer_web_without_cli import vc_single, get_vc
-from my_utils import load_audio, CSVutil
+from .MangioRVC.infer_web_without_cli import vc_single, get_vc
+from .MangioRVC.my_utils import load_audio, CSVutil
 import scipy.io.wavfile as wavfile
 
 import logging
