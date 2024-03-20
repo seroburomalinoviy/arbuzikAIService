@@ -26,7 +26,8 @@ import faiss
 import ffmpeg
 import gradio as gr
 import soundfile as sf
-from django.config import Config
+# from django.config import Config
+from config import Config
 from fairseq import checkpoint_utils
 from i18n import I18nAuto
 from lib.infer_pack.models import (
