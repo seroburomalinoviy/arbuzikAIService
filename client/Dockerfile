@@ -10,11 +10,11 @@ RUN pip install --upgrade setuptools wheel
 # RUN pip install --upgrade pip
 RUN pip install faiss-gpu 
 # RUN pip install fairseq
-RUN pip install gradio
+RUN pip install gradio==3.34.0
 RUN pip install ffmpeg
-RUN pip install ffmpeg-python
-RUN pip install praat-parselmouth
-RUN pip install pyworld
+RUN pip install ffmpeg-python==0.2.0
+RUN pip install praat-parselmouth==0.4.2
+RUN pip install pyworld==0.3.2
 RUN pip install numpy==1.23.5
 RUN pip install numba==0.56.4
 RUN pip install librosa==0.9.1
