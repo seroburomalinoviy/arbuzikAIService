@@ -27,21 +27,21 @@ import ffmpeg
 import gradio as gr
 import soundfile as sf
 # from django.config import Config
-from .config import Config
+from config import Config
 from fairseq import checkpoint_utils
-from .i18n import I18nAuto
-from .lib.infer_pack.models import (
+from i18n import I18nAuto
+from lib.infer_pack.models import (
     SynthesizerTrnMs256NSFsid,
     SynthesizerTrnMs256NSFsid_nono,
     SynthesizerTrnMs768NSFsid,
     SynthesizerTrnMs768NSFsid_nono,
 )
-from .lib.infer_pack.models_onnx import SynthesizerTrnMsNSFsidM
-from .infer_uvr5 import _audio_pre_, _audio_pre_new
-from .MDXNet import MDXNetDereverb
-from .my_utils import load_audio, CSVutil
-from .train.process_ckpt import change_info, extract_small_model, merge, show_info
-from .vc_infer_pipeline import VC
+from lib.infer_pack.models_onnx import SynthesizerTrnMsNSFsidM
+from infer_uvr5 import _audio_pre_, _audio_pre_new
+from MDXNet import MDXNetDereverb
+from my_utils import load_audio, CSVutil
+from train.process_ckpt import change_info, extract_small_model, merge, show_info
+from vc_infer_pipeline import VC
 from sklearn.cluster import MiniBatchKMeans
 
 tmp = os.path.join(now_dir, "TEMP")
