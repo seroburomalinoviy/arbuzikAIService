@@ -1,8 +1,8 @@
 import os
 from dotenv import load_dotenv
 
-from MangioRVC.infer_web_without_cli import vc_single, get_vc
-from MangioRVC.my_utils import load_audio, CSVutil
+from infer_web_without_cli import vc_single, get_vc
+from my_utils import load_audio, CSVutil
 import scipy.io.wavfile as wavfile
 
 import logging
