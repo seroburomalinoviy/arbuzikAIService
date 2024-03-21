@@ -171,3 +171,5 @@ _tests
 .menuignore
 
 notion
+
+!client/MangioRVC/lib
