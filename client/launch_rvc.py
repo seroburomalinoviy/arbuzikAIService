@@ -1,3 +1,6 @@
+import os
+from dotenv import load_dotenv
+
 from MangioRVC.infer_web_without_cli import vc_single, get_vc
 from MangioRVC.my_utils import load_audio, CSVutil
 import scipy.io.wavfile as wavfile
@@ -5,6 +8,7 @@ import scipy.io.wavfile as wavfile
 import logging
 
 logger = logging.Logger(__name__)
+load_dotenv()
 
 
 def starter_infer(
@@ -71,8 +75,9 @@ def starter_infer(
             % ("audio-outputs", output_file_name)
         )
         try:
+            result_path = os.environ.get("USER_VOICES_PROCESSED_VOLUME")
             wavfile.write(
-                "%s/%s" % ("audio-outputs", output_file_name),
+                "%s/%s" % (result_path, output_file_name),
                 conversion_data[1][0],
                 conversion_data[1][1],
             )
@@ -80,7 +85,7 @@ def starter_infer(
             logger.error(f"[wavfile error] {e.__name__}\n{e}")
         logger.debug(
             "[Mangio-RVC] starter_infer: Finished! Saved output to %s/%s"
-            % ("audio-outputs", output_file_name)
+            % (result_path, output_file_name)
         )
     else:
         logger.debug(
