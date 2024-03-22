@@ -1,3 +1,12 @@
+gradio==3.34.0
+faiss-gpu
+ffmpeg
+ffmpeg-python==0.2.0
+praat-parselmouth==0.4.2
+pyworld==0.3.2
+numpy==1.23.5
+numba==0.56.4
+librosa==0.9.1
 python-dotenv==1.0.1
 redis==5.0.2
 absl-py==1.4.0
