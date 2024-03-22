@@ -2,8 +2,7 @@ FROM python:3.10-bullseye
 ENV PYTHONUNBUFFERED 1
 RUN mkdir /app
 COPY . /app
-WORKDIR /app/MangioRVC
-RUN cd /app/MangioRVC
+WORKDIR /app
 RUN apt-get update
 RUN apt-get -y install build-essential python3-dev ffmpeg
 RUN pip install --upgrade pip
