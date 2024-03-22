@@ -21,5 +21,5 @@ RUN pip install librosa==0.9.1
 RUN pip install -r requirements.txt
 RUN pip install --upgrade lxml
 RUN pip install --upgrade ffmpy
-RUN cd /app
+RUN cd /app/MangioRVC
 #RUN pip install -r requirements.txt
