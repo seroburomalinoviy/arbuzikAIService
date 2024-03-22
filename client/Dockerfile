@@ -1,8 +1,9 @@
 FROM python:3.10-bullseye
 ENV PYTHONUNBUFFERED 1
 RUN mkdir /app
-WORKDIR /app
 COPY . /app
+WORKDIR /app/MangioRVC
+RUN cd /app/MangioRVC
 RUN apt-get update
 RUN apt-get -y install build-essential python3-dev ffmpeg
 RUN pip install --upgrade pip
@@ -21,6 +22,4 @@ RUN pip install librosa==0.9.1
 RUN pip3 download --cache-dir ./tmp/pipcache -r requirements.txt
 RUN pip install --upgrade lxml
 RUN pip install --upgrade ffmpy
-WORKDIR /app/MangioRVC
-RUN cd /app/MangioRVC
 #RUN pip install -r requirements.txt
