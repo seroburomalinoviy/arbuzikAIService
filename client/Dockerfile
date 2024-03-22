@@ -18,8 +18,9 @@ RUN pip install pyworld==0.3.2
 RUN pip install numpy==1.23.5
 RUN pip install numba==0.56.4
 RUN pip install librosa==0.9.1
-RUN pip install -r requirements.txt
+RUN pip3 download --cache-dir ./tmp/pipcache -r requirements.txt
 RUN pip install --upgrade lxml
 RUN pip install --upgrade ffmpy
+WORKDIR /app/MangioRVC
 RUN cd /app/MangioRVC
 #RUN pip install -r requirements.txt
