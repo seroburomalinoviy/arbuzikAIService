@@ -8,6 +8,6 @@ RUN apt-get -y install build-essential python3-dev ffmpeg
 RUN pip install --upgrade pip
 RUN pip install --upgrade setuptools wheel
 # RUN pip install fairseq
-RUN pip download --cache-dir ./tmp/pipcache -r requirements.txt
+RUN pip install -r requirements.txt
 RUN pip install --upgrade lxml
 RUN pip install --upgrade ffmpy
