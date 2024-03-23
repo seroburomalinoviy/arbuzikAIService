@@ -272,7 +272,8 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     voice_title = context.user_data.get('voice_title')
     pitch = context.user_data.get(f'pitch_{voice_title}')
     voice_obj = await get_object(Voice, title=voice_title)
-    voice_model_path = voice_obj.model_path
+    voice_model_pth = voice_obj.model_pth
+    voice_model_index = voice_obj.model_index
 
     await voice.download_to_drive(custom_path=voice_path)  # download voice file to host
     logger.info(f'The voice file with name {user_id} downloaded to {voice_path}')
@@ -282,7 +283,7 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup=InlineKeyboardMarkup(keyboards.check_status)
     )
 
-    payload = f"{voice_filename}_{pitch}_{voice_model_path}_{extension}"
+    payload = f"{voice_filename}_{pitch}_{voice_model_pth}_{voice_model_index}_{extension}"
 
     await push_amqp_message(payload)
     # todo: write to db
