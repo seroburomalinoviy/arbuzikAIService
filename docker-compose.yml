@@ -52,23 +52,27 @@ services:
       - redis
       - rabbitmq
 
-    # todo: add volume for voices
-
   client:
     container_name: client
     build: ./client
     command: ["python", "main.py"]
     env_file:
       - .env
-#    restart:
-#      always
+    restart:
+      always
     depends_on:
       - preclient
       - redis
     volumes:
-      - $HOME/media-data:${VOICES_VOLUME}
-      - $HOME/media-data:${USER_VOICES_PROCESSED_VOLUME}
-      - $HOME/media-data:${USER_VOICES_RAW_VOLUME}
+      - type: volume
+        source: $HOME/models-volume
+        target: ${MODELS_VOLUME}
+      - type: volume
+        source: $HOME/raw-voices-volume
+        target: ${USER_VOICES_RAW_VOLUME}
+      - type: volume
+        source: $HOME/processed-voices-volume
+        target: ${USER_VOICES_PROCESSED_VOLUME}
 
   bot:
     build: ./django_bot
@@ -82,8 +86,12 @@ services:
     env_file:
       - .env
     volumes:
-      - $HOME/media-data:${USER_VOICES_PROCESSED_VOLUME}
-      - $HOME/media-data:${USER_VOICES_RAW_VOLUME}
+      - type: volume
+        source: $HOME/raw-voices-volume
+        target: ${USER_VOICES_RAW_VOLUME}
+      - type: volume
+        source: $HOME/processed-voices-volume
+        target: ${USER_VOICES_PROCESSED_VOLUME}
 
   django:
     build: ./django_bot
@@ -101,9 +109,16 @@ services:
     env_file:
       - .env
     volumes:
-      - $HOME/media-data:/app/media/covers/
-      - $HOME/media-data:${VOICES_VOLUME}
+      - type: volume
+        source: $HOME/covers-volume
+        target: /app/media/covers/
+      - type: volume
+        source: $HOME/models-volume
+        target: ${MODELS_VOLUME}
 
 volumes:
-  media-data:
+  models-volume:
+  covers-volume:
+  processed-voices-volume:
+  raw-voices-volume:
 
