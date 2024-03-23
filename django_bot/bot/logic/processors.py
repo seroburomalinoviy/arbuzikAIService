@@ -265,7 +265,7 @@ async def pitch_setting(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     voice = await update.message.voice.get_file()  # get voice file from user
     user_id = str(update.message.from_user.id)
-    voice_volume = os.environ.get('VOICES_VOLUME_RAW')  # path to volume for raw voice file
+    voice_volume = os.environ.get('USER_VOICES_RAW_VOLUME')  # path to volume for raw voice file
     extension = '.ogg'
     voice_filename = user_id  # raw voice file name
     voice_path = Path(voice_volume + voice_filename + extension)
