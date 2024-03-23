@@ -30,7 +30,7 @@ infer_parameters = {
     "feature_ratio": 0.95,
     "protection_amnt": 0.33,
     "protect1": 0.45,
-    "DoFormant": True,
+    "DoFormant": False, # was True
     "Timbre": 8.0,
     "Quefrency": 1.2,
 }
