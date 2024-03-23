@@ -121,7 +121,7 @@ services:
       - type: volume
         source: models-volume
         target: ${MODELS_VOLUME}
-        read_only: True
+        read_only: False
 
 volumes:
   models-volume:
