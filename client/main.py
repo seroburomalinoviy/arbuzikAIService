@@ -10,6 +10,12 @@ from time import perf_counter
 
 from launch_rvc import starter_infer
 
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s >>> %(funcName)s(%(lineno)d)",
+    datefmt="%Y-%m-%d %H:%M:%S"
+)
+
 load_dotenv()
 logger = logging.getLogger(__name__)
 
@@ -47,7 +53,7 @@ async def reader(channel: aioredis.client.PubSub):
 
                     voice_filename, pitch, voice_model_pth, voice_model_index, extension = message.get("data").decode().split('__')
                     logger.info(f'Message delivered:'
-                                f' {voice_filename=}, {pitch=}, {voice_model_pth=}, {extension=}, {voice_model_index=}')
+                                f' {voice_filename=},\n {pitch=}, {voice_model_pth=},\n {extension=},\n {voice_model_index=}')
                     # await find_model_files(voice_model_path)
 
                     infer_parameters['model_name'] = voice_model_pth
@@ -56,10 +62,10 @@ async def reader(channel: aioredis.client.PubSub):
                     infer_parameters['output_file_name'] = voice_filename + extension
                     infer_parameters['transposition'] = pitch
 
-                    logger.info(f"infer parameters: {infer_parameters['model_name']=},"
-                                f" {infer_parameters['source_audio_path']=},"
-                                f"{infer_parameters['output_file_name']=}"
-                                f"{infer_parameters['feature_index_path']=}"
+                    logger.info(f"infer parameters: {infer_parameters['model_name']=},\n"
+                                f" {infer_parameters['source_audio_path']=},\n"
+                                f"{infer_parameters['output_file_name']=}\n"
+                                f"{infer_parameters['feature_index_path']=}\n"
                                 f"{infer_parameters['transposition']=}"
                                 )
 
@@ -87,14 +93,7 @@ async def main():
     await asyncio.create_task(reader(pubsub))
 
 if __name__ == "__main__":
-    logging.basicConfig(
-        level=logging.DEBUG,
-        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s >>> %(funcName)s(%(lineno)d)",
-        datefmt="%Y-%m-%d %H:%M:%S"
-    )
-    try:
-        asyncio.run(main())
-    except Exception as e:
-        logger.info(f'[{type(e).__name__}] - {e}')
+    asyncio.run(main())
+
 
 
