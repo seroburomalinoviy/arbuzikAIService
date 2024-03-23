@@ -127,10 +127,17 @@ class Voice(models.Model):
         null=True,
         blank=True
     )
-    model_path = models.FilePathField(
-        'Путь к модели',
-        path=os.environ.get("MODELS_VOLUME"),
-        allow_folders=True,
+    model_pth = models.FileField(
+        'Путь к model.pth файлу',
+        upload_to='voices/',
+        editable=True,
+        null=True,
+        blank=True  # todo: change on Prod
+    )
+    model_index = models.FileField(
+        'Путь к model.index файлу',
+        upload_to='voices/',
+        editable=True,
         null=True,
         blank=True  # todo: change on Prod
     )
