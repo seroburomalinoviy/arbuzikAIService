@@ -128,14 +128,14 @@ class Voice(models.Model):
         blank=True
     )
     model_pth = models.FileField(
-        'Путь к model.pth файлу',
+        'Файл `pth`',
         upload_to='voices/',
         editable=True,
         null=True,
         blank=True  # todo: change on Prod
     )
     model_index = models.FileField(
-        'Путь к model.index файлу',
+        'Файл `index`',
         upload_to='voices/',
         editable=True,
         null=True,
