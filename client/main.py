@@ -45,7 +45,7 @@ async def reader(channel: aioredis.client.PubSub):
                     logger.info(f'\nGET MESSAGE FROM RABBIT\n{message.get("data").decode()=}')
                     # call Mangio-RVC
 
-                    voice_filename, pitch, voice_model_pth, voice_model_index, extension = message.get("data").decode().split('_')
+                    voice_filename, pitch, voice_model_pth, voice_model_index, extension = message.get("data").decode().split('__')
                     logger.info(f'Message delivered:'
                                 f' {voice_filename=}, {pitch=}, {voice_model_pth=}, {extension=}, {voice_model_index=}')
                     # await find_model_files(voice_model_path)

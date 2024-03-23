@@ -283,7 +283,7 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup=InlineKeyboardMarkup(keyboards.check_status)
     )
 
-    payload = f"{voice_filename}_{pitch}_{voice_model_pth}_{voice_model_index}_{extension}"
+    payload = f"{voice_filename}__{pitch}__{voice_model_pth}__{voice_model_index}__{extension}"
 
     await push_amqp_message(payload)
     # todo: write to db
