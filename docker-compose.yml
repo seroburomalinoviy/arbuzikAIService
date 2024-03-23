@@ -67,12 +67,15 @@ services:
       - type: volume
         source: $HOME/models-volume
         target: ${MODELS_VOLUME}
+        read_only: True
       - type: volume
         source: $HOME/raw-voices-volume
         target: ${USER_VOICES_RAW_VOLUME}
+        read_only: True
       - type: volume
         source: $HOME/processed-voices-volume
         target: ${USER_VOICES_PROCESSED_VOLUME}
+        read_only: False
 
   bot:
     build: ./django_bot
@@ -89,9 +92,11 @@ services:
       - type: volume
         source: $HOME/raw-voices-volume
         target: ${USER_VOICES_RAW_VOLUME}
+        read_only: False
       - type: volume
         source: $HOME/processed-voices-volume
         target: ${USER_VOICES_PROCESSED_VOLUME}
+        read_only: True
 
   django:
     build: ./django_bot
@@ -112,9 +117,11 @@ services:
       - type: volume
         source: $HOME/covers-volume
         target: /app/media/covers/
+        read_only: False
       - type: volume
         source: $HOME/models-volume
         target: ${MODELS_VOLUME}
+        read_only: True
 
 volumes:
   models-volume:
