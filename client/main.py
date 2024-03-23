@@ -42,7 +42,7 @@ async def reader(channel: aioredis.client.PubSub):
             async with async_timeout.timeout(1):
                 message = await channel.get_message(ignore_subscribe_messages=True)
                 if message is not None:
-                    logger.info(f'\nGET MESSAGE FROM RABBIT')
+                    logger.info(f'\nGET MESSAGE FROM RABBIT\nmessage.get("data").decode().')
                     # call Mangio-RVC
 
                     voice_filename, pitch, voice_model_pth, voice_model_index, extension = message.get("data").decode().split('_')
