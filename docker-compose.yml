@@ -65,15 +65,15 @@ services:
       - redis
     volumes:
       - type: volume
-        source: $HOME/models-volume
+        source: models-volume
         target: ${MODELS_VOLUME}
         read_only: True
       - type: volume
-        source: $HOME/raw-voices-volume
+        source: raw-voices-volume
         target: ${USER_VOICES_RAW_VOLUME}
         read_only: True
       - type: volume
-        source: $HOME/processed-voices-volume
+        source: processed-voices-volume
         target: ${USER_VOICES_PROCESSED_VOLUME}
         read_only: False
 
@@ -90,11 +90,11 @@ services:
       - .env
     volumes:
       - type: volume
-        source: $HOME/raw-voices-volume
+        source: raw-voices-volume
         target: ${USER_VOICES_RAW_VOLUME}
         read_only: False
       - type: volume
-        source: $HOME/processed-voices-volume
+        source: processed-voices-volume
         target: ${USER_VOICES_PROCESSED_VOLUME}
         read_only: True
 
@@ -115,11 +115,11 @@ services:
       - .env
     volumes:
       - type: volume
-        source: $HOME/covers-volume
+        source: covers-volume
         target: /app/media/covers/
         read_only: False
       - type: volume
-        source: $HOME/models-volume
+        source: models-volume
         target: ${MODELS_VOLUME}
         read_only: True
 
