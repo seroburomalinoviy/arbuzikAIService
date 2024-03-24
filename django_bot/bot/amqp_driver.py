@@ -2,6 +2,8 @@ import logging
 import os
 from dotenv import load_dotenv
 import aio_pika
+import json
+from telegram import Bot
 
 load_dotenv()
 
@@ -18,6 +20,15 @@ sentry_sdk.init(
     # We recommend adjusting this value in production.
     profiles_sample_rate=1.0,
 )
+
+
+async def send_answer(message):
+    payload = json.loads(message)
+    chat_id = payload.get('chat_id')
+    voice_id = payload.get('voice_id')
+    voice_path = os.environ.get('USER_VOICES_PROCESSED_VOLUME') + '/' + voice_id
+
+    await Bot.sendVoice(chat_id=chat_id, voice=voice_path)
 
 
 async def push_amqp_message(payload):
@@ -38,7 +49,7 @@ async def push_amqp_message(payload):
             aio_pika.Message(body=payload.encode()),
             routing_key=routing_key,
         )
-    logger.info(f'message{payload} sent to rabbit')
+    logger.info(f'message {payload} sent to rabbit')
 
 
 async def amqp_listener():
@@ -66,6 +77,8 @@ async def amqp_listener():
             async for message in queue_iter:
                 async with message.process():
                     logger.info(f'bot got msg from rabbit: {message.body}')
+
+                    await send_answer(message.body)
 
                     if queue.name in message.body.decode():
                         break

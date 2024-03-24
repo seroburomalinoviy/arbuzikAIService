@@ -6,6 +6,7 @@ import asyncstdlib as a
 from uuid import uuid4
 from asgiref.sync import sync_to_async
 import django
+import json
 
 from bot.logic import message_text, keyboards
 from bot.amqp_driver import push_amqp_message
@@ -265,6 +266,7 @@ async def pitch_setting(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     voice = await update.message.voice.get_file()  # get voice file from user
     user_id = str(update.message.from_user.id)
+    chat_id = str(update.message.chat.id)
     voice_volume = os.environ.get('USER_VOICES_RAW_VOLUME')  # path to volume for raw voice file
     extension = '.ogg'
     voice_filename = user_id  # raw voice file name
@@ -282,10 +284,16 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
         message_text.conversation_end,
         reply_markup=InlineKeyboardMarkup(keyboards.check_status)
     )
+    payload = {
+        "user_id": user_id,
+        "chat_id": chat_id,
+        "voice_filename": voice_title + '_' + str(uuid4()) + extension,
+        "pitch": pitch,
+        "voice_model_pth": voice_model_pth,
+        "voice_model_index": voice_model_index,
+    }
 
-    payload = f"{voice_filename}__{pitch}__{voice_model_pth}__{voice_model_index}__{extension}"
-
-    await push_amqp_message(payload)
+    await push_amqp_message(json.dumps(payload))
     # todo: write to db
 
 

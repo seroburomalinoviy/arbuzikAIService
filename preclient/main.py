@@ -44,13 +44,14 @@ async def task_listener():
         password=os.environ.get('RABBIT_PASSWORD'),
     )
     logger.debug('Connection with rabbitmq established')
+
     queue_name = "bot-to-rvc"
 
     async with connection:
         channel = await connection.channel()
         await channel.set_qos(prefetch_count=10)
         queue = await channel.declare_queue(queue_name, durable=True, auto_delete=True)
-        logger.debug('get queue from rabbit')
+        logger.debug(f'get queue {queue_name} from rabbit')
         async with queue.iterator() as queue_iter:
             async for message in queue_iter:
                 async with message.process():

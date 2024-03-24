@@ -2,6 +2,8 @@ import logging
 import os
 import asyncio
 from pathlib import Path
+import aio_pika
+import json
 
 import async_timeout
 from redis import asyncio as aioredis
@@ -42,23 +44,48 @@ infer_parameters = {
 }
 
 
+async def push_amqp_message(payload):
+    connection = await aio_pika.connect_robust(
+        host=os.environ.get('RABBIT_HOST'),
+        port=int(os.environ.get('RABBIT_PORT')),
+        login=os.environ.get('RABBIT_USER'),
+        password=os.environ.get('RABBIT_PASSWORD'),
+    )
+    logger.info('Connected to rabbit')
+    queue_name = "rvc-to-bot"
+    routing_key = "rvc-to-bot"
+    exchange_name = ''
+
+    async with connection:
+        channel = await connection.channel()
+        await channel.default_exchange.publish(
+            aio_pika.Message(body=payload.encode()),
+            routing_key=routing_key,
+        )
+    logger.info(f'message {payload} sent to bot')
+
+
 async def reader(channel: aioredis.client.PubSub):
     while True:
         try:
             async with async_timeout.timeout(1):
                 message = await channel.get_message(ignore_subscribe_messages=True)
                 if message is not None:
-                    logger.info(f'\nGET MESSAGE FROM RABBIT\n{message.get("data").decode()=}')
-                    # call Mangio-RVC
 
-                    voice_filename, pitch, voice_model_pth, voice_model_index, extension = message.get("data").decode().split('__')
-                    # await find_model_files(voice_model_path)
+                    message = message.get("data").decode()
 
-                    infer_parameters['model_name'] = voice_model_pth
-                    infer_parameters['feature_index_path'] = voice_model_index
-                    infer_parameters['source_audio_path'] = os.environ.get('USER_VOICES_RAW_VOLUME') + '/' + voice_filename + extension
-                    infer_parameters['output_file_name'] = voice_filename + extension
-                    infer_parameters['transposition'] = pitch
+                    logger.info(f'\nGET MESSAGE FROM RABBIT\n{message}')
+
+                    payload = json.loads(message)
+
+                    user_id = payload.get('user_id')
+                    chat_id = payload.get('chat_id')
+
+                    infer_parameters['model_name'] = payload.get('voice_model_pth')
+                    infer_parameters['feature_index_path'] = payload.get('voice_model_index')
+                    infer_parameters['source_audio_path'] = os.environ.get('USER_VOICES_RAW_VOLUME') + '/' + payload.get('voice_filename')
+                    infer_parameters['output_file_name'] = payload.get('voice_filename')
+                    infer_parameters['transposition'] = payload.get('pitch')
 
                     logger.info(f"infer parameters: {infer_parameters['model_name']=},\n"
                                 f" {infer_parameters['source_audio_path']=},\n"
@@ -70,6 +97,13 @@ async def reader(channel: aioredis.client.PubSub):
                     start = perf_counter()
                     starter_infer(**infer_parameters)
                     logger.info(f'finished for: {perf_counter() - start}')
+
+                    payload = {
+                        "user_id": user_id,
+                        "chat_id": chat_id,
+                        "voice_id": payload.get('voice_filename')
+                    }
+                    await push_amqp_message(json.dumps(payload))
 
                 await asyncio.sleep(0.01)
         except asyncio.TimeoutError:
