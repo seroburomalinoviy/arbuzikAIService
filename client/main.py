@@ -56,7 +56,7 @@ async def reader(channel: aioredis.client.PubSub):
 
                     infer_parameters['model_name'] = voice_model_pth
                     infer_parameters['feature_index_path'] = voice_model_index
-                    infer_parameters['source_audio_path'] = Path(os.environ.get('USER_VOICES_RAW_VOLUME') + '/' + voice_filename + extension)
+                    infer_parameters['source_audio_path'] = os.environ.get('USER_VOICES_RAW_VOLUME') + '/' + voice_filename + extension
                     infer_parameters['output_file_name'] = voice_filename + extension
                     infer_parameters['transposition'] = pitch
 
