@@ -272,8 +272,8 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     voice_title = context.user_data.get('voice_title')
     pitch = context.user_data.get(f'pitch_{voice_title}')
     voice_obj = await get_object(Voice, title=voice_title)
-    voice_model_pth = voice_obj.model_pth.split('/')[1]
-    voice_model_index = voice_obj.model_index.split('/')[1]
+    voice_model_pth = voice_obj.model_pth.FieldFile.name.split('/')[1]
+    voice_model_index = voice_obj.model_index.FieldFile.name.split('/')[1]
 
     await voice.download_to_drive(custom_path=voice_path)  # download voice file to host
     logger.info(f'The voice file with name {user_id} downloaded to {voice_path}')
