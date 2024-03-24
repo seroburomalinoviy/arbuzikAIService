@@ -4,9 +4,17 @@ from dotenv import load_dotenv
 from django.db import models
 from django.utils import timezone
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.files.storage import FileSystemStorage
 from django.conf import settings
 
 load_dotenv()
+
+
+class OverwriteStorage(FileSystemStorage):
+    def get_available_name(self, name):
+        if self.exists(name):
+            os.remove(os.path.join(settings.MEDIA_ROOT, name))
+        return name
 
 
 class User(models.Model):
@@ -132,14 +140,16 @@ class Voice(models.Model):
         upload_to='voices/',
         editable=True,
         null=True,
-        blank=True  # todo: change on Prod
+        blank=True,  # todo: change on Prod
+        storage=OverwriteStorage()
     )
     model_index = models.FileField(
         'Файл index',
         upload_to='voices/',
         editable=True,
         null=True,
-        blank=True  # todo: change on Prod
+        blank=True,  # todo: change on Prod
+        storage=OverwriteStorage()
     )
     gender = models.CharField(
         'Пол',
