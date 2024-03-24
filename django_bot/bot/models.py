@@ -11,10 +11,13 @@ load_dotenv()
 
 
 class OverwriteStorage(FileSystemStorage):
-    def get_available_name(self, name):
-        if self.exists(name):
-            os.remove(os.path.join(settings.MEDIA_ROOT, name))
-        return name
+    """
+    Custom file system storage: Overwrite get_available_name to make Django replace files instead of
+    creating new ones over and over again.
+    """
+    def get_available_name(self, name, max_length=None):
+        self.delete(name)
+        return super().get_available_name(name, max_length)
 
 
 class User(models.Model):
