@@ -129,14 +129,14 @@ class Voice(models.Model):
     )
     model_pth = models.FileField(
         'Файл `pth`',
-        upload_to='voices/',
+        upload_to='../weights/',
         editable=True,
         null=True,
         blank=True  # todo: change on Prod
     )
     model_index = models.FileField(
         'Файл `index`',
-        upload_to='voices/',
+        upload_to='../weights/',
         editable=True,
         null=True,
         blank=True  # todo: change on Prod
