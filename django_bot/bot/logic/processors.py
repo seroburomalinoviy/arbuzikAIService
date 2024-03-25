@@ -147,7 +147,7 @@ async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 # INLINE_MODE - QUERY
-async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
     slug = update.inline_query.query
     if not slug:
         return
@@ -295,6 +295,8 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await push_amqp_message(json.dumps(payload))
     # todo: write to db
+
+    return ConversationHandler.END
 
 
 

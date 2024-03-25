@@ -17,7 +17,7 @@ logging.getLogger("httpx").setLevel(logging.WARNING)
 def main() -> None:
     load_dotenv()
     logging.basicConfig(
-        level=logging.DEBUG,
+        level=logging.INFO,
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s >>> %(funcName)s(%(lineno)d)",
         datefmt="%Y-%m-%d %H:%M:%S",
     )
