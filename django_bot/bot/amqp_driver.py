@@ -23,12 +23,13 @@ sentry_sdk.init(
 
 
 async def send_answer(message):
+    bot = Bot(token=os.environ.get('BOT_TOKEN'))
     payload = json.loads(message)
     chat_id = payload.get('chat_id')
     voice_id = payload.get('voice_id')
     voice_path = os.environ.get('USER_VOICES_PROCESSED_VOLUME') + '/' + voice_id
 
-    await Bot.sendVoice(chat_id=chat_id, voice=voice_path)
+    await bot.sendVoice(chat_id=chat_id, voice=voice_path)
 
 
 async def push_amqp_message(payload):
