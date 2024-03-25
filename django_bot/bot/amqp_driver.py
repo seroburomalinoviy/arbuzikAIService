@@ -31,7 +31,7 @@ async def send_answer(message):
 
     # await bot.send_message(chat_id=chat_id, text='Получай сука')
 
-    await bot.send_audio(chat_id=chat_id, voice=voice_path)
+    await bot.send_voice(chat_id=chat_id, voice=voice_path)
 
 
 async def push_amqp_message(payload):
