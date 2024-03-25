@@ -29,6 +29,8 @@ async def send_answer(message):
     voice_id = payload.get('voice_id')
     voice_path = os.environ.get('USER_VOICES_PROCESSED_VOLUME') + '/' + voice_id
 
+    await bot.send_message(chat_id=chat_id, text='Получай сука')
+
     await bot.sendVoice(chat_id=chat_id, voice=voice_path)
 
 
