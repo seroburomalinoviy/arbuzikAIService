@@ -58,6 +58,8 @@ async def push_amqp_message(payload):
 
     async with connection:
         channel = await connection.channel()
+        queue = await channel.declare_queue(queue_name, durable=True, auto_delete=True)
+
         await channel.default_exchange.publish(
             aio_pika.Message(body=payload.encode()),
             routing_key=routing_key,
