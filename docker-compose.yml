@@ -42,8 +42,8 @@ services:
     volumes:
       - ./redis.conf:/usr/local/etc/redis/redis.conf
       - $HOME/redis/data:/root/redis
-    depends_on:
-      - bot
+    # depends_on:
+    #   - bot
     restart:
       always
 
@@ -56,8 +56,10 @@ services:
     restart:
       always
     depends_on:
-      - redis
-      - rabbitmq
+      redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
 
   client:
     container_name: client
@@ -68,8 +70,10 @@ services:
     restart:
       always
     depends_on:
-      - preclient
-      - redis
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_started
     volumes:
       - type: volume
         source: models-volume
@@ -113,8 +117,8 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - postgres
-      - bot
+      postgres: 
+        condition: service_started
     restart:
       always
     env_file:
