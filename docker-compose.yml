@@ -25,13 +25,13 @@ services:
     ports:
       - "15672:15672"
       - "5672:5672"
-#    healthcheck:
-#      # test: ["CMD", "curl", "-f", "http://localhost:15672"]
-#      test: rabbitmq-diagnostics check_port_connectivity
-#      interval: 10s
-#      timeout: 30s
-#      retries: 3
-#      start_period: 10s
+    healthcheck:
+      # test: ["CMD", "curl", "-f", "http://localhost:15672"]
+      test: rabbitmq-diagnostics check_port_connectivity
+      interval: 10s
+      timeout: 30s
+      retries: 3
+      start_period: 10s
 
   redis:
     container_name: redis
