@@ -105,6 +105,7 @@ async def reader(channel: aioredis.client.PubSub):
                         "chat_id": chat_id,
                         "voice_id": payload.get('voice_filename')
                     }
+                    logger.info(payload)
                     await push_amqp_message(json.dumps(payload))
 
                 await asyncio.sleep(0.01)
