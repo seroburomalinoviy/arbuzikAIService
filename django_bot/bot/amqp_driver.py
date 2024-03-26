@@ -27,13 +27,13 @@ async def send_answer(message):
     payload = json.loads(message)
     chat_id = payload.get('chat_id')
     voice_id = payload.get('voice_id')
-    voice_path = 'http://' + os.environ.get('RABBIT_HOST') + os.environ.get('USER_VOICES_PROCESSED_VOLUME') + '/' + voice_id
+    voice_path =  os.environ.get('RABBIT_HOST') + os.environ.get('USER_VOICES_PROCESSED_VOLUME') + '/' + voice_id
     # $url = 'https://api.telegram.org/bot'.token.'/sendVideo?chat_id='.uid."&video=".$file."&caption="
 
-    logger.info(f'url: {voice_path}')
+    logger.info(f'voice_path: {voice_path}')
     # await bot.send_message(chat_id=chat_id, text='Получай сука')
 
-    await bot.send_voice(chat_id=chat_id, voice=voice_path)
+    await bot.send_voice(chat_id=chat_id, voice=open(voice_path, 'rb'))
 
 
 async def push_amqp_message(payload):
