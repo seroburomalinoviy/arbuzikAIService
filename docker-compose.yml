@@ -88,8 +88,10 @@ services:
     container_name: bot
     command: ["python", "start_bot.py"]
     depends_on:
-      - rabbitmq
-      - postgres
+      rabbitmq:
+        condition: service_healthy
+      postgres: 
+        condition: service_started
     restart:
       always
     env_file:
