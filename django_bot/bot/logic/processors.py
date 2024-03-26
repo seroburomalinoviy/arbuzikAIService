@@ -267,11 +267,10 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     voice = await update.message.voice.get_file()  # get voice file from user
     user_id = str(update.message.from_user.id)
     chat_id = str(update.message.chat.id)
-    voice_volume = os.environ.get('USER_VOICES_RAW_VOLUME')  # path to volume for raw voice file
     extension = '.ogg'
-    voice_filename = user_id  # raw voice file name
-    voice_path = Path(voice_volume + '/' + voice_filename + extension)
     voice_title = context.user_data.get('voice_title')
+    voice_filename = voice_title + '_' + str(uuid4()) + extension  # raw voice file name
+    voice_path = Path(os.environ.get('USER_VOICES_RAW_VOLUME') + '/' + voice_filename)
     pitch = context.user_data.get(f'pitch_{voice_title}')
     voice_obj = await get_object(Voice, title=voice_title)
     voice_model_pth = voice_obj.model_pth.name.split('/')[1]
@@ -287,7 +286,7 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     payload = {
         "user_id": user_id,
         "chat_id": chat_id,
-        "voice_filename": voice_title + '_' + str(uuid4()) + extension,
+        "voice_filename": voice_filename,
         "pitch": pitch,
         "voice_model_pth": voice_model_pth,
         "voice_model_index": voice_model_index,
