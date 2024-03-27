@@ -45,6 +45,7 @@ infer_parameters = {
 
 
 async def push_amqp_message(payload):
+    logger.info('inside')
     connection = await aio_pika.connect_robust(
         host=os.environ.get('RABBIT_HOST'),
         port=int(os.environ.get('RABBIT_PORT')),
@@ -108,6 +109,7 @@ async def reader(channel: aioredis.client.PubSub):
                     logger.info(payload)
                     try:
                         await push_amqp_message(json.dumps(payload))
+                        logger.info('after')
                     except Exception as e:
                         logger.info(e)
 
