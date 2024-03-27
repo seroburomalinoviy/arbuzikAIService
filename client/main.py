@@ -106,9 +106,9 @@ async def reader(channel: aioredis.client.PubSub):
                                 f"{infer_parameters['transposition']=}"
                                 )
 
-                    start = perf_counter()
-                    starter_infer(**infer_parameters)
-                    logger.info(f'finished for: {perf_counter() - start}')
+                    # start = perf_counter()
+                    # starter_infer(**infer_parameters)
+                    # logger.info(f'finished for: {perf_counter() - start}')
 
                     payload = {
                         "user_id": user_id,
