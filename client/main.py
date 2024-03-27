@@ -4,6 +4,7 @@ import asyncio
 from pathlib import Path
 import aio_pika
 import json
+import pika
 
 import async_timeout
 from redis import asyncio as aioredis
@@ -44,37 +45,33 @@ infer_parameters = {
 }
 
 
-async def push_amqp_message(payload):
-    try:
-        connection = await aio_pika.connect_robust(
-            host=os.environ.get('RABBIT_HOST'),
-            port=int(os.environ.get('RABBIT_PORT')),
-            login=os.environ.get('RABBIT_USER'),
-            password=os.environ.get('RABBIT_PASSWORD'),
-        )
-    except aio_pika.exceptions.CONNECTION_EXCEPTIONS as e:
-        logger.error(e.args[0])
-        await asyncio.sleep(3)
-        return await push_amqp_message(payload)
-    except Exception as e:
-        logger.error(e.args[0])
-        await asyncio.sleep(3)
-        return await push_amqp_message(payload)
+def _create_connection():
+    credentials = pika.PlainCredentials(
+        username=os.environ.get('RABBIT_USER'),
+        password=os.environ.get('RABBIT_PASSWORD')
+    )
+    param = pika.ConnectionParameters(
+        host=os.environ.get('RABBIT_HOST'),
+        port=int(os.environ.get('RABBIT_USER')),
+        credentials=credentials,
+    )
+    return pika.BlockingConnection(param)
 
-    logger.info('Connected to rabbit')
+
+def push_amqp_message(payload):
     queue_name = "rvc-to-bot"
     routing_key = "rvc-to-bot"
-    exchange_name = ''
 
-    async with connection:
-        channel = await connection.channel()
-        queue = await channel.declare_queue(queue_name, durable=True, auto_delete=True)
-
-        await channel.default_exchange.publish(
-            aio_pika.Message(body=payload.encode()),
+    with _create_connection() as connection:
+        channel = connection.channel()
+        logger.debug("message is publishing")
+        channel.basic_publish(
+            exchange="",
             routing_key=routing_key,
+            body=json.dumps(payload).encode(),
         )
-    logger.info(f'message {payload} sent to bot')
+
+    logger.debug(f'message {payload} sent to bot')
 
 
 async def reader(channel: aioredis.client.PubSub):
@@ -86,7 +83,7 @@ async def reader(channel: aioredis.client.PubSub):
 
                     message = message.get("data").decode()
 
-                    logger.info(f'\nGET MESSAGE FROM RABBIT\n{message}')
+                    logger.debug(f'\nGET MESSAGE FROM RABBIT\n{message}')
 
                     payload = json.loads(message)
 
@@ -108,19 +105,16 @@ async def reader(channel: aioredis.client.PubSub):
 
                     # start = perf_counter()
                     # starter_infer(**infer_parameters)
-                    # logger.info(f'finished for: {perf_counter() - start}')
+                    # logger.info(f'NN finished for: {perf_counter() - start}')
 
                     payload = {
                         "user_id": user_id,
                         "chat_id": chat_id,
                         "voice_id": payload.get('voice_filename')
                     }
-                    logger.info(payload)
-                    try:
-                        await push_amqp_message(json.dumps(payload))
-                        logger.info('after')
-                    except Exception as e:
-                        logger.info(e)
+                    logger.debug(payload)
+
+                    push_amqp_message(payload)
 
                 await asyncio.sleep(0.01)
         except asyncio.TimeoutError:
@@ -128,7 +122,7 @@ async def reader(channel: aioredis.client.PubSub):
 
 
 async def main():
-    logger.info(f'\nSTART MAIN\n')
+    logger.debug(f'\nSTART MAIN\n')
     try:
         redis = aioredis.from_url(
             url=f"redis://{os.environ.get('REDIS_HOST')}",
@@ -138,7 +132,7 @@ async def main():
 
     pubsub = redis.pubsub()
     await pubsub.subscribe("channel:raw-data")
-    logger.info(f'GET REDIS SUBSCRIBE')
+    logger.debug(f'GET REDIS SUBSCRIBE')
     await asyncio.create_task(reader(pubsub))
 
 if __name__ == "__main__":
