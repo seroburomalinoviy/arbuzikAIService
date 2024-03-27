@@ -25,13 +25,13 @@ services:
     ports:
       - "15672:15672"
       - "5672:5672"
-    healthcheck:
-      # test: ["CMD", "curl", "-f", "http://localhost:15672"]
-      test: rabbitmq-diagnostics check_port_connectivity
-      interval: 10s
-      timeout: 30s
-      retries: 3
-      start_period: 10s
+#    healthcheck:
+#      # test: ["CMD", "curl", "-f", "http://localhost:15672"]
+#      test: rabbitmq-diagnostics check_port_connectivity
+#      interval: 10s
+#      timeout: 30s
+#      retries: 3
+#      start_period: 10s
 
   redis:
     container_name: redis
@@ -55,11 +55,11 @@ services:
       - .env
     restart:
       always
-    depends_on:
-      redis:
-        condition: service_started
-      rabbitmq:
-        condition: service_healthy
+#    depends_on:
+#      redis:
+#        condition: service_started
+#      rabbitmq:
+#        condition: service_healthy
 
   client:
     container_name: client
@@ -69,11 +69,11 @@ services:
       - .env
     restart:
       always
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
-      redis:
-        condition: service_started
+#    depends_on:
+#      rabbitmq:
+#        condition: service_healthy
+#      redis:
+#        condition: service_started
     volumes:
       - type: volume
         source: models-volume
@@ -91,11 +91,11 @@ services:
     build: ./django_bot
     container_name: bot
     command: ["python", "start_bot.py"]
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
-      postgres: 
-        condition: service_started
+#    depends_on:
+#      rabbitmq:
+#        condition: service_healthy
+#      postgres:
+#        condition: service_started
     restart:
       always
     env_file:
@@ -116,9 +116,9 @@ services:
                     python manage.py runserver 0.0.0.0:3000'
     ports:
       - "3000:3000"
-    depends_on:
-      postgres: 
-        condition: service_started
+#    depends_on:
+#      postgres:
+#        condition: service_started
     restart:
       always
     env_file:
