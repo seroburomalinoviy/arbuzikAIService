@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 import aio_pika
 import json
 from telegram import Bot
+import asyncio
 
 load_dotenv()
 
@@ -58,12 +59,17 @@ async def push_amqp_message(payload):
 
 
 async def amqp_listener():
-    connection = await aio_pika.connect_robust(
-        host=os.environ.get('RABBIT_HOST'),
-        port=int(os.environ.get('RABBIT_PORT')),
-        login=os.environ.get('RABBIT_USER'),
-        password=os.environ.get('RABBIT_PASSWORD'),
-    )
+    try:
+        connection = await aio_pika.connect_robust(
+            host=os.environ.get('RABBIT_HOST'),
+            port=int(os.environ.get('RABBIT_PORT')),
+            login=os.environ.get('RABBIT_USER'),
+            password=os.environ.get('RABBIT_PASSWORD'),
+        )
+    except aio_pika.exceptions.CONNECTION_EXCEPTIONS as e:
+        logger.error(e.args[0])
+        await asyncio.sleep(3)
+        return await amqp_listener()
     logger.info(f'Connected to rabbit')
 
     queue_name = "rvc-to-bot"
