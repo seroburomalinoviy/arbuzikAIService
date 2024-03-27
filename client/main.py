@@ -56,6 +56,10 @@ async def push_amqp_message(payload):
         logger.error(e.args[0])
         await asyncio.sleep(3)
         return await push_amqp_message(payload)
+    except Exception as e:
+        logger.error(e.args[0])
+        await asyncio.sleep(3)
+        return await push_amqp_message(payload)
 
     logger.info('Connected to rabbit')
     queue_name = "rvc-to-bot"
