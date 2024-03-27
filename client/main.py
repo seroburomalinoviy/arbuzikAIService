@@ -13,12 +13,6 @@ from time import perf_counter
 
 from launch_rvc import starter_infer
 
-logging.basicConfig(
-    level=logging.DEBUG,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s >>> %(funcName)s(%(lineno)d)",
-    datefmt="%Y-%m-%d %H:%M:%S"
-)
-
 load_dotenv()
 logger = logging.getLogger(__name__)
 
@@ -103,9 +97,9 @@ async def reader(channel: aioredis.client.PubSub):
                                 f"{infer_parameters['transposition']=}"
                                 )
 
-                    # start = perf_counter()
-                    # starter_infer(**infer_parameters)
-                    # logger.info(f'NN finished for: {perf_counter() - start}')
+                    start = perf_counter()
+                    starter_infer(**infer_parameters)
+                    logger.info(f'NN finished for: {perf_counter() - start}')
 
                     payload = {
                         "user_id": user_id,
@@ -136,6 +130,11 @@ async def main():
     await asyncio.create_task(reader(pubsub))
 
 if __name__ == "__main__":
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s >>> %(funcName)s(%(lineno)d)",
+        datefmt="%Y-%m-%d %H:%M:%S"
+    )
     asyncio.run(main())
 
 
