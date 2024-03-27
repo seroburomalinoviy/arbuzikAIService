@@ -52,7 +52,7 @@ def _create_connection():
     )
     param = pika.ConnectionParameters(
         host=os.environ.get('RABBIT_HOST'),
-        port=int(os.environ.get('RABBIT_USER')),
+        port=int(os.environ.get('RABBIT_PORT')),
         credentials=credentials,
     )
     return pika.BlockingConnection(param)
