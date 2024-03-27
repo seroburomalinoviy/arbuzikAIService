@@ -106,7 +106,10 @@ async def reader(channel: aioredis.client.PubSub):
                         "voice_id": payload.get('voice_filename')
                     }
                     logger.info(payload)
-                    await push_amqp_message(json.dumps(payload))
+                    try:
+                        await push_amqp_message(json.dumps(payload))
+                    except Exception as e:
+                        logger.info(e)
 
                 await asyncio.sleep(0.01)
         except asyncio.TimeoutError:
