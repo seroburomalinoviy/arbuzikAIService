@@ -1,4 +1,4 @@
-image: ubuntu:latest
+image: ubuntu:latest # why not aplpine?
 
 stages:
   - build
