@@ -27,7 +27,7 @@ def write_to_subscription(model:models.Model, raw_dict:dict, title_dict:dict) ->
 
 
 def parser(apps, schema_editor):
-    filepath = os.environ.get("SPREADSHEET")
+    filepath = "parser/" + os.environ.get("SPREADSHEET")
     data = read_file(filepath)
     fistr_raw = data.loc[0].to_dict()
     reverse_fisrt_raw = get_reverse_dict(fistr_raw)
