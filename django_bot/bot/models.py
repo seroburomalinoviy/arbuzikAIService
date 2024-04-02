@@ -92,7 +92,7 @@ class Subscription(models.Model):
     )
     days_limit = models.IntegerField(
         'Дней в подписке',
-        default=1,
+        default=1, # поставил бы 0
         editable=True
     )
     image_cover = models.ImageField('Обложка подписки')
