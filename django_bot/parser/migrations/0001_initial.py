@@ -5,9 +5,9 @@ from parser.main import parser
 
 
 class Migration(migrations.Migration):
-    dependencies = [
-        ("bot", "0001_initial.py")
-    ]
+    # dependencies = [
+    #     ("bot", "0001_initial.py")
+    # ]
 
     operations = [
         migrations.RunPython(parser)
