@@ -33,7 +33,9 @@ def parser(apps, schema_editor):
     reverse_fisrt_raw = get_reverse_dict(fistr_raw)
     Subcription = apps.get_model("bot", "Subscription")
     
-    for _, raw in data.iterrows():
+    for index, raw in data.iterrows():
+        if index == 0:
+            continue
         raw_dict = raw.to_dict()    
         raw_dict.pop('index')
         write_to_subscription(Subcription, raw_dict, reverse_fisrt_raw)
