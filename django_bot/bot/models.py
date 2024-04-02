@@ -24,34 +24,42 @@ class User(models.Model):
     telegram_id = models.CharField(
         'telegram id',
         max_length=250,
-        primary_key=True
+        primary_key=True,
+        editable=False
     )
     nick_name = models.CharField(
         'telegram nick name',
-        max_length=100
+        max_length=100,
+        blank=True,
+        null=True,
+        editable=False
     )
     user_name = models.CharField(
         'telegram username',
-        max_length=100
+        max_length=100,
+        blank=True,
+        null=True,
+        editable=False
     )
     subscription_status = models.CharField(
         'Статус подписки',
-        max_length=200,
+        max_length=100,
         editable=True
     )
     subscription_final_date = models.DateTimeField(
         'Дата окончания подписки',
+        editable=True
         # default=timezone.now
     )
     subscription_usage_limit = models.IntegerField(
-        'Осталось до конце подписки',
-        default=1,
-        validators=[MinValueValidator(0)]
+        'Количество попыток',
+        validators=[MinValueValidator(0)],
+        editable=True
     )
     pitch = models.IntegerField(
         'Pitch',
         default=0,
-        validators=[MinValueValidator(-150), MaxValueValidator(150)],
+        validators=[MinValueValidator(-150), MaxValueValidator(150)],  # todo check NN
         blank=True,
         editable=True,
         null=True
@@ -61,7 +69,7 @@ class User(models.Model):
         null=True,
         on_delete=models.SET_NULL
     )
-    voices = models.ManyToManyField('Voice')
+    favorites = models.ManyToManyField('Voice')
 
     def __str__(self):
         return self.nick_name
