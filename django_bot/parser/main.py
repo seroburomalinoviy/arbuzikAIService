@@ -2,8 +2,6 @@ import os
 
 import pandas
 
-# читать файл
-
 
 def read_file(filename):
     df = pandas.DataFrame()
