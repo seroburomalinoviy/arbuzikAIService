@@ -25,21 +25,18 @@ class User(models.Model):
         'telegram id',
         max_length=250,
         primary_key=True,
-        editable=False
     )
     nick_name = models.CharField(
         'telegram nick name',
         max_length=100,
         blank=True,
         null=True,
-        editable=False
     )
     user_name = models.CharField(
         'telegram username',
         max_length=100,
         blank=True,
         null=True,
-        editable=False
     )
     subscription_status = models.CharField(
         'Статус подписки',
