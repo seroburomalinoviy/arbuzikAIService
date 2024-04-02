@@ -27,7 +27,7 @@ class GenreAdmin(admin.ModelAdmin):
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
     empty_value_display = "<пусто>"
-    list_display = ['nick_name', 'subscription_status', 'subscription_final_date']
+    list_display = ['nick_name', 'subscription', 'subscription_status', 'subscription_final_date']
 
 
 @admin.register(Subscription)
