@@ -9,8 +9,10 @@ def read_file(filepath:str) -> pd.DataFrame:
     data = data.reset_index()
     return data
 
+
 def get_reverse_dict(dictionary:dict[str, str]) -> dict[str, str]:
     return {value: key for key, value in dictionary.items()}
+
 
 def write_to_subscription(model:models.Model, raw_dict:dict, title_dict:dict) -> None:
     subscription = model.objects.create(
@@ -25,7 +27,7 @@ def write_to_subscription(model:models.Model, raw_dict:dict, title_dict:dict) ->
 
 
 def parser(apps, schema_editor):
-    filepath = os.environ.get("")
+    filepath = os.environ.get("SPREADSHEET")
     data = read_file(filepath)
     fistr_raw = data.loc[0].to_dict()
     reverse_fisrt_raw = get_reverse_dict(fistr_raw)
