@@ -6,6 +6,7 @@ import asyncstdlib as a
 from uuid import uuid4
 from asgiref.sync import sync_to_async
 import django
+from django.db import models
 import json
 
 from bot.logic import message_text, keyboards
@@ -21,7 +22,7 @@ from telegram.ext import ContextTypes, ConversationHandler
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 django.setup()
-from bot.models import Voice, Category, Subcategory
+from bot.models import Voice, Category, Subcategory, Subscription, User
 
 load_dotenv()
 logger = logging.getLogger(__name__)
@@ -31,18 +32,29 @@ unresolved_user_statuses = ['kicked', 'restricted', 'left']
 
 
 @sync_to_async
-def get_all_objects(model) -> list:
+def get_all_objects(model:models.Model) -> list:
     return list(model.objects.all())
 
 
 @sync_to_async
-def get_object(model, **kwargs):
+def get_object(model:models.Model, **kwargs): # -> ??
     return model.objects.get(**kwargs)
 
 
 @sync_to_async
-def filter_objects(model, **kwargs) -> list:
+def filter_objects(model:models.Model, **kwargs) -> list:
     return list(model.objects.filter(**kwargs))
+
+@sync_to_async
+def save_model(model:models.Model) -> None:
+    return model.save()
+
+@sync_to_async
+def get_or_create_objets(model:models.Model, **kwargs) -> None:
+    return model.objects.get_or_create(**kwargs)
+
+def check_subsrtiption(model:User) -> None:
+    ...
 
 
 # STEP_0 - SUBSCRIPTION
@@ -73,9 +85,28 @@ async def subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # STEP_2 - CATEGORY_MENU
 async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    # TODO: Проверить есть ли такой пользователь в бд
+    # Если нет, то добавить в бд и привязать статус подписки демо
+    # Если есть, проверить подписку - актуальность
+    tg_user_id = str(update.message.from_user.id)
+    tg_username = update.message.from_user.username
+    tg_user_name = update.message.from_user.first_name
+    user, created = get_or_create_objets(User, telegram_id=tg_user_id, 
+                                         user_name=tg_username,
+                                         nick_name=tg_user_name)
+    
+    if not created:
+        user.subscription_status = True
+        user.subscription = 'demo' # ? 
+        user.subscription_usage_limit = 3 # refactor of magick number
+        save_model(user)
+    else:
+        check_subsrtiption(user)
+        
+    
     query = update.callback_query
     await query.answer()
-
+    # filter_objects(Category, )
     categories = await get_all_objects(Category)
     len_cat = len(categories)
 
