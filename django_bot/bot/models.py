@@ -38,10 +38,10 @@ class User(models.Model):
         blank=True,
         null=True,
     )
-    subscription_status = models.CharField(
+    subscription_status = models.BooleanField(
         'Статус подписки',
-        max_length=100,
-        editable=True
+        editable=True, 
+        default=False
     )
     subscription_final_date = models.DateTimeField(
         'Дата окончания подписки',
