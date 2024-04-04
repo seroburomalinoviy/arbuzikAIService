@@ -8,6 +8,7 @@ from asgiref.sync import sync_to_async
 import django
 from django.db import models
 import json
+from datetime import datetime
 
 from bot.logic import message_text, keyboards
 from bot.amqp_driver import push_amqp_message
@@ -53,8 +54,31 @@ def save_model(model:models.Model) -> None:
 def get_or_create_objets(model:models.Model, **kwargs) -> None:
     return model.objects.get_or_create(**kwargs)
 
-def check_subsrtiption(model:User) -> None:
-    ...
+async def get_avaivales_categories(model:Subscription, current_sabscription:str):
+    subscription_object: Subscription = await get_object(model, title=current_sabscription)
+    categories = subscription_object.available_categories
+    return categories
+
+async def set_demo_to_user(model:User, demo_subsrctiption:str):
+    model.subscription_status = True
+    model.subscription = demo_subsrctiption 
+    model.subscription_usage_limit = 3 # refactor of magick number
+    await save_model(model)
+
+def check_subsrtiption(model:User, demo_subsrctiption:str) -> None:
+    user_subsrctiption = model.subscription
+    actual_status = model.subscription_status
+    status_from_bd = model.subscription_status
+    if user_subsrctiption == demo_subsrctiption: # refactor str 'demo' to global var
+        user_demo_limit = model.subscription_usage_limit
+        if user_demo_limit == 0:
+            actual_status = False
+    else:
+        user_limit_date = model.subscription_final_date
+        current_date = datetime.now()
+        # TODO: сравнить даты и определить actual status
+        
+    return user_subsrctiption, actual_status, status_from_bd
 
 
 # STEP_0 - SUBSCRIPTION
@@ -91,23 +115,27 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     tg_user_id = str(update.message.from_user.id)
     tg_username = update.message.from_user.username
     tg_user_name = update.message.from_user.first_name
-    user, created = get_or_create_objets(User, telegram_id=tg_user_id, 
+    demo_subsrctiption = 'demo'
+    user, created = await get_or_create_objets(User, telegram_id=tg_user_id, 
                                          user_name=tg_username,
                                          nick_name=tg_user_name)
+    # если юзер поменяет имя, то он станет новой строчкой в бд? в данной реализации
     
     if not created:
-        user.subscription_status = True
-        user.subscription = 'demo' # ? 
-        user.subscription_usage_limit = 3 # refactor of magick number
-        save_model(user)
+        await set_demo_to_user(user, demo_subsrctiption)
     else:
-        check_subsrtiption(user)
+        user_subsrctiption, actual_status, status_from_bd = check_subsrtiption(user, demo_subsrctiption)
+        # определение подписки и состояния, если подписка не актуальна совсем, 
+        # то выводится подписка демо, и юзеру будут отображаться категории относящиеся к демо
+        # сохранить в кэш ктуальность статуса, тк если статус неактуален, то при выборе голоса
+        # будет отображаться сообщение с тем, что подписка отсутствует/закончилась и предложение подписаться
         
     
     query = update.callback_query
     await query.answer()
     # filter_objects(Category, )
-    categories = await get_all_objects(Category)
+    avaibale_categories_for_subcsription = ...
+    categories = await get_all_objects(Category) # получение категории в зависимости от подписки
     len_cat = len(categories)
 
     keyboard = [keyboards.search_all_voices]  # add button
@@ -143,7 +171,7 @@ async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.answer()
 
     category_id = int(query.data.split('category_')[1])
-    subcategories = await filter_objects(Subcategory, category_id=category_id)
+    subcategories = await filter_objects(Subcategory, category_id=category_id)# добавить допом фильтр подписки
 
     len_subc = len(subcategories)
     keyboard = []

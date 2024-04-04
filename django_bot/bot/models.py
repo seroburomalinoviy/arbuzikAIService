@@ -48,7 +48,7 @@ class User(models.Model):
         editable=True
         # default=timezone.now
     )
-    subscription_usage_limit = models.IntegerField(
+    subscription_usage_limit = models.PositiveIntegerField(
         'Количество попыток',
         validators=[MinValueValidator(0)],
         editable=True
