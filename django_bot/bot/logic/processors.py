@@ -62,15 +62,16 @@ async def get_avaivales_categories(model:Subscription, current_sabscription:str)
 async def set_demo_to_user(model:User, demo_subsrctiption:str):
     model.subscription_status = True
     model.subscription = demo_subsrctiption 
-    model.subscription_usage_limit = 3 # refactor of magick number
+    model.subscription_usage_count = 3 # refactor of magick number
     await save_model(model)
 
 def check_subsrtiption(model:User, demo_subsrctiption:str) -> None:
     user_subsrctiption = model.subscription
     actual_status = model.subscription_status
     status_from_bd = model.subscription_status
+    # проверить два поля:subscription_usage_limit и subscription_final_date
     if user_subsrctiption == demo_subsrctiption: # refactor str 'demo' to global var
-        user_demo_limit = model.subscription_usage_limit
+        user_demo_limit = model.subscription_usage_count
         if user_demo_limit == 0:
             actual_status = False
     else:
@@ -114,14 +115,14 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # Если есть, проверить подписку - актуальность
     tg_user_id = str(update.message.from_user.id)
     tg_username = update.message.from_user.username
-    tg_user_name = update.message.from_user.first_name
+    tg_nick_name = update.message.from_user.first_name
     demo_subsrctiption = 'demo'
     user, created = await get_or_create_objets(User, telegram_id=tg_user_id, 
                                          user_name=tg_username,
-                                         nick_name=tg_user_name)
+                                         nick_name=tg_nick_name)# 
     # если юзер поменяет имя, то он станет новой строчкой в бд? в данной реализации
     
-    if not created:
+    if created: 
         await set_demo_to_user(user, demo_subsrctiption)
     else:
         user_subsrctiption, actual_status, status_from_bd = check_subsrtiption(user, demo_subsrctiption)
@@ -133,9 +134,9 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     query = update.callback_query
     await query.answer()
-    # filter_objects(Category, )
-    avaibale_categories_for_subcsription = ...
-    categories = await get_all_objects(Category) # получение категории в зависимости от подписки
+    # categories = await filter_objects(Category, available_subscriptions__title__icontains='demo')
+    categories = await filter_objects(Category, available_subscriptions='demo') # вставить вид подписки
+    # categories = await get_all_objects(Category) # получение категории в зависимости от подписки
     len_cat = len(categories)
 
     keyboard = [keyboards.search_all_voices]  # add button
@@ -171,7 +172,8 @@ async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.answer()
 
     category_id = int(query.data.split('category_')[1])
-    subcategories = await filter_objects(Subcategory, category_id=category_id)# добавить допом фильтр подписки
+    subcategories = await filter_objects(Subcategory, category_id=category_id, 
+                                         available_subscriptions='demo')# добавить допом фильтр подписки
 
     len_subc = len(subcategories)
     keyboard = []

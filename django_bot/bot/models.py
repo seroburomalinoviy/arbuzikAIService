@@ -101,9 +101,10 @@ class Subscription(models.Model):
         editable=True
     )
     image_cover = models.ImageField('Обложка подписки')
-    available_voices = models.ManyToManyField('Voice')
-    available_categories = models.ManyToManyField('Category')
-    available_subcategories = models.ManyToManyField('Subcategory')
+    # перенести это все в категории и подкатегории сделать available_subscription
+    # available_voices = models.ManyToManyField('Voice')
+    # available_categories = models.ManyToManyField('Category')
+    # available_subcategories = models.ManyToManyField('Subcategory')
 
     def __str__(self):
         return self.title
@@ -165,6 +166,8 @@ class Voice(models.Model):
         max_length=10,
         default='Male'
     )
+    
+    available_subscriptions = models.ManyToManyField('Subscription')
 
     def __str__(self):
         return self.title
@@ -187,6 +190,8 @@ class Category(models.Model):
         editable=True,
         default='Описание'
     )
+    
+    available_subscriptions = models.ManyToManyField('Subscription')
 
     def __str__(self):
         return self.title
@@ -213,6 +218,8 @@ class Subcategory(models.Model):
         on_delete=models.SET_NULL,
         null=True
     )
+    
+    available_subscriptions = models.ManyToManyField('Subscription')
 
     class Meta:
         verbose_name = 'Подкатегория'
