@@ -9,6 +9,7 @@ import django
 from django.db import models
 import json
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
 from bot.logic import message_text, keyboards
 from bot.amqp_driver import push_amqp_message
@@ -31,6 +32,8 @@ logger = logging.getLogger(__name__)
 allowed_user_statuses = ['member', 'creator', 'administrator']
 unresolved_user_statuses = ['kicked', 'restricted', 'left']
 
+def get_moscow_time() -> datetime: # мб выделить в отдельный файл, как и функци работы с базой данных
+    return datetime.now(tz=ZoneInfo('Europe/Moscow')) # втавить глобальную переменую из env
 
 @sync_to_async
 def get_all_objects(model:models.Model) -> list:
@@ -38,7 +41,7 @@ def get_all_objects(model:models.Model) -> list:
 
 
 @sync_to_async
-def get_object(model:models.Model, **kwargs): # -> ??
+def get_object(model:models.Model, **kwargs) -> models.Model: 
     return model.objects.get(**kwargs)
 
 
@@ -51,36 +54,38 @@ def save_model(model:models.Model) -> None:
     return model.save()
 
 @sync_to_async
-def get_or_create_objets(model:models.Model, **kwargs) -> None:
+def get_or_create_objets(model:models.Model, **kwargs) -> models.Model:
     return model.objects.get_or_create(**kwargs)
 
-async def get_avaivales_categories(model:Subscription, current_sabscription:str):
-    subscription_object: Subscription = await get_object(model, title=current_sabscription)
-    categories = subscription_object.available_categories
-    return categories
+async def set_demo_to_user(user_model:User, demo_subsrctiption:Subscription, 
+                           tg_user_name, tg_nick_name) -> None:
+    # TODO: проверить инициализацию юзера
+    # нужно ли выставлять subscription_final_date??
+    user_model.subscription_status = True
+    user_model.subscription = demo_subsrctiption.id 
+    user_model.user_name=tg_user_name,
+    user_model.nick_name=tg_nick_name
+    user_model.subscription_count_attpemps = demo_subsrctiption.days_limit 
+    # user_model.subscription_final_date = get_moscow_time() #???
+    await save_model(user_model)
 
-async def set_demo_to_user(model:User, demo_subsrctiption:str):
-    model.subscription_status = True
-    model.subscription = demo_subsrctiption 
-    model.subscription_usage_count = 3 # refactor of magick number
-    await save_model(model)
-
-def check_subsrtiption(model:User, demo_subsrctiption:str) -> None:
-    user_subsrctiption = model.subscription
-    actual_status = model.subscription_status
-    status_from_bd = model.subscription_status
-    # проверить два поля:subscription_usage_limit и subscription_final_date
-    if user_subsrctiption == demo_subsrctiption: # refactor str 'demo' to global var
-        user_demo_limit = model.subscription_usage_count
-        if user_demo_limit == 0:
-            actual_status = False
-    else:
-        user_limit_date = model.subscription_final_date
-        current_date = datetime.now()
-        # TODO: сравнить даты и определить actual status
-        
-    return user_subsrctiption, actual_status, status_from_bd
-
+async def check_subsrtiption(user_model:User, demo_subsrctiption:Subscription) -> None:
+    user_subsrctiption = user_model.subscription
+    actual_subscription = user_subsrctiption
+    actual_status = user_model.subscription_status
+    current_date = get_moscow_time()
+    if user_model.subscription_count_attpemps == 0 and \
+        user_model.subscription_final_date < current_date and \
+            actual_status == True:
+        # если подписки все закончились  и Actual status True обнляем
+        actual_status = False
+        actual_subscription = demo_subsrctiption.id 
+        user_model.subscription_status = actual_status
+        user_model.subscription = actual_subscription
+        user_model.subscription_count_attpemps = 0
+        await save_model(user_model)
+    
+    return actual_subscription
 
 # STEP_0 - SUBSCRIPTION
 async def subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -110,33 +115,23 @@ async def subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # STEP_2 - CATEGORY_MENU
 async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    # TODO: Проверить есть ли такой пользователь в бд
-    # Если нет, то добавить в бд и привязать статус подписки демо
-    # Если есть, проверить подписку - актуальность
     tg_user_id = str(update.message.from_user.id)
-    tg_username = update.message.from_user.username
+    tg_user_name = update.message.from_user.username
     tg_nick_name = update.message.from_user.first_name
-    demo_subsrctiption = 'demo'
-    user, created = await get_or_create_objets(User, telegram_id=tg_user_id, 
-                                         user_name=tg_username,
-                                         nick_name=tg_nick_name)# 
-    # если юзер поменяет имя, то он станет новой строчкой в бд? в данной реализации
+    demo_subsrctiption: Subscription = await get_object(Subscription, title='demo')# вставить глобальную переменную названия баозовой подписки
+    user, created = await get_or_create_objets(User, telegram_id=tg_user_id)
     
     if created: 
-        await set_demo_to_user(user, demo_subsrctiption)
+        await set_demo_to_user(user, demo_subsrctiption, tg_user_name, tg_nick_name)
+        user_subsrctiption = demo_subsrctiption
     else:
-        user_subsrctiption, actual_status, status_from_bd = check_subsrtiption(user, demo_subsrctiption)
-        # определение подписки и состояния, если подписка не актуальна совсем, 
-        # то выводится подписка демо, и юзеру будут отображаться категории относящиеся к демо
-        # сохранить в кэш ктуальность статуса, тк если статус неактуален, то при выборе голоса
-        # будет отображаться сообщение с тем, что подписка отсутствует/закончилась и предложение подписаться
+        user_subsrctiption = await check_subsrtiption(user, demo_subsrctiption)
         
-    
     query = update.callback_query
     await query.answer()
-    # categories = await filter_objects(Category, available_subscriptions__title__icontains='demo')
-    categories = await filter_objects(Category, available_subscriptions='demo') # вставить вид подписки
-    # categories = await get_all_objects(Category) # получение категории в зависимости от подписки
+    # categories = await filter_objects(Category, available_subscriptions__title__icontains=demo_subsrctiption.title)
+    categories = await filter_objects(Category,
+                                      available_subscriptions=user_subsrctiption.id)
     len_cat = len(categories)
 
     keyboard = [keyboards.search_all_voices]  # add button
