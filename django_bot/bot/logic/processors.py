@@ -35,6 +35,7 @@ unresolved_user_statuses = ['kicked', 'restricted', 'left']
 def get_moscow_time() -> datetime: # мб выделить в отдельный файл, как и функци работы с базой данных
     return datetime.now(tz=ZoneInfo('Europe/Moscow')) # втавить глобальную переменую из env
 
+
 @sync_to_async
 def get_all_objects(model:models.Model) -> list:
     return list(model.objects.all())
@@ -49,6 +50,7 @@ def get_object(model:models.Model, **kwargs) -> models.Model:
 def filter_objects(model:models.Model, **kwargs) -> list:
     return list(model.objects.filter(**kwargs))
 
+
 @sync_to_async
 def save_model(model:models.Model) -> None:
     return model.save()
@@ -57,6 +59,7 @@ def save_model(model:models.Model) -> None:
 @sync_to_async
 def get_or_create_objets(model:models.Model, **kwargs) -> models.Model:
     return model.objects.get_or_create(**kwargs)
+
 
 async def set_demo_to_user(user_model:User, demo_subsrctiption:Subscription, 
                            tg_user_name, tg_nick_name) -> None:
@@ -88,6 +91,7 @@ async def check_subsrtiption(user_model:User, demo_subsrctiption:Subscription) -
         await save_model(user_model)
     
     return actual_subscription
+
 
 # STEP_0 - SUBSCRIPTION
 async def subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
