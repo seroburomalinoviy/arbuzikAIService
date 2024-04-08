@@ -53,6 +53,7 @@ def filter_objects(model:models.Model, **kwargs) -> list:
 def save_model(model:models.Model) -> None:
     return model.save()
 
+
 @sync_to_async
 def get_or_create_objets(model:models.Model, **kwargs) -> models.Model:
     return model.objects.get_or_create(**kwargs)
@@ -68,6 +69,7 @@ async def set_demo_to_user(user_model:User, demo_subsrctiption:Subscription,
     user_model.subscription_count_attpemps = demo_subsrctiption.days_limit 
     # user_model.subscription_final_date = get_moscow_time() #???
     await save_model(user_model)
+
 
 async def check_subsrtiption(user_model:User, demo_subsrctiption:Subscription) -> None:
     user_subsrctiption = user_model.subscription
@@ -129,7 +131,6 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         
     query = update.callback_query
     await query.answer()
-    # categories = await filter_objects(Category, available_subscriptions__title__icontains=demo_subsrctiption.title)
     categories = await filter_objects(Category,
                                       available_subscriptions=user_subsrctiption.id)
     len_cat = len(categories)

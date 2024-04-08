@@ -191,7 +191,7 @@ class Category(models.Model):
         default='Описание'
     )
     
-    available_subscriptions = models.ManyToManyField('Subscription')
+    available_subscriptions = models.ManyToManyField('Subscription') # fill in through CM
 
     def __str__(self):
         return self.title
@@ -219,7 +219,7 @@ class Subcategory(models.Model):
         null=True
     )
     
-    available_subscriptions = models.ManyToManyField('Subscription')
+    available_subscriptions = models.ManyToManyField('Subscription')  # fill in through CM
 
     class Meta:
         verbose_name = 'Подкатегория'
