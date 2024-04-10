@@ -134,7 +134,7 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         user_subsrctiption = await check_subsrtiption(user, demo_subsrctiption)
         
     
-    = update.callback_query
+    query = update.callback_query
     await query.answer()
     categories = await filter_objects(Category,
                                       available_subscriptions=user_subsrctiption.id)
