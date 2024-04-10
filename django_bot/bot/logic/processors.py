@@ -121,9 +121,9 @@ async def subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # STEP_2 - CATEGORY_MENU
 async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    tg_user_id = str(update.message.from_user.id)
-    tg_user_name = update.message.from_user.username
-    tg_nick_name = update.message.from_user.first_name
+    tg_user_id = str(update.effective_user.id.id)
+    tg_user_name = update.effective_user.username
+    tg_nick_name = update.effective_user.first_name
     demo_subsrctiption: Subscription = await get_object(Subscription, title='demo')# вставить глобальную переменную названия баозовой подписки
     user, created = await get_or_create_objets(User, telegram_id=tg_user_id)
     
@@ -133,7 +133,8 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         user_subsrctiption = await check_subsrtiption(user, demo_subsrctiption)
         
-    query = update.callback_query
+    
+    = update.callback_query
     await query.answer()
     categories = await filter_objects(Category,
                                       available_subscriptions=user_subsrctiption.id)
