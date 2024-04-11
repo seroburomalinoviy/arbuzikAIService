@@ -137,7 +137,7 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
     categories = await filter_objects(Category,
-                                      available_subscriptions=user_subsrctiption.id)
+                                      available_subscriptions=user_subsrctiption)
     len_cat = len(categories)
 
     keyboard = [keyboards.search_all_voices]  # add button
