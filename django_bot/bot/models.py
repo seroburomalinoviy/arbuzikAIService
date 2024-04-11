@@ -52,7 +52,8 @@ class User(models.Model):
     subscription_count_attpemps = models.PositiveIntegerField(
         'Количество попыток',
         validators=[MinValueValidator(0)],
-        editable=True
+        editable=True, 
+        null=True
     )
     pitch = models.IntegerField(
         'Pitch',
