@@ -45,10 +45,11 @@ class User(models.Model):
     )
     subscription_final_date = models.DateTimeField(
         'Дата окончания подписки',
-        editable=True
+        editable=True, 
+        null=True,
         # default=timezone.now
     )
-    subscription_usage_limit = models.PositiveIntegerField(
+    subscription_count_attpemps = models.PositiveIntegerField(
         'Количество попыток',
         validators=[MinValueValidator(0)],
         editable=True
