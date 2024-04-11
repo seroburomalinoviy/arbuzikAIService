@@ -66,7 +66,7 @@ async def set_demo_to_user(user_model:User, demo_subsrctiption:Subscription,
     # TODO: проверить инициализацию юзера
     # нужно ли выставлять subscription_final_date??
     user_model.subscription_status = True
-    user_model.subscription = demo_subsrctiption.id 
+    user_model.subscription = demo_subsrctiption 
     user_model.user_name=tg_user_name,
     user_model.nick_name=tg_nick_name
     user_model.subscription_count_attpemps = demo_subsrctiption.days_limit 
@@ -84,7 +84,7 @@ async def check_subsrtiption(user_model:User, demo_subsrctiption:Subscription) -
             actual_status == True:
         # если подписки все закончились  и Actual status True обнляем
         actual_status = False
-        actual_subscription = demo_subsrctiption.id 
+        actual_subscription = demo_subsrctiption
         user_model.subscription_status = actual_status
         user_model.subscription = actual_subscription
         user_model.subscription_count_attpemps = 0
