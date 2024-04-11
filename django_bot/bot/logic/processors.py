@@ -121,7 +121,7 @@ async def subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # STEP_2 - CATEGORY_MENU
 async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    tg_user_id = str(update.effective_user.id.id)
+    tg_user_id = str(update.effective_user.id)
     tg_user_name = update.effective_user.username
     tg_nick_name = update.effective_user.first_name
     demo_subsrctiption: Subscription = await get_object(Subscription, title='demo')# вставить глобальную переменную названия баозовой подписки
