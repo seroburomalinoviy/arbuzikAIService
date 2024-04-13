@@ -175,7 +175,7 @@ async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.answer()
 
     category_id = int(query.data.split('category_')[1])
-    subcategories = await filter_objects(Subcategory, category_id=category_id, 
+    subcategories = await filter_objects(Subcategory, category_title=category_id, 
                                          available_subscriptions='demo')# добавить допом фильтр подписки
 
     len_subc = len(subcategories)
