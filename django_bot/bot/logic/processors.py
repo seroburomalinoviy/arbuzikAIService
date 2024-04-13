@@ -88,7 +88,7 @@ async def check_subsrtiption(user_model:User, demo_subsrctiption:Subscription) -
         user_model.subscription_status = actual_status
         user_model.subscription = actual_subscription
         user_model.subscription_count_attpemps = 0
-        await save_model(user_model)
+        save_model(user_model)
     
     return actual_subscription
 
