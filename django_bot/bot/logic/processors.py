@@ -73,7 +73,7 @@ async def set_demo_to_user(user_model:User, demo_subsrctiption:Subscription,
     # user_model.subscription_final_date = get_moscow_time() #???
     await save_model(user_model)
 
-
+@sync_to_async
 async def check_subsrtiption(user_model:User, demo_subsrctiption:Subscription) -> None:
     user_subsrctiption = user_model.subscription
     actual_subscription = user_subsrctiption
