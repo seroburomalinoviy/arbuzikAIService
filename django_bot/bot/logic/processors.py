@@ -144,7 +144,7 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     keyboard = [keyboards.search_all_voices]  # add button
     async for i, _ in a.enumerate(categories[0:int(len_cat / 2)]):
-
+        logger.info(f'callback_data = {"category_" + str(categories[i].id)}')
         keyboard.append(
             [
                 InlineKeyboardButton(categories[i].title,
@@ -173,10 +173,10 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
-    category_id = int(query.data.split('category_')[1])
+    current_category_id = int(query.data.split('category_')[1])
     logger.info(f'Get from category menu {query.data}')
-    logger.info(f'Get from category category_id {category_id}')
-    subcategories = await filter_objects(Subcategory, category_title=category_id, 
+    logger.info(f'Get from category category_id {current_category_id}')
+    subcategories = await filter_objects(Subcategory, category_id=current_category_id, 
                                          available_subscriptions='demo')# добавить допом фильтр подписки
 
     len_subc = len(subcategories)
