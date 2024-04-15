@@ -1,0 +1,24 @@
+name: ArbuzikAI deploy
+on:
+  push:
+    branches:
+      - main
+jobs:
+
+  deploy:
+    name: deployment_74
+    runs-on: ubuntu-latest
+    steps:
+    - name: executing remote ssh commands using password
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+        port: ${{ secrets.PORT }}
+        script: |
+          cd arbuzik-rvc-bot/
+          docker compose down
+          git pull origin main
+          docker compose build
+          docker compose up -d
