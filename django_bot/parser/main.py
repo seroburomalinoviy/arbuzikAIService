@@ -24,6 +24,7 @@ def write_to_subscription(model:models.Model, raw_dict:dict, title_dict:dict) ->
         )
     subscription.save()
 
+# IT 's must be deprecated. The target is use the parser in adminka
 
 
 def parser(apps, schema_editor):
