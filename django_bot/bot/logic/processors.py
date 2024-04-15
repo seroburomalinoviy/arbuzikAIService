@@ -134,8 +134,8 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         user_subsrctiption = demo_subsrctiption
     else:
         user_subsrctiption = await check_subsrtiption(user, demo_subsrctiption)
-    key = str(uuid4())    
-    context.user_data[key] = user_subsrctiption
+    # key = str(uuid4())    
+    context.user_data['subs'] = user_subsrctiption
     query = update.callback_query
     await query.answer()
     categories = await filter_objects(Category,
@@ -176,8 +176,8 @@ async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     current_category_id = int(query.data.split('category_')[1])
     logger.info(f'Get from category menu: {query.data}')
     logger.info(f'Get from category category_id: {current_category_id}')
-    key = context.args[1]
-    user_subscription = context.user_data[key]
+    logger.info(f'context.args = {context.args}')
+    user_subscription = context.user_data['subs']
     subcategories = await filter_objects(Subcategory, category_id=current_category_id, 
                                          available_subscriptions=user_subscription)# добавить допом фильтр подписки
 
