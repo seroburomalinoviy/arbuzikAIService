@@ -134,8 +134,8 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         user_subsrctiption = demo_subsrctiption
     else:
         user_subsrctiption = await check_subsrtiption(user, demo_subsrctiption)
-        
-    
+    key = str(uuid4())    
+    context.user_data[key] = user_subsrctiption
     query = update.callback_query
     await query.answer()
     categories = await filter_objects(Category,
@@ -174,10 +174,12 @@ async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
     current_category_id = int(query.data.split('category_')[1])
-    logger.info(f'Get from category menu {query.data}')
-    logger.info(f'Get from category category_id {current_category_id}')
+    logger.info(f'Get from category menu: {query.data}')
+    logger.info(f'Get from category category_id: {current_category_id}')
+    key = context.args[1]
+    user_subscription = context.user_data[key]
     subcategories = await filter_objects(Subcategory, category_id=current_category_id, 
-                                         available_subscriptions='demo')# добавить допом фильтр подписки
+                                         available_subscriptions=user_subscription)# добавить допом фильтр подписки
 
     len_subc = len(subcategories)
     keyboard = []
@@ -202,7 +204,7 @@ async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
     keyboard.append(keyboards.category_menu)  # add button
 
-    category = await get_object(Category, id=category_id)
+    category = await get_object(Category, id=current_category_id)
     await query.edit_message_text(
         category.title + '\n' + category.description,
         reply_markup=InlineKeyboardMarkup(keyboard)
