@@ -68,7 +68,10 @@ class User(models.Model):
         null=True,
         on_delete=models.SET_NULL
     )
-    favorites = models.ManyToManyField('Voice')
+    favorites = models.ManyToManyField(
+        'Voice',  
+        blank=True
+    )
 
     def __str__(self):
         return self.nick_name
