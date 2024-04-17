@@ -76,7 +76,7 @@ async def set_demo_to_user(user_model:User, demo_subsrctiption:Subscription,
 
 
 @sync_to_async
-def check_subsrtiption(user_model:User, demo_subsrctiption:Subscription) -> None:
+def check_subsсrtiption(user_model:User, demo_subsсrctiption:Subscription) -> None:
     user_subsrctiption = user_model.subscription
     actual_subscription = user_subsrctiption
     actual_status = user_model.subscription_status
@@ -86,7 +86,7 @@ def check_subsrtiption(user_model:User, demo_subsrctiption:Subscription) -> None
             actual_status == True:
         # если подписки все закончились  и Actual status True обнляем
         actual_status = False
-        actual_subscription = demo_subsrctiption
+        actual_subscription = demo_subsсrctiption
         user_model.subscription_status = actual_status
         user_model.subscription = actual_subscription
         user_model.subscription_count_attpemps = 0
@@ -133,7 +133,7 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await set_demo_to_user(user, demo_subsrctiption, tg_user_name, tg_nick_name)
         user_subsrctiption = demo_subsrctiption
     else:
-        user_subsrctiption = await check_subsrtiption(user, demo_subsrctiption)
+        user_subsrctiption = await check_subsсrtiption(user, demo_subsrctiption)
     # key = str(uuid4())    
     context.user_data['subs'] = user_subsrctiption
     query = update.callback_query
@@ -174,10 +174,7 @@ async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
     current_category_id = int(query.data.split('category_')[1])
-    logger.info(f'Get from category menu: {query.data}')
-    logger.info(f'Get from category category_id: {current_category_id}')
-    logger.info(f'context.args = {context.args}')
-    user_subscription = context.user_data['subs']
+    user_subscription = context.user_data.get('subs')
     subcategories = await filter_objects(Subcategory, category_id=current_category_id, 
                                          available_subscriptions=user_subscription)# добавить допом фильтр подписки
 
@@ -218,10 +215,10 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
     slug = update.inline_query.query
     if not slug:
         return
-
-    context.user_data['slug'] = slug
     user_subscription = context.user_data['subs']
-    voices = await filter_objects(Voice, subcategory__slug=slug, available_subscriptions=user_subscription)
+    context.user_data['slug'] = slug #why??
+    voices = await filter_objects(Voice, subcategory__slug=slug, 
+                                  available_subscriptions=user_subscription)
 
 
     # todo: проверка голоса в избранном, в зависимости от этого отдавать кнопку избранное/удалить из избранного
