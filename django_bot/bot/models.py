@@ -105,7 +105,10 @@ class Subscription(models.Model):
         default=1, # поставил бы 0
         editable=True
     )
-    image_cover = models.ImageField('Обложка подписки')
+    image_cover = models.ImageField(
+        'Обложка подписки', 
+        blank=True
+    )
     # перенести это все в категории и подкатегории сделать available_subscription
     # available_voices = models.ManyToManyField('Voice')
     # available_categories = models.ManyToManyField('Category')
