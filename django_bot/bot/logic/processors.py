@@ -32,6 +32,7 @@ logger = logging.getLogger(__name__)
 allowed_user_statuses = ['member', 'creator', 'administrator']
 unresolved_user_statuses = ['kicked', 'restricted', 'left']
 
+
 def get_moscow_time() -> datetime: # мб выделить в отдельный файл, как и функци работы с базой данных
     return datetime.now(tz=ZoneInfo('Europe/Moscow')) # втавить глобальную переменую из env
 
@@ -74,7 +75,6 @@ async def set_demo_to_user(user_model:User, demo_subsrctiption:Subscription,
     await save_model(user_model)
 
 
-    
 @sync_to_async
 def check_subsrtiption(user_model:User, demo_subsrctiption:Subscription) -> None:
     user_subsrctiption = user_model.subscription
@@ -220,7 +220,8 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     context.user_data['slug'] = slug
-    voices = await filter_objects(Voice, subcategory__slug=slug)
+    user_subscription = context.user_data['subs']
+    voices = await filter_objects(Voice, subcategory__slug=slug, available_subscriptions=user_subscription)
 
 
     # todo: проверка голоса в избранном, в зависимости от этого отдавать кнопку избранное/удалить из избранного
