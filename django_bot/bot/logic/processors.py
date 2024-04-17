@@ -62,10 +62,11 @@ def get_or_create_objets(model:models.Model, **kwargs) -> models.Model:
     return model.objects.get_or_create(**kwargs)
 
 
-async def set_demo_to_user(user_model:User, demo_subsrctiption:Subscription, 
-                           tg_user_name, tg_nick_name) -> None:
+async def set_demo_to_user(user_model:User, tg_user_name, tg_nick_name) -> None:
     # TODO: проверить инициализацию юзера
     # нужно ли выставлять subscription_final_date??
+    demo_subsrctiption: Subscription = await get_object(Subscription, 
+                                                        title='demo')
     user_model.subscription_status = True
     user_model.subscription = demo_subsrctiption 
     user_model.user_name=tg_user_name,
@@ -73,24 +74,26 @@ async def set_demo_to_user(user_model:User, demo_subsrctiption:Subscription,
     user_model.subscription_count_attpemps = demo_subsrctiption.days_limit 
     # user_model.subscription_final_date = get_moscow_time() #???
     await save_model(user_model)
+    
+    return demo_subsrctiption
 
 
 @sync_to_async
 def check_subsсrtiption(user_model:User, demo_subsсrctiption:Subscription) -> None:
-    user_subsrctiption = user_model.subscription
-    actual_subscription = user_subsrctiption
+    actual_subscription = user_model.subscription
     actual_status = user_model.subscription_status
     current_date = get_moscow_time()
-    if user_model.subscription_count_attpemps == 0 and \
-        user_model.subscription_final_date < current_date and \
-            actual_status == True:
+    if (
+        user_model.subscription_count_attpemps == 0 and 
+        user_model.subscription_final_date < current_date and 
+        actual_status == True
+        ):
         # если подписки все закончились  и Actual status True обнляем
-        actual_status = False
-        actual_subscription = demo_subsсrctiption
-        user_model.subscription_status = actual_status
+        actual_subscription = Subscription.objects.get(title='base')
+        user_model.subscription_status = False
         user_model.subscription = actual_subscription
         user_model.subscription_count_attpemps = 0
-        save_model(user_model)
+        user_model.save()
     
     return actual_subscription
 
@@ -126,14 +129,13 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     tg_user_id = str(update.effective_user.id)
     tg_user_name = update.effective_user.username
     tg_nick_name = update.effective_user.first_name
-    demo_subsrctiption: Subscription = await get_object(Subscription, title='demo')# вставить глобальную переменную названия баозовой подписки
+    # demo_subsrctiption: Subscription = await get_object(Subscription, title='demo')# вставить глобальную переменную названия баозовой подписки
     user, created = await get_or_create_objets(User, telegram_id=tg_user_id)
     
     if created: 
-        await set_demo_to_user(user, demo_subsrctiption, tg_user_name, tg_nick_name)
-        user_subsrctiption = demo_subsrctiption
+        user_subsrctiption = await set_demo_to_user(user, tg_user_name, tg_nick_name)
     else:
-        user_subsrctiption = await check_subsсrtiption(user, demo_subsrctiption)
+        user_subsrctiption = await check_subsсrtiption(user)
     # key = str(uuid4())    
     context.user_data['subs'] = user_subsrctiption
     query = update.callback_query
