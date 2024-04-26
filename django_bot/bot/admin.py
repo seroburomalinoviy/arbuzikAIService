@@ -15,19 +15,19 @@ class GenreAdmin(admin.ModelAdmin):
 @admin.register(Voice)
 class GenreAdmin(admin.ModelAdmin):
     empty_value_display = "-empty-"
-    list_display = ['title', 'subcategory']
+    list_display = ['title', 'subcategory__title']
 
 
 @admin.register(Subcategory)
 class GenreAdmin(admin.ModelAdmin):
     empty_value_display = "<пусто>"
-    list_display = ['title', 'category', 'slug']
+    list_display = ['title', 'category__title', 'slug']
 
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
     empty_value_display = "<пусто>"
-    list_display = ['nick_name', 'subscription', 'subscription_status', 'subscription_final_date']
+    list_display = ['telegram_nickname', 'subscription', 'subscription_status', 'subscription_final_date']
 
 
 @admin.register(Subscription)
