@@ -1,11 +1,10 @@
 import os
+
 from dotenv import load_dotenv
 
 from django.db import models
-from django.utils import timezone
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.files.storage import FileSystemStorage
-from django.conf import settings
 
 load_dotenv()
 
@@ -26,13 +25,13 @@ class User(models.Model):
         max_length=250,
         primary_key=True,
     )
-    nick_name = models.CharField(
+    telegram_nickname = models.CharField(
         'telegram nick name',
         max_length=100,
         blank=True,
         null=True,
     )
-    user_name = models.CharField(
+    telegram_username = models.CharField(
         'telegram username',
         max_length=100,
         blank=True,
@@ -47,9 +46,8 @@ class User(models.Model):
         'Дата окончания подписки',
         editable=True, 
         null=True,
-        # default=timezone.now
     )
-    subscription_count_attpemps = models.PositiveIntegerField(
+    subscription_attempts = models.PositiveIntegerField(
         'Количество попыток',
         validators=[MinValueValidator(0)],
         editable=True, 
@@ -65,8 +63,9 @@ class User(models.Model):
     )
     subscription = models.ForeignKey(
         'Subscription',
-        null=True,
-        on_delete=models.SET_NULL
+        on_delete=models.SET_DEFAULT,
+        default=os.environ.get('DEFAULT_SUBSCRIPTION'),
+        related_name='users'
     )
     favorites = models.ManyToManyField(
         'Voice',  
@@ -74,7 +73,7 @@ class User(models.Model):
     )
 
     def __str__(self):
-        return self.nick_name
+        return self.telegram_nickname
 
     class Meta:
         verbose_name = 'Пользователь'
@@ -102,17 +101,13 @@ class Subscription(models.Model):
     )
     days_limit = models.IntegerField(
         'Дней в подписке',
-        default=1, # поставил бы 0
+        default=0,
         editable=True
     )
     image_cover = models.ImageField(
         'Обложка подписки', 
         blank=True
     )
-    # перенести это все в категории и подкатегории сделать available_subscription
-    # available_voices = models.ManyToManyField('Voice')
-    # available_categories = models.ManyToManyField('Category')
-    # available_subcategories = models.ManyToManyField('Subcategory')
 
     def __str__(self):
         return self.title
@@ -120,6 +115,33 @@ class Subscription(models.Model):
     class Meta:
         verbose_name = 'Подписка'
         verbose_name_plural = 'Подписки'
+
+
+class MediaData(models.Model):
+    model_pth = models.FileField(
+        'Файл pth',
+        upload_to='voices/',
+        editable=True,
+        null=True,
+        blank=True,  # todo: change on Prod
+        storage=OverwriteStorage()
+    )
+    model_index = models.FileField(
+        'Файл index',
+        upload_to='voices/',
+        editable=True,
+        null=True,
+        blank=True,  # todo: change on Prod
+        storage=OverwriteStorage()
+    )
+    demka = models.FileField(
+        'Демка',
+        upload_to='voices/',
+        editable=True,
+        null=True,
+        blank=True,  # todo: change on Prod
+        storage=OverwriteStorage()
+    )
 
 
 class Voice(models.Model):
@@ -140,11 +162,6 @@ class Voice(models.Model):
         blank=True,
         default='Описание'
     )
-    subcategory = models.ForeignKey(
-        'Subcategory',
-        on_delete=models.SET_NULL,
-        null=True
-    )
     image = models.ImageField(
         'Картинка',
         upload_to='covers/',
@@ -152,30 +169,20 @@ class Voice(models.Model):
         null=True,
         blank=True
     )
-    model_pth = models.FileField(
-        'Файл pth',
-        upload_to='voices/',
-        editable=True,
-        null=True,
-        blank=True,  # todo: change on Prod
-        storage=OverwriteStorage()
-    )
-    model_index = models.FileField(
-        'Файл index',
-        upload_to='voices/',
-        editable=True,
-        null=True,
-        blank=True,  # todo: change on Prod
-        storage=OverwriteStorage()
-    )
     gender = models.CharField(
         'Пол',
         choices=gender_choice,
         max_length=10,
         default='Male'
     )
-    
-    available_subscriptions = models.ManyToManyField('Subscription')
+    media_data = models.ManyToManyField(
+        'MediaData'
+    )
+    subcategory = models.ForeignKey(
+        'Subcategory',
+        on_delete=models.CASCADE,
+        related_name='voices'
+    )
 
     def __str__(self):
         return self.title
@@ -198,8 +205,11 @@ class Category(models.Model):
         editable=True,
         default='Описание'
     )
-    
-    available_subscriptions = models.ManyToManyField('Subscription') # fill in through CM
+    subscription = models.ForeignKey(
+        'Subscription',
+        on_delete=models.CASCADE,
+        related_name='categories'
+    )
 
     def __str__(self):
         return self.title
@@ -221,13 +231,10 @@ class Subcategory(models.Model):
         unique=True
     )
     category = models.ForeignKey(
-        'Category',
-        blank=True,
-        on_delete=models.SET_NULL,
-        null=True
+        'category',
+        on_delete=models.CASCADE,
+        related_name='subcategories'
     )
-    
-    available_subscriptions = models.ManyToManyField('Subscription')  # fill in through CM
 
     class Meta:
         verbose_name = 'Подкатегория'
