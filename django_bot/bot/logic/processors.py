@@ -10,6 +10,7 @@ from django.db import models
 import json
 from datetime import datetime
 from zoneinfo import ZoneInfo
+from django.conf import settings
 
 from bot.logic import message_text, keyboards
 from bot.amqp_driver import push_amqp_message
@@ -24,6 +25,7 @@ from telegram.ext import ContextTypes, ConversationHandler
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 django.setup()
+
 from bot.models import Voice, Category, Subcategory, Subscription, User
 
 load_dotenv()
@@ -33,32 +35,32 @@ allowed_user_statuses = ['member', 'creator', 'administrator']
 unresolved_user_statuses = ['kicked', 'restricted', 'left']
 
 
-def get_moscow_time() -> datetime: # мб выделить в отдельный файл, как и функци работы с базой данных
-    return datetime.now(tz=ZoneInfo('Europe/Moscow')) # втавить глобальную переменую из env
+def get_moscow_time() -> datetime:
+    return datetime.now(tz=ZoneInfo(settings.TIME_ZONE))
 
 
 @sync_to_async
-def get_all_objects(model:models.Model) -> list:
+def get_all_objects(model: models.Model) -> list:
     return list(model.objects.all())
 
 
 @sync_to_async
-def get_object(model:models.Model, **kwargs) -> models.Model: 
+def get_object(model: models.Model, **kwargs):
     return model.objects.get(**kwargs)
 
 
 @sync_to_async
-def filter_objects(model:models.Model, **kwargs) -> list:
+def filter_objects(model: models.Model, **kwargs) -> list:
     return list(model.objects.filter(**kwargs))
 
 
 @sync_to_async
-def save_model(model:models.Model) -> None:
+def save_model(model: models.Model) -> None:
     return model.save()
 
 
 @sync_to_async
-def get_or_create_objets(model:models.Model, **kwargs) -> models.Model:
+def get_or_create_objets(model: models.Model, **kwargs):
     return model.objects.get_or_create(**kwargs)
 
 
@@ -135,7 +137,7 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if created: 
         user_subsrctiption = await set_demo_to_user(user, tg_user_name, tg_nick_name)
     else:
-        user_subsrctiption = await check_subsсrtiption(user)
+        user_subsrctiption = await check_subscription(user)
     # key = str(uuid4())    
     context.user_data['subs'] = user_subsrctiption
     query = update.callback_query
