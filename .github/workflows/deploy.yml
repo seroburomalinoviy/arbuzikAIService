@@ -8,7 +8,7 @@ jobs:
   deploy:
     name: deployment_74
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 520
     steps:
     - name: executing remote ssh commands using password
       uses: appleboy/ssh-action@v1.0.3
