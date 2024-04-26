@@ -15,13 +15,13 @@ class GenreAdmin(admin.ModelAdmin):
 @admin.register(Voice)
 class GenreAdmin(admin.ModelAdmin):
     empty_value_display = "-empty-"
-    list_display = ['title', 'subcategory__title']
+    list_display = ['title', 'subcategory']
 
 
 @admin.register(Subcategory)
 class GenreAdmin(admin.ModelAdmin):
     empty_value_display = "<пусто>"
-    list_display = ['title', 'category__title', 'slug']
+    list_display = ['title', 'category', 'slug']
 
 
 @admin.register(User)
