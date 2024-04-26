@@ -79,7 +79,7 @@ async def set_demo_to_user(user_model:User, tg_user_name, tg_nick_name) -> None:
 
 
 @sync_to_async
-def check_subsсrtiption(user_model:User) -> None:
+def check_subscription(user_model:User) -> None:
     actual_subscription = user_model.subscription
     actual_status = user_model.subscription_status
     current_date = get_moscow_time()
