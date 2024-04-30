@@ -1,6 +1,6 @@
 from django.db import models
 
-from django_bot.bot.models import Subcategory, Category, Subscription, OverwriteStorage
+from bot.models import (Subcategory, Category, Subscription, OverwriteStorage)
 
 
 class VoiceParser(models.Model):
