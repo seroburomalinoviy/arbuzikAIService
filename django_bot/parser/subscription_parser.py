@@ -40,14 +40,5 @@ def parser(apps, schema_editor):
         raw_dict = raw.to_dict()    
         raw_dict.pop('index')
         write_to_subscription(Subcription, raw_dict, reverse_fisrt_raw)
-        
-    # for ...
-        #
-        # subscription = Subcription.objects.create(
-        #     image_cover=
-        #     days_limit=
-        #     price=
-        #     time_voice_limit=
-        #     title=
-        # )
+
 
