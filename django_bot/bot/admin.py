@@ -37,8 +37,6 @@ class SubscriptionAdmin(admin.ModelAdmin):
     list_display = ['title', 'time_voice_limit', 'days_limit', 'price']
 
 
-
-
 @admin.register(VoiceParser)
 class VoiceParserAdmin(admin.ModelAdmin):
     list_display = ['subscription']
