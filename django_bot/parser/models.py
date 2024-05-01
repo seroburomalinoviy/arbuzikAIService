@@ -24,7 +24,7 @@ class VoiceParser(models.Model):
     )
 
     def __str__(self):
-        return self.subscription
+        return 'voice parser'
 
 
 class SubscriptionParser(models.Model):
