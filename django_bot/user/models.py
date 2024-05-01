@@ -54,10 +54,6 @@ class User(models.Model):
         related_name='users',
         null=True
     )
-    # favorites = models.ManyToManyField(
-    #     'Voice',
-    #     blank=True
-    # )
 
     def __str__(self):
         return self.telegram_nickname
