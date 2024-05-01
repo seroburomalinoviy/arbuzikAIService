@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.db import models
 
 from config.settings import MEDIA_ROOT
-from parser.models import VoiceParser, SubscriptionParser
+from .models import VoiceParser, SubscriptionParser
 
 
 @admin.register(VoiceParser)
