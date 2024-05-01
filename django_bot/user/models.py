@@ -1,7 +1,7 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 
-
+from bot.models import Subscription
 import os
 
 
@@ -48,7 +48,7 @@ class User(models.Model):
         null=True
     )
     subscription = models.ForeignKey(
-        'Subscription',
+        Subscription,
         on_delete=models.SET_DEFAULT,
         default=os.environ.get('DEFAULT_SUBSCRIPTION'),
         related_name='users'
