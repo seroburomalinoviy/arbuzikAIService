@@ -34,3 +34,7 @@ class SubscriptionParser(models.Model):
         editable=True,
         storage=OverwriteStorage()
     )
+
+    class Meta:
+        verbose_name = 'Парсер подписок'
+        verbose_name_plural = 'Парсер подписок'

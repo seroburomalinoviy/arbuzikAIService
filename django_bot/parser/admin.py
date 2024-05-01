@@ -7,7 +7,7 @@ from config.settings import MEDIA_ROOT
 
 @admin.register(VoiceParser)
 class VoiceParserAdmin(admin.ModelAdmin):
-    pass
+    list_display = ['subscription']
 
     # def save_model(self, request, obj: VoiceParser, form, change):
     #     super().save_model(request, obj, form, change)
@@ -18,7 +18,7 @@ class VoiceParserAdmin(admin.ModelAdmin):
 
 @admin.register(SubscriptionParser)
 class SubscriptionParserAdmin(admin.ModelAdmin):
-    pass
+    list_display = ['csv_file']
 
 
 
