@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import Category, Voice, Subcategory, User, Subscription
+from parser.models import VoiceParser, SubscriptionParser
 
 
 class SubcategoryInline(admin.TabularInline):
@@ -34,5 +35,28 @@ class UserAdmin(admin.ModelAdmin):
 class SubscriptionAdmin(admin.ModelAdmin):
     empty_value_display = "<пусто>"
     list_display = ['title', 'time_voice_limit', 'days_limit', 'price']
+
+
+
+
+@admin.register(VoiceParser)
+class VoiceParserAdmin(admin.ModelAdmin):
+    list_display = ['subscription']
+
+    # def save_model(self, request, obj: VoiceParser, form, change):
+    #     super().save_model(request, obj, form, change)
+    #
+    #     csv_file_rel_path: models.FileField = obj.csv_file
+    #     csv_file_path = str(MEDIA_ROOT) + '/' + str(csv_file_rel_path)
+
+
+@admin.register(SubscriptionParser)
+class SubscriptionParserAdmin(admin.ModelAdmin):
+    list_display = ['csv_file']
+
+
+
+
+
 
 
