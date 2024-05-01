@@ -16,7 +16,6 @@ class VoiceParser(models.Model):
     )
 
 
-
 class SubscriptionParser(models.Model):
     csv_file = models.FileField(
         'CSV',
