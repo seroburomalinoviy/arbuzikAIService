@@ -23,8 +23,6 @@ class VoiceParser(models.Model):
         storage=OverwriteStorage()
     )
 
-    def __str__(self):
-        return 'voice parser'
 
 
 class SubscriptionParser(models.Model):

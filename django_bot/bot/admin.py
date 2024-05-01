@@ -39,7 +39,7 @@ class SubscriptionAdmin(admin.ModelAdmin):
 
 @admin.register(VoiceParser)
 class VoiceParserAdmin(admin.ModelAdmin):
-    list_display = ['subscription']
+    pass
 
     # def save_model(self, request, obj: VoiceParser, form, change):
     #     super().save_model(request, obj, form, change)
@@ -50,8 +50,7 @@ class VoiceParserAdmin(admin.ModelAdmin):
 
 @admin.register(SubscriptionParser)
 class SubscriptionParserAdmin(admin.ModelAdmin):
-    list_display = ['csv_file']
-
+    pass
 
 
 
