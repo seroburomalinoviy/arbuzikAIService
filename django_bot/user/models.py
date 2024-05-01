@@ -49,9 +49,10 @@ class User(models.Model):
     )
     subscription = models.ForeignKey(
         Subscription,
-        on_delete=models.SET_DEFAULT,
+        on_delete=models.SET_NULL,
         default=os.environ.get('DEFAULT_SUBSCRIPTION'),
-        related_name='users'
+        related_name='users',
+        null=True
     )
     # favorites = models.ManyToManyField(
     #     'Voice',

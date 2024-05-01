@@ -16,7 +16,7 @@ class VoiceParser(models.Model):
         verbose_name_plural = 'Загрузить голоса'
 
     def __str__(self):
-        return 'VoiceParser'
+        return 'Загрузка голосов'
 
 
 class SubscriptionParser(models.Model):
@@ -32,4 +32,4 @@ class SubscriptionParser(models.Model):
         verbose_name_plural = 'Загрузить подписки'
 
     def __str__(self):
-        return 'SubscriptionParser'
+        return 'Загрузка подписок'
