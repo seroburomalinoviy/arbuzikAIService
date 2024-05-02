@@ -137,8 +137,7 @@ class Category(models.Model):
     title = models.CharField(
         'Название категории',
         max_length=200,
-        editable=True,
-        unique=True
+        editable=True
     )
     description = models.TextField(
         'Description',
@@ -164,8 +163,7 @@ class Subcategory(models.Model):
     title = models.CharField(
         'Название подкатегории',
         max_length=200,
-        editable=True,
-        unique=True
+        editable=True
     )
     slug = models.SlugField(
         'slug',

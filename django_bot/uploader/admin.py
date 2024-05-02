@@ -10,6 +10,7 @@ from .utils import subscription_parser, voice_parser
 @admin.register(VoiceParser)
 class VoiceParserAdmin(admin.ModelAdmin):
     empty_value_display = "<пусто>"
+    list_display = ['date']
 
     def save_model(self, request, obj: VoiceParser, form, change):
         super().save_model(request, obj, form, change)
@@ -26,6 +27,7 @@ class VoiceParserAdmin(admin.ModelAdmin):
 @admin.register(SubscriptionParser)
 class SubscriptionParserAdmin(admin.ModelAdmin):
     empty_value_display = "<пусто>"
+    list_display = ['date']
 
     def save_model(self, request, obj: SubscriptionParser, form, change):
         super().save_model(request, obj, form, change)
