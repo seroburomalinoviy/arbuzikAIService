@@ -65,40 +65,39 @@ def get_or_create_objets(model: models.Model, **kwargs):
     return model.objects.get_or_create(**kwargs)
 
 
-async def set_demo_to_user(user_model:User, tg_user_name, tg_nick_name) -> None:
-    # TODO: проверить инициализацию юзера
-    # нужно ли выставлять subscription_final_date??
-    demo_subsrctiption: Subscription = await get_object(Subscription, 
-                                                        title='demo')
+async def subscription_list():
+    return
+
+
+async def set_demo_to_user(user_model: User, tg_user_name, tg_nick_name) -> None:
+    demo_subscription: Subscription = await get_object(Subscription, title=os.environ.get('DEFAULT_SUBSCRIPTION'))
+
     user_model.subscription_status = True
-    user_model.subscription = demo_subsrctiption 
-    user_model.user_name=tg_user_name,
-    user_model.nick_name=tg_nick_name
-    user_model.subscription_count_attpemps = demo_subsrctiption.days_limit 
-    # user_model.subscription_final_date = get_moscow_time() #???
+    user_model.subscription = demo_subscription
+    user_model.user_name = tg_user_name,
+    user_model.nick_name = tg_nick_name
+    user_model.subscription_count_attempts = demo_subscription.days_limit
+    user_model.subscription_final_date = None
+
     await save_model(user_model)
     
-    return demo_subsrctiption
+    return user_model.subscription.title
 
 
 @sync_to_async
-def check_subscription(user_model:User) -> None:
-    actual_subscription = user_model.subscription
+def check_subscription(user_model: User) -> tuple[str, bool]:
     actual_status = user_model.subscription_status
     current_date = get_moscow_time()
     if (
-        user_model.subscription_count_attpemps == 0 and 
-        user_model.subscription_final_date < current_date and 
-        actual_status == True
+        user_model.subscription_count_attpemps == 0 and
+        user_model.subscription_final_date < current_date and
+        actual_status
         ):
-        # если подписки все закончились  и Actual status True обнляем
-        actual_subscription = Subscription.objects.get(title='base')
+        user_model.subscription = Subscription.objects.get(title=os.environ.get('DEFAULT_SUBSCRIPTION'))
         user_model.subscription_status = False
-        user_model.subscription = actual_subscription
-        user_model.subscription_count_attpemps = 0
         user_model.save()
     
-    return actual_subscription
+    return user_model.subscription.title, user_model.subscription_status
 
 
 # STEP_0 - SUBSCRIPTION
@@ -107,7 +106,7 @@ async def subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
         chat_id=os.environ.get('CHANNEL_ID'),
         user_id=update.effective_user.id
     )
-    logger.info(f'User {is_member.user} is {is_member.status}')
+    logger.debug(f'User {is_member.user} is {is_member.status}')
 
     query = update.callback_query
 
@@ -132,19 +131,21 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     tg_user_id = str(update.effective_user.id)
     tg_user_name = update.effective_user.username
     tg_nick_name = update.effective_user.first_name
-    # demo_subsrctiption: Subscription = await get_object(Subscription, title='demo')# вставить глобальную переменную названия баозовой подписки
-    user, created = await get_or_create_objets(User, telegram_id=tg_user_id)
-    
-    if created: 
-        user_subsrctiption = await set_demo_to_user(user, tg_user_name, tg_nick_name)
+    user, user_created = await get_or_create_objets(User, telegram_id=tg_user_id)
+
+    if user_created:
+        subscription_name = await set_demo_to_user(user, tg_user_name, tg_nick_name)
+        subscription_status = True
     else:
-        user_subsrctiption = await check_subscription(user)
-    # key = str(uuid4())    
-    context.user_data['subs'] = user_subsrctiption
+        subscription_name, subscription_status = await check_subscription(user)
+
+    context.user_data['actual_subscription'] = subscription_name
+    context.user_data['subscription_status'] = subscription_status
+
     query = update.callback_query
     await query.answer()
     categories = await filter_objects(Category,
-                                      available_subscriptions=user_subsrctiption)
+                                      subscription__title=subscription_name)
     len_cat = len(categories)
 
     keyboard = [keyboards.search_all_voices]  # add button
@@ -179,9 +180,10 @@ async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
     current_category_id = int(query.data.split('category_')[1])
-    user_subscription = context.user_data.get('subs')
-    subcategories = await filter_objects(Subcategory, category_id=current_category_id, 
-                                         available_subscriptions=user_subscription)# добавить допом фильтр подписки
+
+    subscription_name = context.user_data.get('subscription_name')
+    subcategories = await filter_objects(Subcategory,
+                                         category__subscription__title=subscription_name)
 
     len_subc = len(subcategories)
     keyboard = []
@@ -217,14 +219,23 @@ async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # INLINE_MODE - QUERY
 async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    subscription_status = context.user_data['subscription_status']
+    if not subscription_status:
+        await update.message.reply_text(
+            message_text.subscription_finished,
+            reply_markup=InlineKeyboardMarkup(subscription_list)
+        )
+        return ConversationHandler.END
+
     slug = update.inline_query.query
     if not slug:
         return
-    user_subscription = context.user_data['subs']
-    context.user_data['slug'] = slug #why??
-    voices = await filter_objects(Voice, subcategory__slug=slug, 
-                                  available_subscriptions=user_subscription)
+    context.user_data['slug'] = slug
 
+    subscription_name = context.user_data['subscription_name']
+
+    voices = await filter_objects(Voice,
+                                  subcategory__category__subscription__title=subscription_name)
 
     # todo: проверка голоса в избранном, в зависимости от этого отдавать кнопку избранное/удалить из избранного
 

@@ -5,6 +5,10 @@ from bot.models import Subscription
 import os
 
 
+def get_default_sub():
+    return os.environ.get('DEFAULT_SUBSCRIPTION')
+
+
 class User(models.Model):
     telegram_id = models.CharField(
         'telegram id',
@@ -31,7 +35,7 @@ class User(models.Model):
     subscription_final_date = models.DateTimeField(
         'Дата окончания подписки',
         editable=True,
-        null=True,
+        null=True
     )
     subscription_attempts = models.PositiveIntegerField(
         'Количество попыток',
@@ -49,7 +53,7 @@ class User(models.Model):
     )
     subscription = models.ForeignKey(
         Subscription,
-        on_delete=models.SET_NULL,
+        on_delete=models.SET(get_default_sub),
         default=os.environ.get('DEFAULT_SUBSCRIPTION'),
         related_name='users',
         null=True
