@@ -87,6 +87,7 @@ async def set_demo_to_user(user_model: User, tg_user_name, tg_nick_name) -> None
 @sync_to_async
 def check_subscription(user_model: User) -> tuple[str, bool]:
     actual_status = user_model.subscription_status
+    logger.info(f'actual_status = {actual_status}')
     current_date = get_moscow_time()
     if (
         user_model.subscription_attempts == 0 and
@@ -131,13 +132,17 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     tg_user_id = str(update.effective_user.id)
     tg_user_name = update.effective_user.username
     tg_nick_name = update.effective_user.first_name
+    logger.info(f'tg_user_name = {tg_user_name}')
+    logger.info(f'tg_nick_name = {tg_nick_name}')
     user, user_created = await get_or_create_objets(User, telegram_id=tg_user_id)
-
+    logger.info(f'user_created = {user_created}')
     if user_created:
         subscription_name = await set_demo_to_user(user, tg_user_name, tg_nick_name)
         subscription_status = True
     else:
         subscription_name, subscription_status = await check_subscription(user)
+        
+    logger.info(f'subscription_name = {subscription_name}')
 
     context.user_data['actual_subscription'] = subscription_name
     context.user_data['subscription_status'] = subscription_status
