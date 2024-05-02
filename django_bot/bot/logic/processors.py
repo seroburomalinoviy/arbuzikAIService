@@ -89,7 +89,7 @@ def check_subscription(user_model: User) -> tuple[str, bool]:
     actual_status = user_model.subscription_status
     current_date = get_moscow_time()
     if (
-        user_model.subscription_count_attpemps == 0 and
+        user_model.subscription_attempts == 0 and
         user_model.subscription_final_date < current_date and
         actual_status
         ):
