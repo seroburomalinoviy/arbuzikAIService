@@ -26,7 +26,8 @@ from telegram.ext import ContextTypes, ConversationHandler
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 django.setup()
 
-from bot.models import Voice, Category, Subcategory, Subscription, User
+from bot.models import Voice, Category, Subcategory, Subscription
+from user.models import User
 
 load_dotenv()
 logger = logging.getLogger(__name__)
