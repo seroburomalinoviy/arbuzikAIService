@@ -24,6 +24,7 @@ class CategoryAdmin(admin.ModelAdmin):
 class VoiceAdmin(admin.ModelAdmin):
     empty_value_display = "<пусто>"
     list_display = ['title', 'subcategory', 'category_display', 'subscription_display']
+    search_fields = ['title', 'subcategory', 'category_display', 'subscription_display']
 
     @admin.display(description='Category', ordering='subcategory__category__title')
     def category_display(self, obj):
