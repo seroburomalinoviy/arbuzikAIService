@@ -13,7 +13,7 @@ class MediaDataAdmin(admin.ModelAdmin):
 
 
 @admin.register(Category)
-class GenreAdmin(admin.ModelAdmin):
+class CategoryAdmin(admin.ModelAdmin):
     empty_value_display = "<пусто>"
     list_display = ['title', 'subscription']
     search_fields = ['title', 'subscription']
@@ -21,7 +21,7 @@ class GenreAdmin(admin.ModelAdmin):
 
 
 @admin.register(Voice)
-class GenreAdmin(admin.ModelAdmin):
+class VoiceAdmin(admin.ModelAdmin):
     empty_value_display = "<пусто>"
     list_display = ['title', 'subcategory', 'category_display', 'subscription_display']
 
@@ -35,7 +35,7 @@ class GenreAdmin(admin.ModelAdmin):
 
 
 @admin.register(Subcategory)
-class GenreAdmin(admin.ModelAdmin):
+class SubcategoryAdmin(admin.ModelAdmin):
     empty_value_display = "<пусто>"
     list_display = ['title', 'category', 'subscription']
     search_fields = ['title', 'category', 'subscription']
