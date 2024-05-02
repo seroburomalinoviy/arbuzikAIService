@@ -10,7 +10,7 @@ class VoiceParser(models.Model):
         editable=True,
         storage=OverwriteStorage()
     )
-    date = models.DateTimeField(auto_created=True)
+    date = models.DateTimeField('Created', auto_now_add=True)
 
     class Meta:
         verbose_name = 'Загрузить голооса'

@@ -1,6 +1,6 @@
 import pandas as pd
 import csv
-from bot.models import Subscription
+from bot.models import Subscription, Category, Subcategory, Voice, MediaData
 
 
 def subscription_parser(filepath):
@@ -26,7 +26,7 @@ def subscription_parser(filepath):
         )
         subscription.save()
 
-    return 'Подписки сохранены'
+    return 'Подписки созданы'
 
 
 def voice_parser(filepath):
@@ -36,25 +36,52 @@ def voice_parser(filepath):
     SLUG = 'slug'
     DESCRIPTION = 'description'
     GENDER = 'gender'
-    SUBSCRIPTION_TYPE = 'subscription_type_name'
+    SUBSCRIPTIOS = 'subscription_type_name'
     FILE = 'file_name'
 
-    with open('arbuzikaibot_voices.csv', newline='') as f:
+    voice_counter = 0
+    category_counter = 0
+    subcategory_counter = 0
+
+    with open(filepath, newline='') as f:
         reader = csv.DictReader(f)
         for row in reader:
-            print(
-                row[VOICE],
-                row[CATEGORY],
-                row[SUBCATEGORY],
-                row[SLUG],
-                row[DESCRIPTION],
-                row[GENDER],
-                row[SUBSCRIPTION_TYPE],
-                row[FILE]
+            media_data = MediaData.objects.create(
+                slug=row[SLUG],
+                model_pth="voices/" + row[FILE] + ".pth",
+                model_index="voices/" + row[FILE] + ".index",
+                demka="voices/" + row[FILE] + ".mp3"
             )
+            for sub in row[SUBSCRIPTIOS].split(', '):
+                subscription = Subscription.objects.get(title=sub)
 
-            # voice_name, category, subcategory, slug, description, gender, subscription_type_name, search, file_name
+                category, category_created = Category.objects.get_or_create(
+                    title=row[CATEGORY]
+                )
+                if category_created:
+                    category_counter += 1
+                    category.description = row[DESCRIPTION]
+                    category.subscription = subscription
+                    category.save()
 
-    return 'Подписки сохранены'
+                subcategory, subcategory_created = Subcategory.objects.get_or_create(
+                    title=row[SUBCATEGORY]
+                )
+                if subcategory_created:
+                    subcategory_counter += 1
+                    subcategory.slug = row[SLUG]
+                    subcategory.category = category
+
+                Voice.objects.create(
+                    title=row[VOICE],
+                    description=row[DESCRIPTION],
+                    image="covers/" + row[FILE],
+                    gender=row[GENDER],
+                    subcategory=subcategory,
+                    media_data=media_data
+                )
+                voice_counter += 1
+
+    return f'Голоса, категории и подкатегории созданы: {voice_counter} голосов, {category_counter} категорий, {subcategory_counter} подкатегорий'
 
 

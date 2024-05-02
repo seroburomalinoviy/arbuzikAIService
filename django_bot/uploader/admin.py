@@ -4,7 +4,7 @@ from django.contrib import messages
 
 from config.settings import MEDIA_ROOT
 from .models import VoiceParser, SubscriptionParser
-from .utils import subscription_parser
+from .utils import subscription_parser, voice_parser
 
 
 @admin.register(VoiceParser)
@@ -16,6 +16,11 @@ class VoiceParserAdmin(admin.ModelAdmin):
 
         csv_file_rel_path: models.FileField = obj.csv_file
         csv_file_path = str(MEDIA_ROOT) + '/' + str(csv_file_rel_path)
+        try:
+            message = voice_parser(csv_file_path)
+            messages.add_message(request, messages.INFO, message)
+        except Exception as e:
+            messages.add_message(request, messages.WARNING, e)
 
 
 @admin.register(SubscriptionParser)
