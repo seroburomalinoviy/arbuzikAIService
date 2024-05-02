@@ -166,8 +166,7 @@ class Subcategory(models.Model):
         editable=True
     )
     slug = models.SlugField(
-        'slug',
-        unique=True
+        'slug'
     )
     category = models.ForeignKey(
         'category',
