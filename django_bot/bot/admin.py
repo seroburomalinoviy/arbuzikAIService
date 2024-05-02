@@ -37,8 +37,12 @@ class VoiceAdmin(admin.ModelAdmin):
 @admin.register(Subcategory)
 class SubcategoryAdmin(admin.ModelAdmin):
     empty_value_display = "<пусто>"
-    list_display = ['title', 'category', 'subscription']
-    search_fields = ['title', 'category', 'subscription']
+    list_display = ['title', 'category', 'subscription_display']
+    search_fields = ['title', 'category']
+
+    @admin.display(description='Subscription', ordering='category__subscription__title')
+    def subscription_display(self, obj):
+        return str(obj.category.subscription.title)
 
 
 @admin.register(Subscription)
