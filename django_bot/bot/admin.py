@@ -15,19 +15,30 @@ class MediaDataAdmin(admin.ModelAdmin):
 @admin.register(Category)
 class GenreAdmin(admin.ModelAdmin):
     empty_value_display = "<пусто>"
+    list_display = ['title', 'subscription']
+    search_fields = ['title', 'subscription']
     inlines = [SubcategoryInline]
 
 
 @admin.register(Voice)
 class GenreAdmin(admin.ModelAdmin):
     empty_value_display = "<пусто>"
-    list_display = ['title', 'subcategory']
+    list_display = ['title', 'subcategory', 'category_display', 'subscription_display']
+
+    @admin.display(description='Category', ordering='subcategory__category__title')
+    def category_display(self, obj):
+        return str(obj.subcategory.category.title)
+
+    @admin.display(description='Subscription', ordering='subcategory__category__subscription__title')
+    def category_display(self, obj):
+        return str(obj.subcategory.category.subscription.title)
 
 
 @admin.register(Subcategory)
 class GenreAdmin(admin.ModelAdmin):
     empty_value_display = "<пусто>"
-    list_display = ['title', 'category', 'slug']
+    list_display = ['title', 'category', 'subscription']
+    search_fields = ['title', 'category', 'subscription']
 
 
 @admin.register(Subscription)
