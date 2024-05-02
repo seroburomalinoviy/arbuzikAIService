@@ -16,7 +16,7 @@ class MediaDataAdmin(admin.ModelAdmin):
 class CategoryAdmin(admin.ModelAdmin):
     empty_value_display = "<пусто>"
     list_display = ['title', 'subscription']
-    search_fields = ['title', 'subscription']
+    search_fields = ['title']
     inlines = [SubcategoryInline]
 
 
@@ -24,7 +24,7 @@ class CategoryAdmin(admin.ModelAdmin):
 class VoiceAdmin(admin.ModelAdmin):
     empty_value_display = "<пусто>"
     list_display = ['title', 'subcategory', 'category_display', 'subscription_display']
-    search_fields = ['title', 'subcategory', 'category_display', 'subscription_display']
+    search_fields = ['title', 'description']
 
     @admin.display(description='Category', ordering='subcategory__category__title')
     def category_display(self, obj):
@@ -39,7 +39,7 @@ class VoiceAdmin(admin.ModelAdmin):
 class SubcategoryAdmin(admin.ModelAdmin):
     empty_value_display = "<пусто>"
     list_display = ['title', 'category', 'subscription_display']
-    search_fields = ['title', 'category']
+    search_fields = ['title', 'slug']
 
     @admin.display(description='Subscription', ordering='category__subscription__title')
     def subscription_display(self, obj):
