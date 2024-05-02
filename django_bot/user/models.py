@@ -53,8 +53,7 @@ class User(models.Model):
     )
     subscription = models.ForeignKey(
         Subscription,
-        on_delete=models.SET(get_default_sub),
-        default=os.environ.get('DEFAULT_SUBSCRIPTION'),
+        on_delete=models.SET_NULL,
         related_name='users',
         null=True
     )
