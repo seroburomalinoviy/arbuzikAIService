@@ -30,7 +30,7 @@ class GenreAdmin(admin.ModelAdmin):
         return str(obj.subcategory.category.title)
 
     @admin.display(description='Subscription', ordering='subcategory__category__subscription__title')
-    def category_display(self, obj):
+    def subscription_display(self, obj):
         return str(obj.subcategory.category.subscription.title)
 
 
