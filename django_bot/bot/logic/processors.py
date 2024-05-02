@@ -238,7 +238,7 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
     context.user_data['slug'] = slug
 
-    subscription_name = context.user_data['subscription_name']
+    subscription_name = context.user_data['actual_subscription']
 
     voices = await filter_objects(Voice,
                                   subcategory__category__subscription__title=subscription_name)
