@@ -56,21 +56,22 @@ def voice_parser(filepath):
                 subscription = Subscription.objects.get(title=sub)
 
                 category, category_created = Category.objects.get_or_create(
-                    title=row[CATEGORY]
+                    title=row[CATEGORY],
+                    subscription=subscription
                 )
                 if category_created:
                     category_counter += 1
                     category.description = row[DESCRIPTION]
-                    category.subscription = subscription
                     category.save()
 
                 subcategory, subcategory_created = Subcategory.objects.get_or_create(
-                    title=row[SUBCATEGORY]
+                    title=row[SUBCATEGORY],
+                    category=category
                 )
                 if subcategory_created:
                     subcategory_counter += 1
                     subcategory.slug = row[SLUG]
-                    subcategory.category = category
+                    subcategory.save()
 
                 Voice.objects.create(
                     title=row[VOICE],
