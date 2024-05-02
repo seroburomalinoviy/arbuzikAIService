@@ -116,8 +116,10 @@ class Voice(models.Model):
         max_length=10,
         default='Male'
     )
-    media_data = models.ManyToManyField(
-        'MediaData'
+    media_data = models.ForeignKey(
+        'MediaData',
+        on_delete=models.SET_NULL,
+        null=True
     )
     subcategory = models.ForeignKey(
         'Subcategory',

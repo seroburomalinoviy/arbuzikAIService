@@ -73,15 +73,14 @@ def voice_parser(filepath):
                     subcategory.slug = row[SLUG]
                     subcategory.save()
 
-                voice = Voice.objects.create(
+                Voice.objects.create(
                     title=row[VOICE],
                     description=row[DESCRIPTION],
                     image="covers/" + row[FILE],
                     gender=row[GENDER],
                     subcategory=subcategory,
+                    media_data=media_data
                 )
-                voice.media_data.add(media_data)
-
                 voice_counter += 1
 
     return f'Голоса, категории и подкатегории созданы: {voice_counter} голосов, {category_counter} категорий, {subcategory_counter} подкатегорий'
