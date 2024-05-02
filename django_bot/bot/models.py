@@ -84,6 +84,9 @@ class MediaData(models.Model):
         storage=OverwriteStorage()
     )
 
+    def __str__(self):
+        return self.slug
+
 
 class Voice(models.Model):
     gender_choice = [
