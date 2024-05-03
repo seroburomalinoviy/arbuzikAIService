@@ -33,7 +33,7 @@ def voice_parser(filepath):
     VOICE = 'voice_name'
     CATEGORY = 'category'
     SUBCATEGORY = 'subcategory'
-    SLUG = 'slug_subcategory'
+    SLUG = 'slug_voice'
     DESCRIPTION = 'description'
     GENDER = 'gender'
     SUBSCRIPTIOS = 'subscriptions'
@@ -47,7 +47,7 @@ def voice_parser(filepath):
         reader = csv.DictReader(f)
         for row in reader:
             media_data = MediaData.objects.create(
-                title=row[VOICE],
+                slug=row[SLUG],
                 model_pth="voices/" + row[FILE] + ".pth",
                 model_index="voices/" + row[FILE] + ".index",
                 demka="voices/" + row[FILE] + ".mp3",

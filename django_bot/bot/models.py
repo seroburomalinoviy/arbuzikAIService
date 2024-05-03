@@ -55,11 +55,9 @@ class Subscription(models.Model):
 
 
 class MediaData(models.Model):
-    title = models.CharField(
-        'Voice title',
+    slug = models.SlugField(
+        'Voice slug',
         unique=True,
-        max_length=200,
-        editable=True
     )
     image = models.ImageField(
         'Картинка',
