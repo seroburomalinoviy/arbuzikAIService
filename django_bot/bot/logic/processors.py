@@ -239,30 +239,49 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
         subcategory__category__subscription__id=subscription_id
     )
 
-    # todo: проверка голоса в избранном, в зависимости от этого отдавать кнопку избранное/удалить из избранного
-
+    default_image = "https://img.icons8.com/2266EE/search"
+    logger.info(settings.MEDIA_URL + voices[1].media_data.image)
     results = []
     async for num, voice in a.enumerate(voices):
+        try:  # todo setup nginx
+            image = settings.MEDIA_URL + voice.media_data.image
+            if not image:
+                image = default_image
+        except:
+            image = default_image
         results.append(
             InlineQueryResultArticle(
                 id=str(uuid4()),
-                title=voice.title,
+                title=voice.slug_voice,
                 description=voice.description,
-                thumbnail_url="https://img.icons8.com/2266EE/search",
+                thumbnail_url=image,
                 input_message_content=InputTextMessageContent(voice.title)
             )
         )
-    await update.inline_query.answer(results, cache_time=1, auto_pagination=True)
+    await update.inline_query.answer(results, cache_time=100, auto_pagination=True)
     return ConversationHandler.END
 
 
 async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.message:
-        context.user_data['voice_title'] = update.message.text
-        if context.user_data.get(f'pitch_{update.message.text}'):
-            pass
-        else:
-            context.user_data[f'pitch_{update.message.text}'] = 0
+    # if update.message: # todo ест ли случае когда нет  update.message ?
+    voice_slug = update.message.text
+    context.user_data['voice_slug'] = voice_slug
+    if context.user_data.get(f'pitch_{update.message.text}'):
+        pass
+    else:
+        context.user_data[f'pitch_{update.message.text}'] = 0
+    # todo: проверка голоса в избранном, в зависимости от этого отдавать кнопку избранное/удалить из избранного
+
+    voice = await get_object(Voice, slug_voice=voice_slug)
+    demka_path = os.environ.get('MODELS_VOLUME') + voice.media_data.demka
+    if demka_path:
+        await update.message.reply_audio(
+            demka_path
+        )
+    else:
+        await update.message.reply_text(
+            'Запись демонстрации голоса в работе'
+        )
 
     await update.message.reply_text(
         message_text.voice_preview,
