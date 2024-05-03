@@ -9,7 +9,7 @@ class SubcategoryInline(admin.TabularInline):
 @admin.register(MediaData)
 class MediaDataAdmin(admin.ModelAdmin):
     empty_value_display = "<пусто>"
-    list_display = ['slug']
+    list_display = ['title']
 
 
 @admin.register(Category)
@@ -27,7 +27,6 @@ class VoiceAdmin(admin.ModelAdmin):
     list_display = ['title', 'subcategory', 'category_display', 'subscription_display']
     search_fields = ['title', 'description']
     list_filter = ['subcategory', 'subcategory__category__title', 'subcategory__category__subscription__title']
-
 
     @admin.display(description='Category', ordering='subcategory__category__title')
     def category_display(self, obj):
