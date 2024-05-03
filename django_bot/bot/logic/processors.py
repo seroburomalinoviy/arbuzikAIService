@@ -251,10 +251,10 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
         results.append(
             InlineQueryResultArticle(
                 id=str(uuid4()),
-                title=voice.slug_voice,
+                title=voice.title,
                 description=voice.description,
                 thumbnail_url=image,
-                input_message_content=InputTextMessageContent(voice.title)
+                input_message_content=InputTextMessageContent(voice.slug_voice)
             )
         )
     await update.inline_query.answer(results, cache_time=100, auto_pagination=True)
