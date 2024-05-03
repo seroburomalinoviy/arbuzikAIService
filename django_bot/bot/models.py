@@ -101,9 +101,9 @@ class Voice(models.Model):
         ('male', 'Male'),
         ('female', 'Female')
     ]
-    slug_subcategory = models.SlugField(
-        'Subcategory slug',
-    )
+    # slug_subcategory = models.SlugField(
+    #     'Subcategory slug',
+    # )
     slug_voice = models.SlugField(
         'Voice slug',
     )
@@ -119,13 +119,6 @@ class Voice(models.Model):
         blank=True,
         default='Описание'
     )
-    # image = models.ImageField(
-    #     'Картинка',
-    #     upload_to='covers/',
-    #     editable=True,
-    #     null=True,
-    #     blank=True
-    # )
     gender = models.CharField(
         'Пол',
         choices=gender_choice,
