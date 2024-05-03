@@ -264,15 +264,16 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # if update.message: # todo ест ли случае когда нет  update.message ?
-    voice_slug = update.message.text
-    context.user_data['voice_slug'] = voice_slug
+    voice_title = update.message.text
+    context.user_data['voice_title'] = voice_title
     if context.user_data.get(f'pitch_{update.message.text}'):
         pass
     else:
         context.user_data[f'pitch_{update.message.text}'] = 0
     # todo: проверка голоса в избранном, в зависимости от этого отдавать кнопку избранное/удалить из избранного
 
-    voice = await get_object(Voice, slug_voice=voice_slug)
+    subscription_id = context.user_data['subscription_id']
+    voice = await get_object(Voice, title=voice_title, subcategory__category__subscription__id=subscription_id)
     demka_path = os.environ.get('MODELS_VOLUME') + voice.media_data.demka
     if demka_path:
         await update.message.reply_audio(

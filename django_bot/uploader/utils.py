@@ -78,7 +78,7 @@ def voice_parser(filepath):
                 Voice.objects.create(
                     title=row[VOICE],
                     slug_subcategory=row[SLUG_SUBCATEGORY],
-                    slug_voice=row[SLUG_VOICE],
+                    # slug_voice=row[SLUG_VOICE],
                     description=row[DESCRIPTION],
                     gender=row[GENDER],
                     subcategory=subcategory,

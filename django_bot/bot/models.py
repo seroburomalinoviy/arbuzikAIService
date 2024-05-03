@@ -104,10 +104,9 @@ class Voice(models.Model):
     slug_subcategory = models.SlugField(
         'Subcategory slug',
     )
-    slug_voice = models.SlugField(
-        'Voice slug',
-        unique=True
-    )
+    # slug_voice = models.SlugField(
+    #     'Voice slug',
+    # )
     title = models.CharField(
         'Название голоса',
         max_length=200,
