@@ -87,7 +87,6 @@ async def set_demo_to_user(user_model: User, tg_user_name, tg_nick_name) -> None
 @sync_to_async
 def check_subscription(user_model: User) -> tuple[str, bool]:
     actual_status = user_model.subscription_status
-    logger.info(f'actual_status = {actual_status}')
     current_date = get_moscow_time()
     if (
         user_model.subscription_attempts == 0 and

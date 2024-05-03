@@ -59,7 +59,7 @@ class User(models.Model):
     )
 
     def __str__(self):
-        return self.telegram_nickname
+        return str(self.telegram_id)
 
     class Meta:
         verbose_name = 'Пользователь'
