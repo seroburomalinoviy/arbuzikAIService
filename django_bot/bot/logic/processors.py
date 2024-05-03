@@ -180,7 +180,7 @@ async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     current_category_id = int(query.data.split('category_')[1])
 
     subscription_name = context.user_data.get('subscription_name')
-    subcategories = await filter_objects(Subcategory,
+    subcategories = await filter_objects(Subcategory, category=current_category_id,
                                          category__subscription__title=subscription_name)
 
     len_subc = len(subcategories)

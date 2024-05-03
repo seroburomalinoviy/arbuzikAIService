@@ -21,7 +21,6 @@ class CategoryAdmin(admin.ModelAdmin):
     list_filter = ['subscription']
 
 
-
 @admin.register(Voice)
 class VoiceAdmin(admin.ModelAdmin):
     empty_value_display = "<пусто>"
