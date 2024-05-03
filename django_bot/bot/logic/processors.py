@@ -276,7 +276,8 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     # try:
     await update.message.reply_audio(
-        audio=open(demka_path,'rb')
+        audio=open(demka_path,'rb'),
+        title=slug_voice
     )
     # except Exception:
     #     await update.message.reply_text(

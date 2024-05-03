@@ -108,8 +108,8 @@ services:
         source: processed-voices-volume
         target: ${USER_VOICES_PROCESSED_VOLUME}
       - type: volume
-        source: dem-volume
-        target: /app/media/dem/
+        source: ~/dem-volume
+        target: ${DEM_VOLUME}
 
   django:
     build: ./django_bot
@@ -134,22 +134,22 @@ services:
         source: models-volume
         target: ${MODELS_VOLUME}
       - type: volume
-        source: dem-volume
+        source: ~/dem-volume
         target: /app/media/dem/
 
-  nginx:
-    container_name: nginx
-    image: nginx:latest
-    ports:
-      - "80:80"
-    env_file:
-      - .env
-    volumes:
-      - dem-volume:/data:rw
-      - covers-volume:/data:rw
-      - ./my_nginx.conf:/etc/nginx/conf.d/default.conf
-    restart:
-      always
+#  nginx:
+#    container_name: nginx
+#    image: nginx:latest
+#    ports:
+#      - "80:80"
+#    env_file:
+#      - .env
+#    volumes:
+#      - dem-volume:/data:rw
+#      - covers-volume:/data:rw
+#      - ./my_nginx.conf:/etc/nginx/conf.d/default.conf
+#    restart:
+#      always
 
 
 volumes:
