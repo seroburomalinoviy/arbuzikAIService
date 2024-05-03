@@ -107,9 +107,7 @@ services:
       - type: volume
         source: processed-voices-volume
         target: ${USER_VOICES_PROCESSED_VOLUME}
-      - type: volume
-        source: ~/dem-volume
-        target: ${DEM_VOLUME}
+      - ~/dem-volume:${DEM_VOLUME}
 
   django:
     build: ./django_bot
