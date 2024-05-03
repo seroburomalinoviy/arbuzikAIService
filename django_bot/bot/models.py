@@ -55,9 +55,19 @@ class Subscription(models.Model):
 
 
 class MediaData(models.Model):
-    slug = models.SlugField(
-        'Voice slug',
-        unique=True
+    title = models.CharField(
+        'Voice title',
+        unique=True,
+        max_length=200,
+        editable=True
+    )
+    image = models.ImageField(
+        'Картинка',
+        upload_to='covers/',
+        editable=True,
+        null=True,
+        blank=True,  # todo: change on Prod
+        storage=OverwriteStorage()
     )
     model_pth = models.FileField(
         'Файл pth',
@@ -106,13 +116,13 @@ class Voice(models.Model):
         blank=True,
         default='Описание'
     )
-    image = models.ImageField(
-        'Картинка',
-        upload_to='covers/',
-        editable=True,
-        null=True,
-        blank=True
-    )
+    # image = models.ImageField(
+    #     'Картинка',
+    #     upload_to='covers/',
+    #     editable=True,
+    #     null=True,
+    #     blank=True
+    # )
     gender = models.CharField(
         'Пол',
         choices=gender_choice,
