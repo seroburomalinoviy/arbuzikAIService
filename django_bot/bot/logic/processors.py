@@ -235,7 +235,7 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
     voices = await filter_objects(
         Voice,
         subcategory__category__id=current_category_id,
-        slug=slug,
+        slug_subcategory=slug,
         subcategory__category__subscription__id=subscription_id
     )
 
@@ -252,7 +252,7 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
         results.append(
             InlineQueryResultArticle(
                 id=str(uuid4()),
-                title=voice.title,
+                title=voice.slug_voice,
                 description=voice.description,
                 thumbnail_url=image,
                 input_message_content=InputTextMessageContent(voice.title)
@@ -264,8 +264,8 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # if update.message: # todo ест ли случае когда нет  update.message ?
-    voice_title = update.message.text
-    context.user_data['voice_title'] = voice_title
+    slug_voice = update.message.text
+    context.user_data['slug_voice'] = slug_voice
     if context.user_data.get(f'pitch_{update.message.text}'):
         pass
     else:
@@ -273,7 +273,7 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # todo: проверка голоса в избранном, в зависимости от этого отдавать кнопку избранное/удалить из избранного
 
     subscription_id = context.user_data['subscription_id']
-    voice = await get_object(Voice, title=voice_title, subcategory__category__subscription__id=subscription_id)
+    voice = await get_object(Voice, slug_voice=slug_voice, subcategory__category__subscription__id=subscription_id)
     demka_path = os.environ.get('MODELS_VOLUME') + voice.media_data.demka
     if demka_path:
         await update.message.reply_audio(
@@ -306,11 +306,11 @@ async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
 
-    voice_title = context.user_data.get('voice_title')
-    pitch = context.user_data.get(f'pitch_{voice_title}') if context.user_data.get(f'pitch_{voice_title}') else "0"
+    slug_voice = context.user_data.get('slug_voice')
+    pitch = context.user_data.get(f'pitch_{slug_voice}') if context.user_data.get(f'pitch_{slug_voice}') else "0"
 
     await query.edit_message_text(
-        message_text.voice_set.format(name=voice_title),
+        message_text.voice_set.format(name=slug_voice),
         reply_markup=InlineKeyboardMarkup(
             [
                 [
