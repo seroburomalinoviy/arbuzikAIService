@@ -85,7 +85,7 @@ class MediaData(models.Model):
     )
     demka = models.FileField(
         'Демка',
-        upload_to='voices/',
+        upload_to='dem/',
         editable=True,
         null=True,
         blank=True,  # todo: change on Prod
