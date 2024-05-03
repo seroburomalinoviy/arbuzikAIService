@@ -97,7 +97,7 @@ def check_subscription(user_model: User) -> tuple[str, bool]:
         user_model.subscription_status = False
         user_model.save()
     
-    return user_model.subscription.title, user_model.subscription_status
+    return user_model.subscription.id, user_model.subscription_status
 
 
 # STEP_0 - SUBSCRIPTION
@@ -133,18 +133,18 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     tg_nick_name = update.effective_user.first_name
     user, user_created = await get_or_create_objets(User, telegram_id=tg_user_id)
     if user_created:
-        subscription_name = await set_demo_to_user(user, tg_user_name, tg_nick_name)
+        subscription_id = await set_demo_to_user(user, tg_user_name, tg_nick_name)
         subscription_status = True
     else:
-        subscription_name, subscription_status = await check_subscription(user)
+        subscription_id, subscription_status = await check_subscription(user)
 
-    context.user_data['subscription_name'] = subscription_name
+    context.user_data['subscription_id'] = subscription_id
     context.user_data['subscription_status'] = subscription_status
 
     query = update.callback_query
     await query.answer()
     categories = await filter_objects(Category,
-                                      subscription__title=subscription_name)
+                                      subscription__id=subscription_id)
     len_cat = len(categories)
 
     keyboard = [keyboards.search_all_voices]  # add button
@@ -178,10 +178,11 @@ async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
     current_category_id = int(query.data.split('category_')[1])
+    context.user_data['subscription_id'] = current_category_id
 
-    subscription_name = context.user_data.get('subscription_name')
+    subscription_id = context.user_data.get('subscription_id')
     subcategories = await filter_objects(Subcategory, category=current_category_id,
-                                         category__subscription__title=subscription_name)
+                                         category__subscription__id=subscription_id)
 
     len_subc = len(subcategories)
     keyboard = []
@@ -230,9 +231,10 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
     context.user_data['slug'] = slug
 
-    subscription_name = context.user_data['subscription_name']
+    subscription_id = context.user_data['subscription_id']
+    current_category_id = int(query.data.split('category_')[1])
 
-    voices = await filter_objects(Voice,
+    voices = await filter_objects(Voice, category=current_category_id,
                                   subcategory__category__subscription__title=subscription_name)
 
     # todo: проверка голоса в избранном, в зависимости от этого отдавать кнопку избранное/удалить из избранного

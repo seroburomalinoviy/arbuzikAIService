@@ -18,6 +18,8 @@ class User(models.Model):
     telegram_nickname = models.CharField(
         'telegram nick name',
         max_length=100,
+        blank=True,
+        null=True,
     )
     telegram_username = models.CharField(
         'telegram username',
@@ -57,7 +59,7 @@ class User(models.Model):
     )
 
     def __str__(self):
-        return self.telegram_username
+        return str(self.telegram_id)
 
     class Meta:
         verbose_name = 'Пользователь'
