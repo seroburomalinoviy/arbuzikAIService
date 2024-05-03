@@ -178,11 +178,10 @@ async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
     current_category_id = int(query.data.split('category_')[1])
-    context.user_data['subscription_id'] = current_category_id
+    context.user_data['current_category_id'] = current_category_id
 
-    subscription_id = context.user_data.get('subscription_id')
-    subcategories = await filter_objects(Subcategory, category=current_category_id,
-                                         category__subscription__id=subscription_id)
+    # subscription_id = context.user_data.get('subscription_id')
+    subcategories = await filter_objects(Subcategory, category__id=current_category_id)
 
     len_subc = len(subcategories)
     keyboard = []
@@ -232,10 +231,13 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data['slug'] = slug
 
     subscription_id = context.user_data['subscription_id']
-    current_category_id = int(query.data.split('category_')[1])
-
-    voices = await filter_objects(Voice, category=current_category_id,
-                                  subcategory__category__subscription__title=subscription_name)
+    current_category_id = context.user_data['current_category_id']
+    voices = await filter_objects(
+        Voice,
+        category__id=current_category_id,
+        slug=slug,
+        subcategory__category__subscription__id=subscription_id
+    )
 
     # todo: проверка голоса в избранном, в зависимости от этого отдавать кнопку избранное/удалить из избранного
 

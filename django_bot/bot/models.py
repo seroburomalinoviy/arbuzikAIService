@@ -101,7 +101,10 @@ class Voice(models.Model):
         ('male', 'Male'),
         ('female', 'Female')
     ]
-
+    slug = models.SlugField(
+        'Subcategory slug',
+        unique=True,
+    )
     title = models.CharField(
         'Название голоса',
         max_length=200,
@@ -179,7 +182,8 @@ class Subcategory(models.Model):
         editable=True
     )
     slug = models.SlugField(
-        'slug'
+        'Subcategory slug',
+        unique=True,
     )
     category = models.ForeignKey(
         'category',
