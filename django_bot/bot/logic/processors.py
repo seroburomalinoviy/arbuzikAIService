@@ -235,11 +235,12 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     default_image = "https://img.icons8.com/2266EE/search"
     results = []
-    async for voice in Voice.objects.select_related(MediaData).filter(
+    async for voice in Voice.objects.filter(
             subcategory__category__id=current_category_id,
             subcategory__slug=slug,
             subcategory__category__subscription__id=subscription_id
     ):
+        voice_media_data = await get_object(MediaData, slug=voice.slug_voice)
         # try:  # todo setup nginx
         #     image = str(settings.MEDIA_URL) + str(voice.media_data.image)
         #     logger.info(f'{image=}')
@@ -252,7 +253,7 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 id=str(uuid4()),
                 title=voice.title,
                 description=voice.description,
-                thumbnail_url= str(settings.MEDIA_URL) + str(voice.media_data.image),
+                thumbnail_url= str(settings.MEDIA_URL) + str(voice_media_data.image),
                 input_message_content=InputTextMessageContent(voice.slug_voice)
             )
         )
