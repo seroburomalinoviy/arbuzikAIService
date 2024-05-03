@@ -74,8 +74,8 @@ async def set_demo_to_user(user_model: User, tg_user_name, tg_nick_name) -> None
 
     user_model.subscription_status = True
     user_model.subscription = demo_subscription
-    user_model.user_name = tg_user_name,
-    user_model.nick_name = tg_nick_name
+    user_model.telegram_username = tg_user_name,
+    user_model.telegram_nickname = tg_nick_name
     user_model.subscription_count_attempts = demo_subscription.days_limit
     user_model.subscription_final_date = None
 

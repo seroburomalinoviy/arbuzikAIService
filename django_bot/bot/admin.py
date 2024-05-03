@@ -40,6 +40,7 @@ class SubcategoryAdmin(admin.ModelAdmin):
     empty_value_display = "<пусто>"
     list_display = ['title', 'category', 'subscription_display']
     search_fields = ['title', 'slug']
+    list_filter = ['category', 'category__subscription__title']
 
     @admin.display(description='Subscription', ordering='category__subscription__title')
     def subscription_display(self, obj):
