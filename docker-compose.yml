@@ -132,21 +132,21 @@ services:
         source: models-volume
         target: ${MODELS_VOLUME}
       - ~/dem-volume:/app/media/dem/
+      - ~/covers-volume:/app/media/covers/
 
 
-#  nginx:
-#    container_name: nginx
-#    image: nginx:latest
-#    ports:
-#      - "80:80"
-#    env_file:
-#      - .env
-#    volumes:
-#      - dem-volume:/data:rw
-#      - covers-volume:/data:rw
-#      - ./my_nginx.conf:/etc/nginx/conf.d/default.conf
-#    restart:
-#      always
+  nginx:
+    container_name: nginx
+    image: nginx:latest
+    ports:
+      - "80:80"
+    env_file:
+      - .env
+    volumes:
+      - ~/covers-volume:/data:rw
+      - ./my_nginx.conf:/etc/nginx/conf.d/default.conf
+    restart:
+      always
 
 
 volumes:

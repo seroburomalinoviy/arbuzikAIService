@@ -240,19 +240,19 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
             subcategory__slug=slug,
             subcategory__category__subscription__id=subscription_id
     ):
-        try:  # todo setup nginx
-            image = str(settings.MEDIA_URL) + str(voice.media_data.image)
-            logger.info(f'{image=}')
-            if not image:
-                image = default_image
-        except:
-            image = default_image
+        # try:  # todo setup nginx
+        #     image = str(settings.MEDIA_URL) + str(voice.media_data.image)
+        #     logger.info(f'{image=}')
+        #     if not image:
+        #         image = default_image
+        # except:
+        #     image = default_image
         results.append(
             InlineQueryResultArticle(
                 id=str(uuid4()),
                 title=voice.title,
                 description=voice.description,
-                thumbnail_url=image,
+                thumbnail_url= str(settings.MEDIA_URL) + str(voice.media_data.image),
                 input_message_content=InputTextMessageContent(voice.slug_voice)
             )
         )
@@ -271,18 +271,17 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # todo: проверка голоса в избранном, в зависимости от этого отдавать кнопку избранное/удалить из избранного
 
     voice_media_data = await get_object(MediaData, slug=slug_voice)
-    demka_path = str(voice_media_data.demka.path)
-    logger.info(f'{demka_path=}')
+    demka_path = voice_media_data.demka.path
 
-    # try:
-    await update.message.reply_audio(
-        audio=open(demka_path,'rb'),
-        title=slug_voice
-    )
-    # except Exception:
-    #     await update.message.reply_text(
-    #         'Запись демонстрации голоса в работе'
-    #     )
+    try:
+        await update.message.reply_audio(
+            audio=open(demka_path, 'rb')
+        )
+    except Exception as e:
+        logger.warning(e)
+        await update.message.reply_text(
+            'Запись демонстрации голоса в работе'
+        )
 
     await update.message.reply_text(
         message_text.voice_preview,
