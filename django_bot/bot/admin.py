@@ -18,6 +18,8 @@ class CategoryAdmin(admin.ModelAdmin):
     list_display = ['title', 'subscription']
     search_fields = ['title']
     inlines = [SubcategoryInline]
+    list_filter = ['subscription']
+
 
 
 @admin.register(Voice)
@@ -25,6 +27,8 @@ class VoiceAdmin(admin.ModelAdmin):
     empty_value_display = "<пусто>"
     list_display = ['title', 'subcategory', 'category_display', 'subscription_display']
     search_fields = ['title', 'description']
+    list_filter = ['subcategory', 'subcategory__category__title', 'subcategory__category__subscription__title']
+
 
     @admin.display(description='Category', ordering='subcategory__category__title')
     def category_display(self, obj):
