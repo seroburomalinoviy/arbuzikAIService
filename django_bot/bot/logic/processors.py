@@ -240,7 +240,6 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
     default_image = "https://img.icons8.com/2266EE/search"
-    logger.info(settings.MEDIA_URL + voices[1].media_data.image)
     results = []
     async for num, voice in a.enumerate(voices):
         try:  # todo setup nginx
