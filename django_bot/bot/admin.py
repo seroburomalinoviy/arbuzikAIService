@@ -9,7 +9,7 @@ class SubcategoryInline(admin.TabularInline):
 @admin.register(MediaData)
 class MediaDataAdmin(admin.ModelAdmin):
     empty_value_display = "<пусто>"
-    list_display = ['title']
+    list_display = ['slug']
 
 
 @admin.register(Category)
