@@ -272,6 +272,7 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     voice_media_data = await get_object(MediaData, slug=slug_voice)
     demka_path = settings.MEDIA_URL + settings.MEDIA_ROOT + voice_media_data.demka.path
+    logger.info(f'{demka_path=}')
     try:
         await update.message.reply_audio(
             demka_path
