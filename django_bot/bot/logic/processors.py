@@ -132,19 +132,14 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     tg_user_id = str(update.effective_user.id)
     tg_user_name = update.effective_user.username
     tg_nick_name = update.effective_user.first_name
-    logger.info(f'tg_user_name = {tg_user_name}')
-    logger.info(f'tg_nick_name = {tg_nick_name}')
     user, user_created = await get_or_create_objets(User, telegram_id=tg_user_id)
-    logger.info(f'user_created = {user_created}')
     if user_created:
         subscription_name = await set_demo_to_user(user, tg_user_name, tg_nick_name)
         subscription_status = True
     else:
         subscription_name, subscription_status = await check_subscription(user)
-        
-    logger.info(f'subscription_name = {subscription_name}')
 
-    context.user_data['actual_subscription'] = subscription_name
+    context.user_data['subscription_name'] = subscription_name
     context.user_data['subscription_status'] = subscription_status
 
     query = update.callback_query
@@ -155,7 +150,6 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     keyboard = [keyboards.search_all_voices]  # add button
     async for i, _ in a.enumerate(categories[0:int(len_cat / 2)]):
-        logger.info(f'callback_data = {"category_" + str(categories[i].id)}')
         keyboard.append(
             [
                 InlineKeyboardButton(categories[i].title,
@@ -186,8 +180,7 @@ async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.answer()
     current_category_id = int(query.data.split('category_')[1])
 
-    subscription_name = context.user_data.get('actual_subscription')
-    logger.info(f'subscription_name = {subscription_name}')
+    subscription_name = context.user_data.get('subscription_name')
     subcategories = await filter_objects(Subcategory,
                                          category__subscription__title=subscription_name)
 
@@ -238,7 +231,7 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
     context.user_data['slug'] = slug
 
-    subscription_name = context.user_data['actual_subscription']
+    subscription_name = context.user_data['subscription_name']
 
     voices = await filter_objects(Voice,
                                   subcategory__category__subscription__title=subscription_name)
