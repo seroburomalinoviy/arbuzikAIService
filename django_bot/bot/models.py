@@ -101,9 +101,6 @@ class Voice(models.Model):
         ('male', 'Male'),
         ('female', 'Female')
     ]
-    # slug_subcategory = models.SlugField(
-    #     'Subcategory slug',
-    # )
     slug_voice = models.SlugField(
         'Voice slug',
     )
