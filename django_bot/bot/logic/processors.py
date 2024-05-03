@@ -241,7 +241,7 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
             subcategory__category__subscription__id=subscription_id
     ):
         try:  # todo setup nginx
-            image = str(settings.MEDIA_URL) + voice.media_data.image.path
+            image = str(settings.MEDIA_URL) + str(voice.media_data.image)
             logger.info(f'{image=}')
             if not image:
                 image = default_image
@@ -271,12 +271,12 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # todo: проверка голоса в избранном, в зависимости от этого отдавать кнопку избранное/удалить из избранного
 
     voice_media_data = await get_object(MediaData, slug=slug_voice)
-    demka_path = str(settings.MEDIA_URL) + str(voice_media_data.demka)
+    demka_path = str(settings.MEDIA_ROOT) + str(voice_media_data.demka)
     logger.info(f'{demka_path=}')
 
     try:
         await update.message.reply_audio(
-            demka_path
+            audio=demka_path
         )
     except Exception:
         await update.message.reply_text(
