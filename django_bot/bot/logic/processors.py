@@ -271,7 +271,7 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # todo: проверка голоса в избранном, в зависимости от этого отдавать кнопку избранное/удалить из избранного
 
     voice_media_data = await get_object(MediaData, slug=slug_voice)
-    demka_path = str(settings.MEDIA_ROOT) + str(voice_media_data.demka)
+    demka_path = str(voice_media_data.demka.path)
     logger.info(f'{demka_path=}')
 
     try:
