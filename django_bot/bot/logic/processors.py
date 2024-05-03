@@ -234,7 +234,7 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
     current_category_id = context.user_data['current_category_id']
     voices = await filter_objects(
         Voice,
-        category__id=current_category_id,
+        subcategory__category__id=current_category_id,
         slug=slug,
         subcategory__category__subscription__id=subscription_id
     )
