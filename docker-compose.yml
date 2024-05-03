@@ -131,9 +131,8 @@ services:
       - type: volume
         source: models-volume
         target: ${MODELS_VOLUME}
-      - type: volume
-        source: ~/dem-volume
-        target: /app/media/dem/
+      - ~/dem-volume:/app/media/dem/
+
 
 #  nginx:
 #    container_name: nginx
