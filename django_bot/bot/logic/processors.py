@@ -242,7 +242,7 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
     default_image = "https://img.icons8.com/2266EE/search"
     results = []
     # async for num, voice in a.enumerate(voices):
-    async for num, voice in Voice.objects.filter(
+    async for voice in Voice.objects.filter(
             subcategory__category__id=current_category_id,
             subcategory__slug=slug,
             subcategory__category__subscription__id=subscription_id
