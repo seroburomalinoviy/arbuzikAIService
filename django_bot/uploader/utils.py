@@ -33,10 +33,10 @@ def voice_parser(filepath):
     VOICE = 'voice_name'
     CATEGORY = 'category'
     SUBCATEGORY = 'subcategory'
-    SLUG = 'slug'
+    SLUG = 'slug_subcategory'
     DESCRIPTION = 'description'
     GENDER = 'gender'
-    SUBSCRIPTIOS = 'subscription_type_name'
+    SUBSCRIPTIOS = 'subscriptions'
     FILE = 'file_name'
 
     voice_counter = 0
