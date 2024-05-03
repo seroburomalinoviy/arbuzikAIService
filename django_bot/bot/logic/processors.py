@@ -274,14 +274,14 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
     demka_path = str(voice_media_data.demka.path)
     logger.info(f'{demka_path=}')
 
-    try:
-        await update.message.reply_audio(
-            audio=demka_path
-        )
-    except Exception:
-        await update.message.reply_text(
-            'Запись демонстрации голоса в работе'
-        )
+    # try:
+    await update.message.reply_audio(
+        audio=demka_path
+    )
+    # except Exception:
+    #     await update.message.reply_text(
+    #         'Запись демонстрации голоса в работе'
+    #     )
 
     await update.message.reply_text(
         message_text.voice_preview,
