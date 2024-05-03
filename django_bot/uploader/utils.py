@@ -51,7 +51,7 @@ def voice_parser(filepath):
                 slug=row[SLUG_VOICE],
                 model_pth="voices/" + row[FILE] + ".pth",
                 model_index="voices/" + row[FILE] + ".index",
-                demka="voices/" + row[FILE] + ".mp3",
+                demka="dem/" + row[FILE] + ".mp3",
                 image="covers/" + row[FILE] + ".png"
             )
             for sub in row[SUBSCRIPTIOS].split(', '):
@@ -77,7 +77,6 @@ def voice_parser(filepath):
 
                 Voice.objects.create(
                     title=row[VOICE],
-                    # slug_subcategory=row[SLUG_SUBCATEGORY],
                     slug_voice=row[SLUG_VOICE],
                     description=row[DESCRIPTION],
                     gender=row[GENDER],
