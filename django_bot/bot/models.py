@@ -103,7 +103,6 @@ class Voice(models.Model):
     ]
     slug = models.SlugField(
         'Subcategory slug',
-        unique=True,
     )
     title = models.CharField(
         'Название голоса',
@@ -183,7 +182,6 @@ class Subcategory(models.Model):
     )
     slug = models.SlugField(
         'Subcategory slug',
-        unique=True,
     )
     category = models.ForeignKey(
         'category',
