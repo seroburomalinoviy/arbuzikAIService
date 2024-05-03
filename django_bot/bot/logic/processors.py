@@ -26,7 +26,7 @@ from telegram.ext import ContextTypes, ConversationHandler
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 django.setup()
 
-from bot.models import Voice, Category, Subcategory, Subscription
+from bot.models import Voice, Category, Subcategory, Subscription, MediaData
 from user.models import User
 
 load_dotenv()
@@ -232,16 +232,13 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     subscription_id = context.user_data['subscription_id']
     current_category_id = context.user_data['current_category_id']
-    voices = await filter_objects(
-        Voice,
-        subcategory__category__id=current_category_id,
-        subcategory__slug=slug,
-        subcategory__category__subscription__id=subscription_id
-    )
 
     default_image = "https://img.icons8.com/2266EE/search"
     results = []
-    async for num, voice in a.enumerate(voices):
+    async for num, voice in Voice.objects.afilter(
+            subcategory__category__id=current_category_id,
+            subcategory__slug=slug,
+            subcategory__category__subscription__id=subscription_id):
         try:  # todo setup nginx
             image = settings.MEDIA_URL + voice.media_data.image
             if not image:
@@ -271,9 +268,8 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
         context.user_data[f'pitch_{update.message.text}'] = 0
     # todo: проверка голоса в избранном, в зависимости от этого отдавать кнопку избранное/удалить из избранного
 
-    subscription_id = context.user_data['subscription_id']
-    voice = await get_object(Voice, slug_voice=slug_voice, subcategory__category__subscription__id=subscription_id)
-    demka_path = os.environ.get('MODELS_VOLUME') + voice.media_data.demka
+    voice_media_data = await get_object(MediaData, slug_voice=slug_voice)
+    demka_path = os.environ.get('MODELS_VOLUME') + voice_media_data.demka
     if demka_path:
         await update.message.reply_audio(
             demka_path
