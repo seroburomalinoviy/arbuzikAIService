@@ -241,6 +241,7 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
             subcategory__category__subscription__id=subscription_id
     ):
         voice_media_data = await get_object(MediaData, slug=voice.slug_voice)
+        logger.info(str(settings.MEDIA_URL) + str(voice_media_data.image))
         # try:  # todo setup nginx
         #     image = str(settings.MEDIA_URL) + str(voice.media_data.image)
         #     logger.info(f'{image=}')
