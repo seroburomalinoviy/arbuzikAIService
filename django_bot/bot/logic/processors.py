@@ -241,18 +241,18 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
             subcategory__category__subscription__id=subscription_id
     ):
         voice_media_data = await get_object(MediaData, slug=voice.slug_voice)
-        try:
-            image = str(settings.MEDIA_URL) + str(voice_media_data.image)
-            if not image:
-                image = default_image
-        except:
-            image = default_image
+        # try:
+        #     image = str(settings.MEDIA_URL) + str(voice_media_data.image)
+        #     if not image:
+        #         image = default_image
+        # except:
+        #     image = default_image
         results.append(
             InlineQueryResultArticle(
                 id=str(uuid4()),
                 title=voice.title,
                 description=voice.description,
-                thumbnail_url=image,
+                thumbnail_url=str(settings.MEDIA_URL) + str(voice_media_data.image),
                 input_message_content=InputTextMessageContent(voice.slug_voice)
             )
         )
