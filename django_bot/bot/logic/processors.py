@@ -247,6 +247,7 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
         #         image = default_image
         # except:
         #     image = default_image
+
         results.append(
             InlineQueryResultArticle(
                 id=str(uuid4()),
