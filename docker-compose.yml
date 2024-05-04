@@ -126,13 +126,10 @@ services:
       - .env
     volumes:
       - type: volume
-        source: covers-volume
-        target: /app/media/covers/
-      - type: volume
         source: models-volume
         target: ${MODELS_VOLUME}
       - ~/dem-volume:/app/media/dem/
-      - ~/covers-volume:/app/media/covers/
+      - ~/covers-volume:/app/media
 
 
   nginx:
