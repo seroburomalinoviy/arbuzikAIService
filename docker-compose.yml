@@ -141,8 +141,8 @@ services:
       - .env
     volumes:
       - ~/covers-volume:/data:rw
-      - ./my_nginx.conf:/etc/nginx/nginx.conf
-#      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+#      - ./my_nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
     restart:
       always
 
