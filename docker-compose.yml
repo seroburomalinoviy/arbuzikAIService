@@ -129,7 +129,7 @@ services:
         source: models-volume
         target: ${MODELS_VOLUME}
       - ~/dem-volume:/app/media/dem/
-      - ~/covers-volume:/app/media
+      - ~/covers-volume:/app/media/covers/
 
 
   nginx:
