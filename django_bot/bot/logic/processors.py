@@ -133,18 +133,18 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     tg_nick_name = update.effective_user.first_name
     user, user_created = await get_or_create_objets(User, telegram_id=tg_user_id)
     if user_created:
-        subscription_id = await set_demo_to_user(user, tg_user_name, tg_nick_name)
+        subscription_name = await set_demo_to_user(user, tg_user_name, tg_nick_name)
         subscription_status = True
     else:
-        subscription_id, subscription_status = await check_subscription(user)
+        subscription_name, subscription_status = await check_subscription(user)
 
-    context.user_data['subscription_id'] = subscription_id
+    context.user_data['subscription_name'] = subscription_name
     context.user_data['subscription_status'] = subscription_status
 
     query = update.callback_query
     await query.answer()
     categories = await filter_objects(Category,
-                                      subscription__id=subscription_id)
+                                      subscription__title=subscription_name)
     len_cat = len(categories)
 
     keyboard = [keyboards.search_all_voices]  # add button
@@ -180,7 +180,6 @@ async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     current_category_id = int(query.data.split('category_')[1])
     context.user_data['current_category_id'] = current_category_id
 
-    # subscription_id = context.user_data.get('subscription_id')
     subcategories = await filter_objects(Subcategory, category__id=current_category_id)
 
     len_subc = len(subcategories)
@@ -218,19 +217,24 @@ async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # INLINE_MODE - QUERY
 async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
     subscription_status = context.user_data['subscription_status']
+    subscription_name = context.user_data['subscription_name']
+
     if not subscription_status:
         await update.message.reply_text(
-            message_text.subscription_finished,
-            reply_markup=InlineKeyboardMarkup(subscription_list)
+            message_text.subscription_finished
+            # reply_markup=InlineKeyboardMarkup(subscription_list)
         )
         return ConversationHandler.END
+    else:
+        user = await get_object(User, telegram_id=update.effective_user.id)
+        if subscription_name == os.environ.get('DEFAULT_SUBSCRIPTION'):
+            user.subscription_attempts -= 1
 
     slug = update.inline_query.query
     if not slug:
         return
     context.user_data['slug'] = slug
 
-    subscription_id = context.user_data['subscription_id']
     current_category_id = context.user_data['current_category_id']
 
     default_image = "https://img.icons8.com/2266EE/search"
@@ -239,21 +243,15 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
     async for voice in Voice.objects.filter(
             subcategory__category__id=current_category_id,
             subcategory__slug=slug,
-            subcategory__category__subscription__id=subscription_id
+            subcategory__category__subscription__title=subscription_name
     ):
         voice_media_data = await get_object(MediaData, slug=voice.slug_voice)
-        # try:
-        #     image = str(settings.MEDIA_URL) + str(voice_media_data.image)
-        #     if not image:
-        #         image = default_image
-        # except:
-        #     image = default_image
-
         results.append(
             InlineQueryResultArticle(
                 id=str(uuid4()),
                 title=voice.title,
                 description=voice.description,
+                # todo установить ssl сертификат
                 thumbnail_url=default_image, #str(settings.MEDIA_URL) + str(voice_media_data.image),
                 input_message_content=InputTextMessageContent(voice.slug_voice)
             )
