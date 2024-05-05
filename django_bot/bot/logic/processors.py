@@ -434,8 +434,14 @@ async def show_paid_subscriptions(update: Update, context: ContextTypes.DEFAULT_
         ]
     )
 
-    await query.edit_message_text(
-        message_text.all_paid_subs,
+    await context.bot.send_photo(
+        chat_id=query.message.chat.id,
+        photo=open(str(settings.MEDIA_ROOT) + '/covers/all_paid_subs.png', 'rb')
+    )
+
+    await context.bot.send_message(
+        chat_id=query.message.chat.id,
+        text=message_text.all_paid_subs,
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
 
@@ -451,8 +457,12 @@ async def preview_paid_subscription(update: Update, context: ContextTypes.DEFAUL
 
     await context.bot.send_photo(
         chat_id=query.message.chat.id,
-        photo=open(str(settings.MEDIA_ROOT) + "/" + str(subscription.image_cover), 'rb'),
-        caption=subscription.description,
+        photo=open(str(settings.MEDIA_ROOT) + "/" + str(subscription.image_cover), 'rb')
+    )
+
+    await context.bot.send_message(
+        chat_id=query.message.chat.id,
+        text=subscription.description,
         reply_markup=InlineKeyboardMarkup(
             [
                 [
