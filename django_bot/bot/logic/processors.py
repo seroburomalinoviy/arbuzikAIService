@@ -456,12 +456,16 @@ async def preview_paid_subscription(update: Update, context: ContextTypes.DEFAUL
         reply_markup=InlineKeyboardMarkup(
             [
                 [
-                    InlineKeyboardButton(f" 💵 Разовый платёж - {subscription.price} руб", callback_data=f"payment_{subscription.price}"),
+                    InlineKeyboardButton(f" 💵 Разовый платёж - {subscription.price} руб", callback_data=f"payment_{subscription.price}")
+                ],
+                [
                     InlineKeyboardButton("▶️ Другие подписки", callback_data='paid_subscriptions$')
                 ]
             ]
         )
     )
+
+    return START_ROUTES
 
 
 
