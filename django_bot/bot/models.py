@@ -48,8 +48,12 @@ class Subscription(models.Model):
         editable=True
     )
     image_cover = models.ImageField(
-        'Обложка подписки', 
-        blank=True
+        'Обложка подписки',
+        upload_to='covers/',
+        editable=True,
+        null=True,
+        blank=True,  # todo: change on Prod
+        storage=OverwriteStorage()
     )
 
     def __str__(self):
