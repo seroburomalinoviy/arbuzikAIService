@@ -420,14 +420,18 @@ async def show_paid_subscriptions(update: Update, context: ContextTypes.DEFAULT_
     query = update.callback_query
     await query.answer()
 
-    keyboard = list(list())
+    keyboard = list()
     async for sub in Subscription.objects.all():
-        keyboard[0].append(
-            InlineKeyboardButton(sub.telegram_title, callback_data=f'paid_subscription_{sub.title}')
+        keyboard.append(
+            [
+                InlineKeyboardButton(sub.telegram_title, callback_data=f'paid_subscription_{sub.title}')
+            ]
         )
 
-    keyboard[0].append(
-        InlineKeyboardButton("⏩ Перейти к выбору голосов", callback_data='category_menu')
+    keyboard.append(
+        [
+            InlineKeyboardButton("⏩ Перейти к выбору голосов", callback_data='category_menu')
+        ]
     )
 
     await update.message.reply_text(
