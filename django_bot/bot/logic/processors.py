@@ -450,7 +450,7 @@ async def preview_paid_subscription(update: Update, context: ContextTypes.DEFAUL
     subscription = await get_object(Subscription, title=subscription_title)
 
     await context.bot.send_photo(
-        chat_id=update.message.chat.id,
+        chat_id=query.message.chat.id,
         photo=open(str(settings.MEDIA_ROOT) + "/" + str(subscription.image_cover)),
         caption=subscription.description
     )
