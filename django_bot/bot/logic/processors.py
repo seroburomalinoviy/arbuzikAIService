@@ -439,6 +439,8 @@ async def show_paid_subscriptions(update: Update, context: ContextTypes.DEFAULT_
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
 
+    return START_ROUTES
+
 
 
 
