@@ -450,7 +450,7 @@ async def preview_paid_subscription(update: Update, context: ContextTypes.DEFAUL
     subscription = await get_object(Subscription, title=subscription_title)
 
     await context.bot.send_photo(
-        photo=open(settings.MEDIA_ROOT + str(subscription.image_cover)),
+        photo=open(str(settings.MEDIA_ROOT) + str(subscription.image_cover)),
         caption=subscription.description
     )
 
