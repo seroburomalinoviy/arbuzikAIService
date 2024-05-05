@@ -230,6 +230,7 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if subscription_name == os.environ.get('DEFAULT_SUBSCRIPTION'):
             user.subscription_attempts -= 1
 
+
     slug = update.inline_query.query
     if not slug:
         return
