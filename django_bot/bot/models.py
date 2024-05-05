@@ -30,6 +30,11 @@ class Subscription(models.Model):
         editable=True,
         null=True
         )
+    description = models.TextField(
+        max_length=1000,
+        editable=True,
+        null=True
+    )
     time_voice_limit = models.IntegerField(
         'Ограничение аудиофайла, сек',
         default=30,

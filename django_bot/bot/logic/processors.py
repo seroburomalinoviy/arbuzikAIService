@@ -442,6 +442,15 @@ async def show_paid_subscriptions(update: Update, context: ContextTypes.DEFAULT_
     return START_ROUTES
 
 
+async def preview_paid_subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+
+    subscription_title = query.data.split('paid_subscription_')[1]
+    subscription = await get_object(Subscription, title=subscription_title)
+
+
+
 
 
 # for TestHandler
