@@ -18,6 +18,7 @@ def subscription_parser(filepath):
         raw_dict = raw.to_dict()    
         raw_dict.pop('index')
         subscription = Subscription.objects.create(
+            description=raw_dict[reverse_fisrt_raw['description']],
             image_cover="covers/" + str(raw_dict[reverse_fisrt_raw['image_cover']]),
             days_limit=raw_dict[reverse_fisrt_raw['days_limit']],
             price=raw_dict[reverse_fisrt_raw['price']],
