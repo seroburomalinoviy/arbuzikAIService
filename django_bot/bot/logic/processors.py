@@ -234,6 +234,7 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
     current_category_id = context.user_data['current_category_id']
 
     default_image = "https://img.icons8.com/2266EE/search"
+    default_image = "https://img.freepik.com/free-photo/3d-rendering-hydraulic-elements_23-2149333332.jpg?t=st=1714904107~exp=1714907707~hmac=98d51596c9ad15af1086b0d1916f5567c1191255c42d157c87c59bab266d6e84&w=2000"
     results = []
     async for voice in Voice.objects.filter(
             subcategory__category__id=current_category_id,
@@ -253,7 +254,7 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 id=str(uuid4()),
                 title=voice.title,
                 description=voice.description,
-                thumbnail_url=str(settings.MEDIA_URL) + str(voice_media_data.image),
+                thumbnail_url=default_image, #str(settings.MEDIA_URL) + str(voice_media_data.image),
                 input_message_content=InputTextMessageContent(voice.slug_voice)
             )
         )
