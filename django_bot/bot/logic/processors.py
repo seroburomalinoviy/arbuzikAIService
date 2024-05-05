@@ -434,7 +434,7 @@ async def show_paid_subscriptions(update: Update, context: ContextTypes.DEFAULT_
         ]
     )
 
-    await update.message.reply_text(
+    await query.edit_message_text(
         message_text.all_paid_subs,
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
