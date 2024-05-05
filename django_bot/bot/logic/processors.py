@@ -434,10 +434,10 @@ async def show_paid_subscriptions(update: Update, context: ContextTypes.DEFAULT_
         ]
     )
 
-    await context.bot.delete_message(
-        chat_id=query.message.chat.id,
-        message_id=query.message.message_id
-    )
+    # await context.bot.delete_message(
+    #     chat_id=query.message.chat.id,
+    #     message_id=query.message.message_id
+    # )
 
     await context.bot.send_photo(
         chat_id=query.message.chat.id,
@@ -460,10 +460,10 @@ async def preview_paid_subscription(update: Update, context: ContextTypes.DEFAUL
     subscription_title = query.data.split('paid_subscription_')[1]
     subscription = await get_object(Subscription, title=subscription_title)
 
-    await context.bot.delete_message(
-        chat_id=query.message.chat.id,
-        message_id=query.message.message_id
-    )
+    # await context.bot.delete_message(
+    #     chat_id=query.message.chat.id,
+    #     message_id=query.message.message_id
+    # )
 
     await context.bot.send_photo(
         chat_id=query.message.chat.id,
