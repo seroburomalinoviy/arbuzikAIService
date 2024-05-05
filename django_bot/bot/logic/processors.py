@@ -255,8 +255,8 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if not subscription_status:
         await update.message.reply_text(
-            message_text.subscription_finished
-            # reply_markup=InlineKeyboardMarkup(subscription_list)
+            message_text.subscription_finished,
+            reply_markup=InlineKeyboardMarkup(keyboards.is_subscribed)
         )
         return ConversationHandler.END
 
@@ -266,7 +266,7 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await save_model(user)
         context.user_data['subscription_name'], context.user_data['subscription_status'] = await check_subscription(user)
 
-    # if update.message: # todo ест ли случае когда нет  update.message ?
+    # if update.message: # todo ест ли случаи когда нет  update.message ?
     slug_voice = update.message.text
     context.user_data['slug_voice'] = slug_voice
     if context.user_data.get(f'pitch_{update.message.text}'):
@@ -414,6 +414,28 @@ async def audio_process():
 async def search_all(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
+
+
+async def show_paid_subscriptions(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+
+    keyboard = list(list())
+    async for sub in Subscription.objects.all():
+        keyboard[0].append(
+            InlineKeyboardButton(sub.telegram_title, callback_data=f'paid_subscription_{sub.title}')
+        )
+
+    keyboard[0].append(
+        InlineKeyboardButton("⏩ Перейти к выбору голосов", callback_data='category_menu')
+    )
+
+    await update.message.reply_text(
+        message_text.all_paid_subs,
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )
+
+
 
 
 # for TestHandler

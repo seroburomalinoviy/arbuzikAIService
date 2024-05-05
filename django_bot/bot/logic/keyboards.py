@@ -22,8 +22,7 @@ check_subscription = [
                 ]
 is_subscribed = [
                     [
-                        InlineKeyboardButton("⚡ Подписки", callback_data='step_1'),
+                        InlineKeyboardButton("⚡ Подписки", callback_data='paid_subscriptions'),
                         InlineKeyboardButton("⏩ Перейти к выбору голосов", callback_data='category_menu'),
                     ]
                 ]
-

@@ -24,6 +24,12 @@ class Subscription(models.Model):
         editable=True,
         unique=True
         )
+    telegram_title = models.CharField(
+        'Название подписки в боте',
+        max_length=500,
+        editable=True,
+        null=True
+        )
     time_voice_limit = models.IntegerField(
         'Ограничение аудиофайла, сек',
         default=30,
