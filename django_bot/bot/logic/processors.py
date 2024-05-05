@@ -264,6 +264,7 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
         user = await get_object(User, telegram_id=update.effective_user.id)
         user.subscription_attempts -= 1
         await save_model(user)
+        context.user_data['subscription_name'], context.user_data['subscription_status'] = await check_subscription(user)
 
     # if update.message: # todo ест ли случае когда нет  update.message ?
     slug_voice = update.message.text
