@@ -225,10 +225,6 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
             # reply_markup=InlineKeyboardMarkup(subscription_list)
         )
         return ConversationHandler.END
-    else:
-        user = await get_object(User, telegram_id=update.effective_user.id)
-        if subscription_name == os.environ.get('DEFAULT_SUBSCRIPTION'):
-            user.subscription_attempts -= 1
 
     slug = update.inline_query.query
     if not slug:
@@ -261,6 +257,13 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    subscription_name = context.user_data['subscription_name']
+
+    if subscription_name == os.environ.get('DEFAULT_SUBSCRIPTION'):
+        user = await get_object(User, telegram_id=update.effective_user.id)
+        user.subscription_attempts -= 1
+        user.asave()
+
     # if update.message: # todo ест ли случае когда нет  update.message ?
     slug_voice = update.message.text
     context.user_data['slug_voice'] = slug_voice
