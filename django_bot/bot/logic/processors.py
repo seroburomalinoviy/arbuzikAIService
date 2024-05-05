@@ -71,13 +71,14 @@ async def subscription_list():
 
 async def set_demo_to_user(user_model: User, tg_user_name, tg_nick_name) -> None:
     demo_subscription: Subscription = await get_object(Subscription, title=os.environ.get('DEFAULT_SUBSCRIPTION'))
+    current_date = get_moscow_time()
 
     user_model.subscription_status = True
     user_model.subscription = demo_subscription
     user_model.telegram_username = tg_user_name,
     user_model.telegram_nickname = tg_nick_name
     user_model.subscription_count_attempts = demo_subscription.days_limit
-    user_model.subscription_final_date = None
+    user_model.subscription_final_date = current_date
 
     await save_model(user_model)
     
