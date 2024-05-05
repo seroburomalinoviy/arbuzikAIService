@@ -97,7 +97,7 @@ def check_subscription(user_model: User) -> tuple[str, bool]:
         user_model.subscription_status = False
         user_model.save()
     
-    return user_model.subscription.id, user_model.subscription_status
+    return user_model.subscription.title, user_model.subscription_status
 
 
 # STEP_0 - SUBSCRIPTION
@@ -229,7 +229,6 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
         user = await get_object(User, telegram_id=update.effective_user.id)
         if subscription_name == os.environ.get('DEFAULT_SUBSCRIPTION'):
             user.subscription_attempts -= 1
-
 
     slug = update.inline_query.query
     if not slug:
