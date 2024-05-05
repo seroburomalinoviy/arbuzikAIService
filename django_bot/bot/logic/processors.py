@@ -217,15 +217,7 @@ async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # INLINE_MODE - QUERY
 async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    subscription_status = context.user_data['subscription_status']
     subscription_name = context.user_data['subscription_name']
-
-    if not subscription_status:
-        await update.message.reply_text(
-            message_text.subscription_finished
-            # reply_markup=InlineKeyboardMarkup(subscription_list)
-        )
-        return ConversationHandler.END
 
     slug = update.inline_query.query
     if not slug:
@@ -259,6 +251,14 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
     subscription_name = context.user_data['subscription_name']
+    subscription_status = context.user_data['subscription_status']
+
+    if not subscription_status:
+        await update.message.reply_text(
+            message_text.subscription_finished
+            # reply_markup=InlineKeyboardMarkup(subscription_list)
+        )
+        return ConversationHandler.END
 
     if subscription_name == os.environ.get('DEFAULT_SUBSCRIPTION'):
         user = await get_object(User, telegram_id=update.effective_user.id)

@@ -44,8 +44,7 @@ class User(models.Model):
     subscription_attempts = models.PositiveIntegerField(
         'Количество попыток',
         validators=[MinValueValidator(0)],
-        editable=True,
-        null=True
+        editable=True
     )
     pitch = models.IntegerField(
         'Pitch',
