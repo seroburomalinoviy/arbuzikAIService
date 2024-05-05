@@ -452,7 +452,15 @@ async def preview_paid_subscription(update: Update, context: ContextTypes.DEFAUL
     await context.bot.send_photo(
         chat_id=query.message.chat.id,
         photo=open(str(settings.MEDIA_ROOT) + "/" + str(subscription.image_cover), 'rb'),
-        caption=subscription.description
+        caption=subscription.description,
+        reply_markup=InlineKeyboardMarkup(
+            [
+                [
+                    InlineKeyboardButton(f" 💵 Разовый платёж - {subscription.price} руб", callback_data=f"payment_{subscription.price}"),
+                    InlineKeyboardButton("▶️ Другие подписки", callback_data='paid_subscriptions$')
+                ]
+            ]
+        )
     )
 
 
