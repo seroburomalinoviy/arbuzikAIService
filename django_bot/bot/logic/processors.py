@@ -434,21 +434,23 @@ async def show_paid_subscriptions(update: Update, context: ContextTypes.DEFAULT_
         ]
     )
 
-    # await context.bot.delete_message(
-    #     chat_id=query.message.chat.id,
-    #     message_id=query.message.message_id
-    # )
+    await context.bot.delete_message(
+        chat_id=query.message.chat.id,
+        message_id=query.message.message_id
+    )
 
     await context.bot.send_photo(
         chat_id=query.message.chat.id,
-        photo=open(str(settings.MEDIA_ROOT) + '/covers/all_paid_subs.png', 'rb')
-    )
-
-    await context.bot.send_message(
-        chat_id=query.message.chat.id,
-        text=message_text.all_paid_subs,
+        photo=open(str(settings.MEDIA_ROOT) + '/covers/all_paid_subs.png', 'rb'),
+        caption=message_text.all_paid_subs,
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
+
+    # await context.bot.send_message(
+    #     chat_id=query.message.chat.id,
+    #     text=message_text.all_paid_subs,
+    #     reply_markup=InlineKeyboardMarkup(keyboard)
+    # )
 
     return START_ROUTES
 
@@ -460,23 +462,20 @@ async def preview_paid_subscription(update: Update, context: ContextTypes.DEFAUL
     subscription_title = query.data.split('paid_subscription_')[1]
     subscription = await get_object(Subscription, title=subscription_title)
 
-    # await context.bot.delete_message(
-    #     chat_id=query.message.chat.id,
-    #     message_id=query.message.message_id
-    # )
+    await context.bot.delete_message(
+        chat_id=query.message.chat.id,
+        message_id=query.message.message_id
+    )
 
     await context.bot.send_photo(
         chat_id=query.message.chat.id,
-        photo=open(str(settings.MEDIA_ROOT) + "/" + str(subscription.image_cover), 'rb')
-    )
-
-    await context.bot.send_message(
-        chat_id=query.message.chat.id,
-        text=subscription.description,
+        photo=open(str(settings.MEDIA_ROOT) + "/" + str(subscription.image_cover), 'rb'),
+        caption=subscription.description,
         reply_markup=InlineKeyboardMarkup(
             [
                 [
-                    InlineKeyboardButton(f" 💵 Разовый платёж - {subscription.price} руб", callback_data=f"payment_{subscription.price}")
+                    InlineKeyboardButton(f" 💵 Разовый платёж - {subscription.price} руб",
+                                         callback_data=f"payment_{subscription.price}")
                 ],
                 [
                     InlineKeyboardButton("▶️ Другие подписки", callback_data='paid_subscriptions')
@@ -484,6 +483,21 @@ async def preview_paid_subscription(update: Update, context: ContextTypes.DEFAUL
             ]
         )
     )
+
+    # await context.bot.send_message(
+    #     chat_id=query.message.chat.id,
+    #     text=subscription.description,
+    #     reply_markup=InlineKeyboardMarkup(
+    #         [
+    #             [
+    #                 InlineKeyboardButton(f" 💵 Разовый платёж - {subscription.price} руб", callback_data=f"payment_{subscription.price}")
+    #             ],
+    #             [
+    #                 InlineKeyboardButton("▶️ Другие подписки", callback_data='paid_subscriptions')
+    #             ]
+    #         ]
+    #     )
+    # )
 
     return START_ROUTES
 
