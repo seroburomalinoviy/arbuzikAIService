@@ -108,6 +108,7 @@ services:
         source: processed-voices-volume
         target: ${USER_VOICES_PROCESSED_VOLUME}
       - ~/dem-volume:${DEM_VOLUME}
+      - ~/covers-volume:/app/media/covers
 
   django:
     build: ./django_bot
