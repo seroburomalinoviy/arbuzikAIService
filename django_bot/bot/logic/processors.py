@@ -256,43 +256,13 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    subscription_name = context.user_data['subscription_name']
-    subscription_status = context.user_data['subscription_status']
-
-    if not subscription_status:
-        await update.message.reply_text(
-            message_text.subscription_finished,
-            reply_markup=InlineKeyboardMarkup(keyboards.is_subscribed)
-        )
-        return ConversationHandler.END
-
-    if subscription_name == os.environ.get('DEFAULT_SUBSCRIPTION'):
-        user = await get_object(User, telegram_id=update.effective_user.id)
-        user.subscription_attempts -= 1
-        await save_model(user)
-        context.user_data['subscription_name'], context.user_data['subscription_status'] = await check_subscription(user)
-
-    # if update.message: # todo ест ли случаи когда нет  update.message ?
-    slug_voice = update.message.text
-    context.user_data['slug_voice'] = slug_voice
-    if context.user_data.get(f'pitch_{update.message.text}'):
-        pass
-    else:
-        context.user_data[f'pitch_{update.message.text}'] = 0
-    # todo: проверка голоса в избранном, в зависимости от этого отдавать кнопку избранное/удалить из избранного
-
-    voice_media_data = await get_object(MediaData, slug=slug_voice)
-    demka_path = voice_media_data.demka.path
-
-    try:
-        await update.message.reply_audio(
-            audio=open(demka_path, 'rb')
-        )
-    except Exception as e:
-        logger.warning(e)
-        await update.message.reply_text(
-            'Запись демонстрации голоса в работе'
-        )
+    if update.message:
+        logger.info(f'voice_title = {update.message.text}')
+        context.user_data['voice_title'] = update.message.text
+        if context.user_data.get(f'pitch_{update.message.text}'):
+            pass
+        else:
+            context.user_data[f'pitch_{update.message.text}'] = 0
 
     await update.message.reply_text(
         message_text.voice_preview,
