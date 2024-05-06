@@ -356,10 +356,12 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     voice_filename = voice_title + '_' + str(uuid4()) + extension  # raw voice file name
     voice_path = Path(os.environ.get('USER_VOICES_RAW_VOLUME') + '/' + voice_filename)
     pitch = context.user_data.get(f'pitch_{voice_title}')
-    voice_obj = await get_object(Voice, slug_voice=voice_title, 
+    voice_obj:Voice = await get_object(Voice, slug_voice=voice_title, 
                                  subcategory__category__id=current_category_id)
-    voice_model_pth = voice_obj.model_pth.name.split('/')[1]
-    voice_model_index = voice_obj.model_index.name.split('/')[1]
+    voice_model_pth = voice_obj.media_data.model_pth.split('/')[1]
+    voice_model_index = voice_obj.media_data.model_index.split('/')[1]
+    logger.info(f'\n\nvoice_model_pth = {voice_model_pth}')
+    logger.info(f'voice_model_index = {voice_model_index}\n\n')
 
     await voice.download_to_drive(custom_path=voice_path)  # download voice file to host
     logger.info(f'The voice file with name {user_id} downloaded to {voice_path}')
