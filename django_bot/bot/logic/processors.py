@@ -355,7 +355,7 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     voice_filename = voice_title + '_' + str(uuid4()) + extension  # raw voice file name
     voice_path = Path(os.environ.get('USER_VOICES_RAW_VOLUME') + '/' + voice_filename)
     pitch = context.user_data.get(f'pitch_{voice_title}')
-    voice_obj = await get_object(Voice, title=voice_title)
+    voice_obj = await get_object(Voice, slug_voice=voice_title)
     voice_model_pth = voice_obj.model_pth.name.split('/')[1]
     voice_model_index = voice_obj.model_index.name.split('/')[1]
 
