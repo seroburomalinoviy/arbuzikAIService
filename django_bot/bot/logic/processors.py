@@ -142,8 +142,6 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data['subscription_name'] = subscription_name
     context.user_data['subscription_status'] = subscription_status
 
-    query = update.callback_query
-    await query.answer()
     categories = await filter_objects(Category,
                                       subscription__title=subscription_name)
     len_cat = len(categories)
@@ -167,11 +165,18 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
                                               )
                          ])
 
-    await query.edit_message_media(media=None)
-    await query.edit_message_text(
-        message_text.category_menu,
-        reply_markup=InlineKeyboardMarkup(keyboard)
-    )
+    query = update.callback_query
+    if query:
+        await query.answer()
+        await query.edit_message_text(
+            message_text.category_menu,
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
+    else:
+        await update.message.reply_text(
+            message_text.category_menu,
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
     return START_ROUTES
 
 
