@@ -443,7 +443,7 @@ async def show_paid_subscriptions(update: Update, context: ContextTypes.DEFAULT_
     await context.bot.send_photo(
         chat_id=query.message.chat.id,
         photo=open(str(settings.MEDIA_ROOT) + '/covers/all_paid_subs.png', 'rb'),
-        text=message_text.all_paid_subs,
+        caption=message_text.all_paid_subs,
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
 
