@@ -38,7 +38,7 @@ class MainConversationHandler(BaseConversationHandler):
                 CallbackQueryHandler(processors.subcategory_menu, pattern="^category_"),
                 CallbackQueryHandler(processors.show_paid_subscriptions, pattern="^paid_subscriptions$"),
                 CallbackQueryHandler(processors.preview_paid_subscription, pattern="^paid_subscription_"),
-                CommandHandler('menu', processors.subcategory_menu)
+                CommandHandler('menu', processors.category_menu)
             ]
         }
 
