@@ -263,7 +263,7 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
             pass
         else:
             context.user_data[f'pitch_{update.message.text}'] = 0
-
+    logger.info(f'\n\nvoice_title = {update.message.text}\n\n')
     await update.message.reply_text(
         message_text.voice_preview,
         reply_markup=InlineKeyboardMarkup(
