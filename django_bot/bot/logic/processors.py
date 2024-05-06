@@ -167,6 +167,7 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
                                               )
                          ])
 
+    await query.edit_message_media(media=None)
     await query.edit_message_text(
         message_text.category_menu,
         reply_markup=InlineKeyboardMarkup(keyboard)
@@ -442,13 +443,15 @@ async def show_paid_subscriptions(update: Update, context: ContextTypes.DEFAULT_
     await context.bot.send_photo(
         chat_id=query.message.chat.id,
         photo=open(str(settings.MEDIA_ROOT) + '/covers/all_paid_subs.png', 'rb'),
-    )
-
-    await context.bot.send_message(
-        chat_id=query.message.chat.id,
         text=message_text.all_paid_subs,
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
+
+    # await context.bot.send_message(
+    #     chat_id=query.message.chat.id,
+    #     text=message_text.all_paid_subs,
+    #     reply_markup=InlineKeyboardMarkup(keyboard)
+    # )
 
     return START_ROUTES
 
