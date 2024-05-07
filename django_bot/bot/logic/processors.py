@@ -393,9 +393,9 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     pitch = context.user_data.get(f'pitch_{slug_voice}')
 
     slug = context.user_data.get('slug_voice')
-    voice_media_data = await get_object(MediaData, slug=slug)
-    voice_model_pth = str(voice_media_data.media_data.model_pth)
-    voice_model_index = str(voice_media_data.media_data.model_index)
+    voice_media_data: MediaData = await get_object(MediaData, slug=slug)
+    voice_model_pth = str(voice_media_data.model_pth)
+    voice_model_index = str(voice_media_data.model_index)
 
     logger.info(f'\n\nvoice_model_pth = {voice_model_pth}')
     logger.info(f'voice_model_index = {voice_model_index}\n\n')
