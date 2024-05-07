@@ -342,8 +342,8 @@ async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def voice_set_0(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
-    voice_title = context.user_data.get('voice_title')
-    pitch = context.user_data.get(f'pitch_{voice_title}') if context.user_data.get(f'pitch_{voice_title}') else "0"
+    slug_voice = context.user_data.get('slug_voice')
+    pitch = context.user_data.get(f'pitch_{slug_voice}') if context.user_data.get(f'pitch_{slug_voice}') else "0"
     await query.answer(f'Тональность {pitch}')
     return START_ROUTES
 
@@ -352,17 +352,19 @@ async def pitch_setting(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
 
-    voice_title = context.user_data.get('voice_title')
+    slug_voice = context.user_data.get('slug_voice')
 
     if query.data == 'voice_set_sub':
-        context.user_data[f'pitch_{voice_title}'] -= 1
+        context.user_data[f'pitch_{slug_voice}'] -= 1
     elif query.data == 'voice_set_add':
-        context.user_data[f'pitch_{voice_title}'] += 1
+        context.user_data[f'pitch_{slug_voice}'] += 1
 
-    pitch = str(context.user_data.get(f'pitch_{voice_title}'))
+    pitch = str(context.user_data.get(f'pitch_{slug_voice}'))
+
+
 
     await query.edit_message_text(
-        message_text.voice_set.format(name=voice_title),
+        message_text.voice_set.format(name=slug_voice),
         reply_markup=InlineKeyboardMarkup(
             [
                 [
@@ -384,11 +386,11 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = str(update.message.from_user.id)
     chat_id = str(update.message.chat.id)
     extension = '.ogg'
-    voice_title = context.user_data.get('voice_title')
+    slug_voice = context.user_data.get('slug_voice')
     # current_category_id = context.user_data.get('current_category_id')
-    voice_filename = voice_title + '_' + str(uuid4()) + extension  # raw voice file name
+    voice_filename = slug_voice + '_' + str(uuid4()) + extension  # raw voice file name
     voice_path = Path(os.environ.get('USER_VOICES_RAW_VOLUME') + '/' + voice_filename)
-    pitch = context.user_data.get(f'pitch_{voice_title}')
+    pitch = context.user_data.get(f'pitch_{slug_voice}')
 
     slug = context.user_data.get('slug_voice')
     voice_media_data = await get_object(MediaData, slug=slug)
