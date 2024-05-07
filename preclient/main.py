@@ -27,7 +27,7 @@ async def create_task(payload):
     # https://aioredis.readthedocs.io/en/latest/getting-started/
     logger.info(f'redis input args: {payload}')
     redis = aioredis.from_url(
-        url=f"redis://{os.environ.get('REDIS_HOST')}"  # todo: можем ли использовать сеть докеров? Оптимально?
+        url=f"redis://{os.environ.get('REDIS_HOST')}"  # TODO: можем ли использовать сеть докеров? Оптимально?
     )
     pubsub = redis.pubsub()
     await pubsub.subscribe("channel:raw-data")
@@ -55,7 +55,7 @@ async def task_listener():
         async with queue.iterator() as queue_iter:
             async for message in queue_iter:
                 async with message.process():
-
+                    logger.info(f'message.body.decode() = {message.body.decode()}')
                     await create_task(message.body.decode())
 
                     if queue.name in message.body.decode():
@@ -63,4 +63,6 @@ async def task_listener():
 
 
 if __name__ == '__main__':
+    # Почему не создавать один коннекшн и использовать его
+    # Сейчас для каждой записи создается конекшн и даже не закрывается
     asyncio.run(task_listener())
