@@ -53,7 +53,7 @@ def _create_connection():
 
 
 def push_amqp_message(payload):
-    queue_name = "rvc-to-bot"
+    queue_name = "rvc-to-bot" # ???
     routing_key = "rvc-to-bot"
 
     with _create_connection() as connection:
@@ -77,7 +77,7 @@ async def reader(channel: aioredis.client.PubSub):
 
                     message = message.get("data").decode()
 
-                    logger.debug(f'\nGET MESSAGE FROM RABBIT\n{message}')
+                    logger.debug(f'\nGET MESSAGE FROM REDIS\n{message}')
 
                     payload = json.loads(message)
 
@@ -131,7 +131,7 @@ async def main():
 
 if __name__ == "__main__":
     logging.basicConfig(
-        level=logging.INFO,
+        level=logging.DEBUG,
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s >>> %(funcName)s(%(lineno)d)",
         datefmt="%Y-%m-%d %H:%M:%S"
     )
