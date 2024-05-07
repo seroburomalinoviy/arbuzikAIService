@@ -225,10 +225,10 @@ async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
     subscription_name = context.user_data['subscription_name']
 
-    slug = update.inline_query.query
-    if not slug:
+    slug_subcategory = update.inline_query.query
+    if not slug_subcategory:
         return
-    context.user_data['slug'] = slug
+    context.user_data['slug_subcategory'] = slug_subcategory
 
     current_category_id = context.user_data['current_category_id']
 
@@ -237,7 +237,7 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
     results = []
     async for voice in Voice.objects.filter(
             subcategory__category__id=current_category_id,
-            subcategory__slug=slug,
+            subcategory__slug=slug_subcategory,
             subcategory__category__subscription__title=subscription_name
     ):
         voice_media_data = await get_object(MediaData, slug=voice.slug_voice)
@@ -256,14 +256,47 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.message:
-        logger.info(f'voice_title = {update.message.text}')
-        context.user_data['voice_title'] = update.message.text
-        if context.user_data.get(f'pitch_{update.message.text}'):
-            pass
-        else:
-            context.user_data[f'pitch_{update.message.text}'] = 0
-    logger.info(f'\n\nvoice_title = {update.message.text}\n\n')
+    subscription_name = context.user_data['subscription_name']
+    subscription_status = context.user_data['subscription_status']
+
+    if not subscription_status:
+        await update.message.reply_text(
+            message_text.subscription_finished,
+            reply_markup=InlineKeyboardMarkup(keyboards.is_subscribed)
+        )
+        return ConversationHandler.END
+
+    if subscription_name == os.environ.get('DEFAULT_SUBSCRIPTION'):
+        user = await get_object(User, telegram_id=update.effective_user.id)
+        user.subscription_attempts -= 1
+        await save_model(user)
+        context.user_data['subscription_name'], context.user_data['subscription_status'] = await check_subscription(
+            user)
+
+    # if update.message: # todo ест ли случаи когда нет  update.message ?
+    slug_voice = update.message.text
+    context.user_data['slug_voice'] = slug_voice
+
+    if context.user_data.get(f'pitch_{update.message.text}'):
+        pass
+    else:
+        context.user_data[f'pitch_{update.message.text}'] = 0
+
+    # todo: проверка голоса в избранном, в зависимости от этого отдавать кнопку избранное/удалить из избранного
+
+    voice_media_data = await get_object(MediaData, slug=slug_voice)
+    demka_path = voice_media_data.demka.path
+
+    try:
+        await update.message.reply_audio(
+            audio=open(demka_path, 'rb')
+        )
+    except Exception as e:
+        logger.warning(e)
+        await update.message.reply_text(
+            'Запись демонстрации голоса в работе'
+        )
+
     await update.message.reply_text(
         message_text.voice_preview,
         reply_markup=InlineKeyboardMarkup(
@@ -352,14 +385,16 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = str(update.message.chat.id)
     extension = '.ogg'
     voice_title = context.user_data.get('voice_title')
-    current_category_id = context.user_data.get('current_category_id')
+    # current_category_id = context.user_data.get('current_category_id')
     voice_filename = voice_title + '_' + str(uuid4()) + extension  # raw voice file name
     voice_path = Path(os.environ.get('USER_VOICES_RAW_VOLUME') + '/' + voice_filename)
     pitch = context.user_data.get(f'pitch_{voice_title}')
-    voice_obj:Voice = await get_object(Voice, slug_voice=voice_title, 
-                                 subcategory__category__id=current_category_id)
-    voice_model_pth = voice_obj.media_data.model_pth.split('/')[1]
-    voice_model_index = voice_obj.media_data.model_index.split('/')[1]
+
+    slug = context.user_data.get('slug_voice')
+    voice_media_data = await get_object(MediaData, slug=slug)
+    voice_model_pth = str(voice_media_data.media_data.model_pth)
+    voice_model_index = str(voice_media_data.media_data.model_index)
+
     logger.info(f'\n\nvoice_model_pth = {voice_model_pth}')
     logger.info(f'voice_model_index = {voice_model_index}\n\n')
 
