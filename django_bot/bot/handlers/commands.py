@@ -48,8 +48,22 @@ class HelpHandler(BaseCommandHandler):
 
 
 class StatusHandler(BaseCommandHandler):
-    def __call__(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        ...
+    def __init__(self) -> None:
+        self._pattern = '^check_status$'
+    
+    async def __call__(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        query = update.callback_query
+        await query.answer()
+        # TODO: Взаимодействие с очередью mqrabbit для получения статуса
+        await query.edit_message_text(
+            text=message_text.check_status_text, 
+            reply_markup=InlineKeyboardMarkup(keyboards.check_status)
+        )
+        
+    @property
+    def pattern(self) -> str:
+        return self._pattern
+        
 
 
 class PitchHandler(BaseCommandHandler):
