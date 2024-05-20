@@ -2,7 +2,7 @@ from telegram import InlineKeyboardButton
 
 check_status = [
     [
-        InlineKeyboardButton('Проверить аудио', callback_data='^check_status$')
+        InlineKeyboardButton('Проверить аудио', callback_data='check_status')
         ]
 ]
 
