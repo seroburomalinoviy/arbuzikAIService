@@ -1,3 +1,4 @@
+[![ArbuzikAI deploy](https://github.com/seroburomalinoviy/arbuzikAIService/actions/workflows/deploy.yml/badge.svg)](https://github.com/seroburomalinoviy/arbuzikAIService/actions/workflows/deploy.yml)
 ## ArbuzikAiBot Project
 
 ---
