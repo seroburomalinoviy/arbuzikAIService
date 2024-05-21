@@ -4,7 +4,7 @@ from bot.handlers.commands import TestHandler, CancelHandler, StartHandler, Menu
 from bot.logic import processors
 from bot.logic import message_text
 from bot.logic.constants import (
-AUDIO, PARAMETRS, START_ROUTES, END_ROUTES
+AUDIO, PARAMETRS, START_ROUTES, WAITING, END_ROUTES
 )
 
 from telegram.ext import CommandHandler, MessageHandler, filters, CallbackQueryHandler
@@ -80,6 +80,9 @@ class AudioConversationHandler(BaseConversationHandler):
 
     def states(self):
         return {
+            WAITING: [
+                CallbackQueryHandler(processors.check_status, pattern='^check_status$')
+            ]
         }
 
     def fallbacks(self):

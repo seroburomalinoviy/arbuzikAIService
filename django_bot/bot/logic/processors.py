@@ -15,7 +15,7 @@ from django.conf import settings
 from bot.logic import message_text, keyboards
 from bot.amqp_driver import push_amqp_message
 from bot.logic.constants import (
-    PARAMETRS, START_ROUTES, END_ROUTES
+    PARAMETRS, START_ROUTES, END_ROUTES, WAITING
 )
 
 from telegram import (Update, InlineKeyboardMarkup, InlineKeyboardButton, InlineQueryResultArticle,
@@ -419,7 +419,7 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await push_amqp_message(json.dumps(payload))
     # todo: write to db
 
-    return ConversationHandler.END
+    return WAITING
 
 
 
@@ -427,6 +427,17 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def audio_process():
     pass
 
+async def check_status(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Заглушка проверки состояния обработки запроса преобразования аудио нейросетью
+    """
+    query = update.callback_query
+    await query.answer()
+    
+    await query.edit_message_text(
+            text=message_text.check_status_text, 
+            reply_markup=InlineKeyboardMarkup(keyboards.check_status)
+        )
+    return WAITING 
 
 async def search_all(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
