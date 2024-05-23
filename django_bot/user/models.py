@@ -2,7 +2,7 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils import timezone
 
-from bot.models import Subscription
+from bot.models import Subscription, Voice
 
 import os
 
@@ -59,6 +59,10 @@ class User(models.Model):
         related_name='users',
         null=True
     )
+    favorites = models.ManyToManyField(
+        verbose_name='Избранные голоса',
+        to='Voice'
+    )
 
     def __str__(self):
         return str(self.telegram_id)
@@ -66,4 +70,5 @@ class User(models.Model):
     class Meta:
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
+
 

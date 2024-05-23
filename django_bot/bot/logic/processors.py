@@ -87,6 +87,11 @@ async def set_demo_to_user(user_model: User, tg_user_name, tg_nick_name) -> None
 
 @sync_to_async
 def check_subscription(user_model: User) -> tuple[str, bool]:
+    """
+    Деактивирует подписку пользователя, если у него нет ни одной активной подписки
+    :param user_model:
+    :return:
+    """
     actual_status = user_model.subscription_status
     current_date = get_moscow_time()
     if (
@@ -256,10 +261,17 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    subscription_name = context.user_data['subscription_name']
-    subscription_status = context.user_data['subscription_status']
+    """
+    1. Проверяем пользвоательскую подписку (todo: вынести в отдельную функцию)
+    2. Отпрваляем демку и превью Voice'a
+    :param update:
+    :param context:
+    :return:
+    """
+    user = await get_object(User, telegram_id=update.effective_user.id)
+    subscription_name, subscription_status = await check_subscription(user)
 
-    if not subscription_status:
+    if not subscription_status or user.subscription_final_date < get_moscow_time():
         await update.message.reply_text(
             message_text.subscription_finished,
             reply_markup=InlineKeyboardMarkup(keyboards.is_subscribed)
@@ -267,7 +279,6 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return ConversationHandler.END
 
     if subscription_name == os.environ.get('DEFAULT_SUBSCRIPTION'):
-        user = await get_object(User, telegram_id=update.effective_user.id)
         user.subscription_attempts -= 1
         await save_model(user)
         context.user_data['subscription_name'], context.user_data['subscription_status'] = await check_subscription(
@@ -283,6 +294,10 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
         context.user_data[f'pitch_{update.message.text}'] = 0
 
     # todo: проверка голоса в избранном, в зависимости от этого отдавать кнопку избранное/удалить из избранного
+    try:
+        user.favorites.voice.filter(slug_voice=slug_voice)
+    except Exception as e:
+        logger.info(f'{e}')
 
     voice_media_data = await get_object(MediaData, slug=slug_voice)
     demka_path = voice_media_data.demka.path
@@ -427,8 +442,10 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def audio_process():
     pass
 
+
 async def check_status(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Заглушка проверки состояния обработки запроса преобразования аудио нейросетью
+    """
+    Заглушка проверки состояния обработки запроса преобразования аудио нейросетью
     """
     query = update.callback_query
     await query.answer()
@@ -437,7 +454,8 @@ async def check_status(update: Update, context: ContextTypes.DEFAULT_TYPE):
             text=message_text.check_status_text, 
             reply_markup=InlineKeyboardMarkup(keyboards.check_status)
         )
-    return WAITING 
+    return WAITING
+
 
 async def search_all(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
