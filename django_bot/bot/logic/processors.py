@@ -272,20 +272,29 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
     :return:
     """
     user = await get_object(User, telegram_id=update.effective_user.id)
-    subscription_name, subscription_status = await check_subscription(user)
+    context.user_data['subscription_name'], context.user_data['subscription_status'] = await check_subscription(user)
 
-    if not subscription_status or user.subscription_final_date < get_moscow_time():
+    if context.user_data.get('subscription_status'):
+        if context.user_data['subscription_name'] == os.environ.get('DEFAULT_SUBSCRIPTION'):
+            user.subscription_attempts -= 1
+            if user.subscription_attempts <= 0:
+                user.subscription_status = False
+                await save_model(user)
+            await save_model(user)
+
+        else:
+            if user.subscription_final_date < get_moscow_time():
+                user.subscription_status = False
+                await save_model(user)
+
+    user = await get_object(User, telegram_id=update.effective_user.id)
+    if user.subscription_status:
         await update.message.reply_text(
             message_text.subscription_finished,
             reply_markup=InlineKeyboardMarkup(keyboards.is_subscribed)
         )
         return ConversationHandler.END
 
-    if subscription_name == os.environ.get('DEFAULT_SUBSCRIPTION'):
-        user.subscription_attempts -= 1
-        await save_model(user)
-        context.user_data['subscription_name'], context.user_data['subscription_status'] = await check_subscription(
-            user)
 
     # if update.message: # todo ест ли случаи когда нет  update.message ?
     slug_voice = update.message.text
