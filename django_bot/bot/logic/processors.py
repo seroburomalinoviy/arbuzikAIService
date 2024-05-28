@@ -184,7 +184,7 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
     else:
-        await query.edit_message_text(
+        await update.message.reply_text(
             message_text.category_menu,
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
