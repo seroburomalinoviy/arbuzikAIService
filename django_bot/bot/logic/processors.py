@@ -134,10 +134,14 @@ async def subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # STEP_2 - CATEGORY_MENU
 async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
-
-    tg_user_id = str(update.callback_query.from_user.id)
-    tg_user_name = update.callback_query.from_user.username
-    tg_nick_name = update.callback_query.from_user.first_name
+    if not update.message:
+        tg_user_id = str(update.callback_query.from_user.id)
+        tg_user_name = update.callback_query.from_user.username
+        tg_nick_name = update.callback_query.from_user.first_name
+    else:
+        tg_user_id = str(update.effective_user.id)
+        tg_user_name = update.effective_user.username
+        tg_nick_name = update.effective_user.first_name
 
     user, user_created = await get_or_create_objets(User, telegram_id=tg_user_id)
     if user_created:
