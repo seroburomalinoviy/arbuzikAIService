@@ -61,7 +61,7 @@ class User(models.Model):
     )
     favorites = models.ManyToManyField(
         verbose_name='Избранные голоса',
-        to='Voice',
+        to=Voice,
     )
 
     def __str__(self):
