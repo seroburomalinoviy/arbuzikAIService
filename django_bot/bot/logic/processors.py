@@ -134,11 +134,12 @@ async def subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # STEP_2 - CATEGORY_MENU
 async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    tg_user_id = str(update.message.from_user.id)
-    tg_user_name = update.message.from_user.username
-    tg_nick_name = update.message.from_user.first_name
+
+    tg_user_id = str(update.callback_query.from_user.id)
+    tg_user_name = update.callback_query.from_user.username
+    tg_nick_name = update.callback_query.from_user.first_name
+
     user, user_created = await get_or_create_objets(User, telegram_id=tg_user_id)
-    logger.info(user, user_created)
     if user_created:
         subscription_name = await set_demo_to_user(user, tg_user_name, tg_nick_name)
         subscription_status = True
@@ -172,12 +173,17 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
                          ])
 
     query = update.callback_query
-
-    await query.answer()
-    await query.edit_message_text(
-        message_text.category_menu,
-        reply_markup=InlineKeyboardMarkup(keyboard)
-    )
+    if query:
+        await query.answer()
+        await query.edit_message_text(
+            message_text.category_menu,
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
+    else:
+        await query.edit_message_text(
+            message_text.category_menu,
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
 
     return START_ROUTES
 
