@@ -294,8 +294,9 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
         context.user_data[f'pitch_{update.message.text}'] = 0
 
     # todo: проверка голоса в избранном, в зависимости от этого отдавать кнопку избранное/удалить из избранного
+    favorite_voices = []
     try:
-        user.favorites.voice.filter(slug_voice=slug_voice)
+        favorite_voices = await filter_objects(User, favorites__slug_voice=slug_voice)
     except Exception as e:
         logger.info(f'{e}')
 
@@ -322,7 +323,7 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
                 ],
                 [
-                    InlineKeyboardButton('⭐ В избранное', callback_data="favorite-add"),
+                    InlineKeyboardButton('⭐ В избранное' if favorite_voices else 'удалить из избранного', callback_data="favorite-add"),
                 ]
             ]
         )
