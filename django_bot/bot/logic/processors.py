@@ -288,15 +288,14 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 await save_model(user)
 
     user = await get_object(User, telegram_id=update.effective_user.id)
-    if user.subscription_status:
+    if not user.subscription_status:
         await update.message.reply_text(
             message_text.subscription_finished,
             reply_markup=InlineKeyboardMarkup(keyboards.is_subscribed)
         )
         return ConversationHandler.END
 
-
-    # if update.message: # todo ест ли случаи когда нет  update.message ?
+    # if update.message: # todo ест ли случаи когда нет update.message ?
     slug_voice = update.message.text
     context.user_data['slug_voice'] = slug_voice
 
