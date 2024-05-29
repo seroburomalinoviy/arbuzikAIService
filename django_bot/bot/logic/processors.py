@@ -117,6 +117,7 @@ def check_subscription(user_model: User) -> tuple[str, bool]:
 
 
 # STEP_0 - SUBSCRIPTION
+@log_journal
 async def subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
     is_member = await context.bot.get_chat_member(
         chat_id=os.environ.get('CHANNEL_ID'),
@@ -143,6 +144,7 @@ async def subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 # STEP_2 - CATEGORY_MENU
+@log_journal
 async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not update.message:
         tg_user_id = str(update.callback_query.from_user.id)
@@ -203,6 +205,7 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 # STEP_3 - SUBCATEGORY_MENU
+@log_journal
 async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
@@ -278,6 +281,7 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return ConversationHandler.END
 
 
+@log_journal
 async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     1. Проверяем пользвоательскую подписку (todo: вынести в отдельную функцию)
@@ -366,6 +370,7 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return START_ROUTES
 
 
+@log_journal
 async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
@@ -391,6 +396,7 @@ async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return START_ROUTES
 
 
+@log_journal
 async def voice_set_0(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     slug_voice = context.user_data.get('slug_voice')
@@ -399,6 +405,7 @@ async def voice_set_0(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return START_ROUTES
 
 
+@log_journal
 async def pitch_setting(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
@@ -432,6 +439,7 @@ async def pitch_setting(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return START_ROUTES
 
 
+@log_journal
 async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     voice = await update.message.voice.get_file()  # get voice file from user
     user_id = str(update.message.from_user.id)
@@ -479,6 +487,7 @@ async def audio_process():
     pass
 
 
+@log_journal
 async def check_status(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Заглушка проверки состояния обработки запроса преобразования аудио нейросетью
@@ -493,11 +502,13 @@ async def check_status(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return WAITING
 
 
+@log_journal
 async def search_all(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
 
 
+@log_journal
 async def show_paid_subscriptions(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
@@ -537,6 +548,7 @@ async def show_paid_subscriptions(update: Update, context: ContextTypes.DEFAULT_
     return START_ROUTES
 
 
+@log_journal
 async def preview_paid_subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
