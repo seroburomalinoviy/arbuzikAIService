@@ -4,7 +4,8 @@ from telegram import Update
 from bot.handlers.main import inline_query
 from bot.logic.conversations import (
     MainConversationHandler,
-    VoiceConversationHandler, AudioConversationHandler
+    # VoiceConversationHandler,
+    AudioConversationHandler
 )
 
 import logging
@@ -20,7 +21,7 @@ async def on_result_chosen(update: Update, context: tg_ext.ContextTypes.DEFAULT_
 
 def init_handlers(application: tg_ext.Application):
     main = MainConversationHandler()
-    voice = VoiceConversationHandler()
+    # voice = VoiceConversationHandler()
     audio = AudioConversationHandler()
 
     # Main
@@ -40,13 +41,13 @@ def init_handlers(application: tg_ext.Application):
     # application.add_handler(tg_ext.ChosenInlineResultHandler(on_result_chosen))
 
     # Voice
-    application.add_handler(
-        tg_ext.ConversationHandler(
-            entry_points=voice.entrypoints(),
-            states=voice.states(),
-            fallbacks=main.fallbacks()
-        )
-    )
+    # application.add_handler(
+    #     tg_ext.ConversationHandler(
+    #         entry_points=voice.entrypoints(),
+    #         states=voice.states(),
+    #         fallbacks=main.fallbacks()
+    #     )
+    # )
 
     application.add_handler(
         tg_ext.ConversationHandler(
