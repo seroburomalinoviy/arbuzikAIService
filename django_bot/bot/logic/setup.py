@@ -4,7 +4,7 @@ from bot.logic.conversations import (
     VoiceConversationHandler, AudioConversationHandler
 )
 
-from bot.handlers.processors_main import inline_query
+from bot.handlers.main import inline_query
 from telegram import Update
 
 import logging

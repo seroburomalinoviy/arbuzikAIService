@@ -6,9 +6,8 @@ import asyncio
 from telegram.ext import ApplicationBuilder
 from telegram import Update
 
-from bot.handlers.setup import init_handlers
-from bot.amqp_driver import amqp_listener
-from bot.logic import constants
+from bot.logic.setup import init_handlers
+from bot.logic.amqp_driver import amqp_listener
 
 logger = logging.getLogger(__name__)
 logging.getLogger("httpx").setLevel(logging.WARNING)
