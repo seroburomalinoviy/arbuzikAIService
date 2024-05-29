@@ -44,13 +44,13 @@ class VoiceConversationHandler(BaseConversationHandler):
         return {
             START_ROUTES: [
                 # MessageHandler(filters.TEXT, processors.voice_preview),
-                CallbackQueryHandler(processors.voice_set, pattern="^record$"),
+                CallbackQueryHandler(processors.voice_set, pattern="^record"),
                 CallbackQueryHandler(processors.category_menu, pattern="^category_menu$"),
                 CallbackQueryHandler(processors.voice_preview, pattern="^voice_preview$"),
                 CallbackQueryHandler(processors.voice_set_0, pattern="^voice_set_0$"),
                 CallbackQueryHandler(processors.pitch_setting, pattern="^voice_set_sub$"),
                 CallbackQueryHandler(processors.pitch_setting, pattern="^voice_set_add$"),
-                CommandHandler('menu', processors.category_menu)
+                # CommandHandler('menu', processors.category_menu)
             ]
         }
 

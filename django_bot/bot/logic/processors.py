@@ -54,7 +54,8 @@ async def set_demo_to_user(user_model: User, tg_user_name, tg_nick_name) -> None
 @sync_to_async
 def check_subscription(user_model: User) -> tuple[str, bool]:
     """
-    Деактивирует подписку пользователя, если у него нет ни одной активной подписки
+    Отстреливатель пользователей
+    1. Деактивирует подписку пользователя, если у него нет ни одной активной подписки
     :param user_model:
     :return:
     """
@@ -72,11 +73,11 @@ def check_subscription(user_model: User) -> tuple[str, bool]:
     return user_model.subscription.title, user_model.subscription_status
 
 
-# STEP_0 - SUBSCRIPTION
 @log_journal
 async def subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
-    Проверяем подписан ли пользователь на канал арбузика
+    Подписка на канал
+    1. Проверяем подписан ли пользователь на канал арбузика
     :param update:
     :param context:
     :return:
@@ -105,11 +106,10 @@ async def subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return START_ROUTES
 
 
-# STEP_2 - CATEGORY_MENU
 @log_journal
 async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
-    Главное меню
+    Главное меню / Категории
     1. Создаем или получаем пользователя в бд
     2. Получаем параметры подписки пользователя
     3. Отравляем пользователю категории в соответствии с его подпиской
@@ -175,11 +175,11 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return START_ROUTES
 
 
-# STEP_3 - SUBCATEGORY_MENU
 @log_journal
 async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
-    Отправляем подкатегории в соответствии с подпиской пользователя
+    Подкатегории
+    1. Отправляем подкатегории в соответствии с подпиской пользователя
     :param update:
     :param context:
     :return:
@@ -223,7 +223,6 @@ async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return START_ROUTES
 
 
-# INLINE_MODE - QUERY
 @log_journal
 async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
@@ -268,8 +267,8 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Превью голоса
-    1. Проверяем пользвоательскую подписку (todo: вынести в отдельную функцию)
-    2. Отпрваляем демку и превью Voice'a
+    1. Проверяем подписку (todo: вынести в отдельную функцию)
+    2. Отправляем демку
     :param update:
     :param context:
     :return:
@@ -449,6 +448,8 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     Захват голосового сообщения
     1. Получаем голосовое сообщение, данные пользователя и тональность голоса
     2. Сохраняем файл с голосовым сообщением
+    3. Отправляем пользователю статус
+    4. Отправляем данные в брокер сообщений
     :param update:
     :param context:
     :return:
