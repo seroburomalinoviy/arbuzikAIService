@@ -328,14 +328,14 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(
             'Демонстрация голоса в работе'
         )
-
+    logger.info('here')
     await update.message.reply_text(
         message_text.voice_preview,
         reply_markup=InlineKeyboardMarkup(
             [
                 [
                     InlineKeyboardButton('⏪ Вернуться в меню', callback_data='category_menu'),
-                    InlineKeyboardButton('🔴Начать запись', callback_data="record"),
+                    InlineKeyboardButton('🔴Начать запись', callback_data='record'),
 
                 ],
                 [

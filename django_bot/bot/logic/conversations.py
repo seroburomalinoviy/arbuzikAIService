@@ -12,8 +12,9 @@ from telegram.ext import CommandHandler, MessageHandler, filters, CallbackQueryH
 class MainConversationHandler(BaseConversationHandler):
 
     def entrypoints(self):
-        return [CommandHandler("start", StartHandler()),
-                MessageHandler(filters.TEXT, main.voice_preview)
+        return [
+            CommandHandler("start", StartHandler()),
+            MessageHandler(filters.TEXT, main.voice_preview)
                 ]
 
     def states(self):
@@ -29,7 +30,7 @@ class MainConversationHandler(BaseConversationHandler):
                 # CommandHandler('menu', main.category_menu)
             ],
             VOICE_PROCESSING: [
-                CallbackQueryHandler(main.voice_set, pattern="^record"),
+                CallbackQueryHandler(main.voice_set, pattern="record"),
                 CallbackQueryHandler(main.voice_set_0, pattern="^voice_set_0$"),
                 CallbackQueryHandler(main.pitch_setting, pattern="^voice_set_sub$"),
                 CallbackQueryHandler(main.pitch_setting, pattern="^voice_set_add$"),
