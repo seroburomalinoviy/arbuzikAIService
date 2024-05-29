@@ -40,7 +40,7 @@ class VoiceConversationHandler(BaseConversationHandler):
     def states(self):
         return {
             START_ROUTES: [
-                # MessageHandler(filters.TEXT, processors.voice_preview),
+                MessageHandler(filters.TEXT, main.voice_preview),
                 CallbackQueryHandler(main.voice_set, pattern="^record"),
                 CallbackQueryHandler(main.category_menu, pattern="^category_menu$"),
                 CallbackQueryHandler(main.voice_preview, pattern="^voice_preview$"),
