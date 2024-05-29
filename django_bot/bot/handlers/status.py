@@ -11,6 +11,9 @@ from bot.logic import keyboards
 async def check_status(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Заглушка проверки состояния обработки запроса преобразования аудио нейросетью
+    :param update:
+    :param context:
+    :return:
     """
     query = update.callback_query
     await query.answer()
