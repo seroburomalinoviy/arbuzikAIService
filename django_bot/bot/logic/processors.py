@@ -69,7 +69,15 @@ def get_or_create_objets(model: models.Model, **kwargs):
 def log_journal(func):
     @functools.wraps(func)
     async def wrapper(*args, **kwargs):
-        _id = 'test'
+        update: Update = args[0]
+        if update.message:
+            _id = str(update.effective_user.id)
+        elif update.callback_query:
+            _id = str(update.callback_query.from_user.id)
+        elif update.inline_query:
+            _id = str(update.inline_query.from_user.id)
+        else:
+            _id = 'Not found'
         logger.info(f'JOURNAL: {func.__name__} called at {get_moscow_time()} by tg_user_id: {_id}')
         await func(*args, **kwargs)
         return
