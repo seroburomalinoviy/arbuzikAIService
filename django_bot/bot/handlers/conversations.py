@@ -4,6 +4,7 @@ from bot.handlers.commands import CancelHandler, StartHandler, MenuHandler
 from bot.logic import processors
 from bot.logic import processors_search
 from bot.logic import processors_paid_subscription
+from bot.logic import processors_status
 from bot.logic.constants import (
 AUDIO, PARAMETRS, START_ROUTES, WAITING, END_ROUTES
 )
@@ -69,7 +70,7 @@ class AudioConversationHandler(BaseConversationHandler):
     def states(self):
         return {
             WAITING: [
-                CallbackQueryHandler(processors.check_status, pattern='^check_status$')
+                CallbackQueryHandler(processors_status.check_status, pattern='^check_status$')
             ]
         }
 

@@ -179,7 +179,7 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
 @log_journal
 async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
-
+    Отправляем подкатегории в соответствии с подпиской пользователя
     :param update:
     :param context:
     :return:
@@ -226,6 +226,12 @@ async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # INLINE_MODE - QUERY
 @log_journal
 async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """
+    Меню выбора голосов
+    :param update:
+    :param context:
+    :return:
+    """
     subscription_name = context.user_data['subscription_name']
 
     slug_subcategory = update.inline_query.query
@@ -261,6 +267,7 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
 @log_journal
 async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
+    Превью голоса
     1. Проверяем пользвоательскую подписку (todo: вынести в отдельную функцию)
     2. Отпрваляем демку и превью Voice'a
     :param update:
@@ -349,6 +356,13 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 @log_journal
 async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """
+    Тональность голоса
+    1. Меняем pitch voice'a
+    :param update:
+    :param context:
+    :return:
+    """
     query = update.callback_query
     await query.answer()
 
@@ -375,6 +389,12 @@ async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 @log_journal
 async def voice_set_0(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """
+    Обнуление тональности
+    :param update:
+    :param context:
+    :return:
+    """
     query = update.callback_query
     slug_voice = context.user_data.get('slug_voice')
     pitch = context.user_data.get(f'pitch_{slug_voice}') if context.user_data.get(f'pitch_{slug_voice}') else "0"
