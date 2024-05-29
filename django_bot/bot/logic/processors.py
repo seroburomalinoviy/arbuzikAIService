@@ -315,6 +315,8 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         logger.info(f'{e}')
 
+    logger.info(f'{favorite_voices=}')
+
     voice_media_data = await get_object(MediaData, slug=slug_voice)
     demka_path = voice_media_data.demka.path
 
@@ -338,7 +340,7 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
                 ],
                 [
-                    InlineKeyboardButton('⭐ В избранное' if favorite_voices else 'удалить из избранного', callback_data="favorite-add"),
+                    InlineKeyboardButton('⭐ В избранное' if favorite_voices else 'Удалить из избранного', callback_data="favorite-add"),
                 ]
             ]
         )
