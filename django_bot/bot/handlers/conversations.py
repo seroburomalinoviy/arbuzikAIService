@@ -2,7 +2,8 @@ from bot.structures.base_classes import BaseConversationHandler
 from bot.handlers.commands import TestHandler, CancelHandler, StartHandler, MenuHandler
 
 from bot.logic import processors
-from bot.logic import message_text
+from bot.logic import processors_search
+from bot.logic import processors_paid_subscription
 from bot.logic.constants import (
 AUDIO, PARAMETRS, START_ROUTES, WAITING, END_ROUTES
 )
@@ -34,10 +35,10 @@ class MainConversationHandler(BaseConversationHandler):
             START_ROUTES: [
                 CallbackQueryHandler(processors.subscription, pattern="^subscription"),
                 CallbackQueryHandler(processors.category_menu, pattern="^category_menu$"),
-                CallbackQueryHandler(processors.search_all, pattern="^search_all$"),
+                CallbackQueryHandler(processors_search.search_all, pattern="^search_all$"),
                 CallbackQueryHandler(processors.subcategory_menu, pattern="^category_"),
-                CallbackQueryHandler(processors.show_paid_subscriptions, pattern="^paid_subscriptions$"),
-                CallbackQueryHandler(processors.preview_paid_subscription, pattern="^paid_subscription_"),
+                CallbackQueryHandler(processors_paid_subscription.show_paid_subscriptions, pattern="^paid_subscriptions$"),
+                CallbackQueryHandler(processors_paid_subscription.preview_paid_subscription, pattern="^paid_subscription_"),
                 CommandHandler('menu', processors.category_menu)
             ]
         }

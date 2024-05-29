@@ -6,86 +6,32 @@ import asyncstdlib as a
 from uuid import uuid4
 from asgiref.sync import sync_to_async
 import django
-from django.db import models
 import json
-from datetime import datetime
-from zoneinfo import ZoneInfo
-from django.conf import settings
-import functools
 
 from bot.logic import message_text, keyboards
 from bot.amqp_driver import push_amqp_message
 from bot.logic.constants import (
     PARAMETRS, START_ROUTES, END_ROUTES, WAITING
 )
+from utils import (get_moscow_time, log_journal, save_model, get_object,
+                   get_or_create_objets, filter_objects)
 
 from telegram import (Update, InlineKeyboardMarkup, InlineKeyboardButton, InlineQueryResultArticle,
                       InputTextMessageContent, InlineQueryResultsButton)
 from telegram.ext import ContextTypes, ConversationHandler
 
+from bot.models import Voice, Category, Subcategory, Subscription, MediaData
+from user.models import User
+
+logger = logging.getLogger(__name__)
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 django.setup()
 
-from bot.models import Voice, Category, Subcategory, Subscription, MediaData
-from user.models import User
-
 load_dotenv()
-logger = logging.getLogger(__name__)
 
 allowed_user_statuses = ['member', 'creator', 'administrator']
 unresolved_user_statuses = ['kicked', 'restricted', 'left']
-
-
-def get_moscow_time() -> datetime:
-    return datetime.now(tz=ZoneInfo(settings.TIME_ZONE))
-
-
-@sync_to_async
-def get_all_objects(model: models.Model) -> list:
-    return list(model.objects.all())
-
-
-@sync_to_async
-def get_object(model: models.Model, **kwargs):
-    return model.objects.get(**kwargs)
-
-
-@sync_to_async
-def filter_objects(model: models.Model, **kwargs) -> list:
-    return list(model.objects.filter(**kwargs))
-
-
-@sync_to_async
-def save_model(model: models.Model) -> None:
-    return model.save()
-
-
-@sync_to_async
-def get_or_create_objets(model: models.Model, **kwargs):
-    return model.objects.get_or_create(**kwargs)
-
-
-def log_journal(func):
-    @functools.wraps(func)
-    async def wrapper(*args, **kwargs):
-        update: Update = args[0]
-        if update.message:
-            _id = str(update.effective_user.id)
-        elif update.callback_query:
-            _id = str(update.callback_query.from_user.id)
-        elif update.inline_query:
-            _id = str(update.inline_query.from_user.id)
-        else:
-            _id = 'Not found'
-        await func(*args, **kwargs)
-        logger.info(f'JOURNAL: {func.__name__} - was returned to user - {_id} - tg_id')
-        return
-    return wrapper
-
-
-async def subscription_list():
-    return
 
 
 async def set_demo_to_user(user_model: User, tg_user_name, tg_nick_name) -> None:
@@ -428,8 +374,6 @@ async def pitch_setting(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     pitch = str(context.user_data.get(f'pitch_{slug_voice}'))
 
-
-
     await query.edit_message_text(
         message_text.voice_set.format(name=slug_voice),
         reply_markup=InlineKeyboardMarkup(
@@ -491,149 +435,46 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 
-
+@log_journal
 async def audio_process():
     pass
 
 
-@log_journal
-async def check_status(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """
-    Заглушка проверки состояния обработки запроса преобразования аудио нейросетью
-    """
-    query = update.callback_query
-    await query.answer()
-    
-    await query.edit_message_text(
-            text=message_text.check_status_text, 
-            reply_markup=InlineKeyboardMarkup(keyboards.check_status)
-        )
-    return WAITING
-
-
-@log_journal
-async def search_all(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    query = update.callback_query
-    await query.answer()
-
-
-@log_journal
-async def show_paid_subscriptions(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    query = update.callback_query
-    await query.answer()
-
-    keyboard = list()
-    async for sub in Subscription.objects.exclude(title=os.environ.get('DEFAULT_SUBSCRIPTION')).all():
-        keyboard.append(
-            [
-                InlineKeyboardButton(sub.telegram_title, callback_data=f'paid_subscription_{sub.title}')
-            ]
-        )
-
-    keyboard.append(
-        [
-            InlineKeyboardButton("⏩ Перейти к выбору голосов", callback_data='category_menu')
-        ]
-    )
-
-    # await context.bot.delete_message(
-    #     chat_id=query.message.chat.id,
-    #     message_id=query.message.message_id
-    # )
-
-    await context.bot.send_photo(
-        chat_id=query.message.chat.id,
-        photo=open(str(settings.MEDIA_ROOT) + '/covers/all_paid_subs.png', 'rb'),
-        # caption=message_text.all_paid_subs,
-        # reply_markup=InlineKeyboardMarkup(keyboard)
-    )
-
-    await context.bot.send_message(
-        chat_id=query.message.chat.id,
-        text=message_text.all_paid_subs,
-        reply_markup=InlineKeyboardMarkup(keyboard)
-    )
-
-    return START_ROUTES
-
-
-@log_journal
-async def preview_paid_subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    query = update.callback_query
-    await query.answer()
-
-    subscription_title = query.data.split('paid_subscription_')[1]
-    subscription = await get_object(Subscription, title=subscription_title)
-    #
-    # await context.bot.delete_message(
-    #     chat_id=query.message.chat.id,
-    #     message_id=query.message.message_id
-    # )
-
-    await context.bot.send_photo(
-        chat_id=query.message.chat.id,
-        photo=open(str(settings.MEDIA_ROOT) + "/" + str(subscription.image_cover), 'rb'),
-        # caption=subscription.description,
-        # reply_markup=InlineKeyboardMarkup(
-        #     [
-        #         [
-        #             InlineKeyboardButton(f" 💵 Разовый платёж - {subscription.price} руб",
-        #                                  callback_data=f"payment_{subscription.price}")
-        #         ],
-        #         [
-        #             InlineKeyboardButton("▶️ Другие подписки", callback_data='paid_subscriptions')
-        #         ]
-        #     ]
-        # )
-    )
-
-    await context.bot.send_message(
-    # await query.edit_message_text(
-        chat_id=query.message.chat.id,
-        text=subscription.description,
-        reply_markup=InlineKeyboardMarkup(
-            [
-                [
-                    InlineKeyboardButton(f" 💵 Разовый платёж - {subscription.price} руб", callback_data=f"payment_{subscription.price}")
-                ],
-                [
-                    InlineKeyboardButton("▶️ Другие подписки", callback_data='paid_subscriptions')
-                ]
-            ]
-        )
-    )
-
-    return START_ROUTES
 
 
 
 
-# for TestHandler
-async def get_audio(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    audio = await update.message.effective_attachment.get_file()
-    filename = f'audio_file_{update.message.from_user.id}.ogg'
-    await audio.download_to_drive(filename)
-    logger.info('file downloaded')
-
-    context.user_data['path_to_file'] = filename
-
-    await update.message.reply_text(
-        f"File is downloaded and named as`{filename}`\nSend a parameters."
-    )
-    return PARAMETRS
 
 
-async def get_parameters(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    parameters = update.message.text
-    logger.info(f'{parameters=}')
-    filename = context.user_data.get('path_to_file')
-    logger.info(f'{filename=}')
-    command = f'{filename} {parameters}'
 
-    await update.message.reply_text(
-        f"The command I collected:\n\n{command}\n\nStart script ..."
-    )
 
-    await push_amqp_message('privet')
 
-    return ConversationHandler.END
+# # for TestHandler
+# async def get_audio(update: Update, context: ContextTypes.DEFAULT_TYPE):
+#     audio = await update.message.effective_attachment.get_file()
+#     filename = f'audio_file_{update.message.from_user.id}.ogg'
+#     await audio.download_to_drive(filename)
+#     logger.info('file downloaded')
+#
+#     context.user_data['path_to_file'] = filename
+#
+#     await update.message.reply_text(
+#         f"File is downloaded and named as`{filename}`\nSend a parameters."
+#     )
+#     return PARAMETRS
+#
+#
+# async def get_parameters(update: Update, context: ContextTypes.DEFAULT_TYPE):
+#     parameters = update.message.text
+#     logger.info(f'{parameters=}')
+#     filename = context.user_data.get('path_to_file')
+#     logger.info(f'{filename=}')
+#     command = f'{filename} {parameters}'
+#
+#     await update.message.reply_text(
+#         f"The command I collected:\n\n{command}\n\nStart script ..."
+#     )
+#
+#     await push_amqp_message('privet')
+#
+#     return ConversationHandler.END
