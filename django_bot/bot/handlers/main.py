@@ -220,7 +220,7 @@ async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
 
-    return START_ROUTES
+    return ConversationHandler.END
 
 
 @log_journal
