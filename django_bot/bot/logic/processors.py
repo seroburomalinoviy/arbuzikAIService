@@ -13,7 +13,7 @@ from bot.amqp_driver import push_amqp_message
 from bot.logic.constants import (
     PARAMETRS, START_ROUTES, END_ROUTES, WAITING
 )
-from utils import (get_moscow_time, log_journal, save_model, get_object,
+from bot.logic.utils import (get_moscow_time, log_journal, save_model, get_object,
                    get_or_create_objets, filter_objects)
 
 from telegram import (Update, InlineKeyboardMarkup, InlineKeyboardButton, InlineQueryResultArticle,
@@ -74,6 +74,12 @@ def check_subscription(user_model: User) -> tuple[str, bool]:
 # STEP_0 - SUBSCRIPTION
 @log_journal
 async def subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """
+    Проверяем подписан ли пользователь на канал арбузика
+    :param update:
+    :param context:
+    :return:
+    """
     is_member = await context.bot.get_chat_member(
         chat_id=os.environ.get('CHANNEL_ID'),
         user_id=update.effective_user.id
@@ -101,6 +107,15 @@ async def subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # STEP_2 - CATEGORY_MENU
 @log_journal
 async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """
+    Главное меню
+    1. Создаем или получаем пользователя в бд
+    2. Получаем параметры подписки пользователя
+    3. Отравляем пользователю категории в соответствии с его подпиской
+    :param update:
+    :param context:
+    :return:
+    """
     if not update.message:
         tg_user_id = str(update.callback_query.from_user.id)
         tg_user_name = update.callback_query.from_user.username
@@ -162,6 +177,12 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # STEP_3 - SUBCATEGORY_MENU
 @log_journal
 async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """
+
+    :param update:
+    :param context:
+    :return:
+    """
     query = update.callback_query
     await query.answer()
     current_category_id = int(query.data.split('category_')[1])

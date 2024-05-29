@@ -1,7 +1,7 @@
 from telegram import Update
 from telegram.ext import ContextTypes
 
-from utils import log_journal
+from bot.logic.utils import log_journal
 
 
 @log_journal

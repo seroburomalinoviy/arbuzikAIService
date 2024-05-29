@@ -1,10 +1,10 @@
 from telegram import Update, InlineKeyboardMarkup
 from telegram.ext import ContextTypes
 
-from utils import log_journal
-from constants import WAITING
-import message_text
-import keyboards
+from bot.logic.utils import log_journal
+from bot.logic.constants import WAITING
+from bot.logic import message_text
+from bot.logic import keyboards
 
 
 @log_journal
