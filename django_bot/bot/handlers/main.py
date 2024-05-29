@@ -268,7 +268,8 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Превью голоса
     1. Проверяем подписку (todo: вынести в отдельную функцию)
-    2. Отправляем демку
+    2. проверяем избранные голоса пользователя
+    3. Отправляем демку
     :param update:
     :param context:
     :return:
@@ -301,26 +302,19 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
     slug_voice = update.message.text
     context.user_data['slug_voice'] = slug_voice
 
-    if context.user_data.get(f'pitch_{update.message.text}'):
-        pass
-    else:
+    if not context.user_data.get(f'pitch_{update.message.text}'):
         context.user_data[f'pitch_{update.message.text}'] = 0
 
     favorite_voices = []
     try:
         favorite_voices = await filter_objects(User, favorites__slug_voice=slug_voice)
     except Exception as e:
-        logger.info(f'{e}')
+        logger.warning(f'{e}')
 
-    flag_is_favorite = 0
+    button_favorite = ('⭐ В избранное', 'favorite-add')
     for voice in favorite_voices:
         if slug_voice in voice.slug_voice:
-            flag_is_favorite = 1
-
-    if flag_is_favorite:
-        button_favorite = ('Удалить из избранного', 'favorite-remove')
-    else:
-        button_favorite = ('⭐ В избранное', 'favorite-add')
+            button_favorite = ('Удалить из избранного', 'favorite-remove')
 
     voice_media_data = await get_object(MediaData, slug=slug_voice)
     demka_path = voice_media_data.demka.path
@@ -332,7 +326,7 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         logger.warning(e)
         await update.message.reply_text(
-            'Запись демонстрации голоса в работе'
+            'Демонстрация голоса в работе'
         )
 
     await update.message.reply_text(
