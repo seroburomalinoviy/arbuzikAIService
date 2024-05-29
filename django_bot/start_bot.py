@@ -6,7 +6,7 @@ import asyncio
 from telegram.ext import ApplicationBuilder
 from telegram import Update
 
-from bot.handlers.setup import init_handlers
+from bot._handlers.setup import init_handlers
 from bot.amqp_driver import amqp_listener
 from bot.logic import constants
 

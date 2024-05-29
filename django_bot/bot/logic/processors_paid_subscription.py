@@ -4,11 +4,14 @@ from telegram.ext import ContextTypes
 import os
 
 from django.conf import settings
+import django
 
 from bot.models import Subscription
 from bot.logic.utils import log_journal, get_object
 from bot.logic import message_text
 from bot.logic.constants import START_ROUTES
+
+django.setup()
 
 
 @log_journal
