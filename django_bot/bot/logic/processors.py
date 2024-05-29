@@ -68,9 +68,9 @@ def get_or_create_objets(model: models.Model, **kwargs):
 
 def log_journal(func):
     @functools.wraps(func)
-    def wrapper(*args, **kwargs):
+    async def wrapper(*args, **kwargs):
         logger.info(f'TRACE: {func.__name__} called at {get_moscow_time()}')
-        return func(*args, **kwargs)
+        return await func(*args, **kwargs)
 
     logger.info(f'TRACE: {func.__name__} finished at {get_moscow_time()}')
     return wrapper
