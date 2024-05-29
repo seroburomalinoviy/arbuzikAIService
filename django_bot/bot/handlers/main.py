@@ -434,7 +434,7 @@ async def pitch_setting(update: Update, context: ContextTypes.DEFAULT_TYPE):
             ]
         )
     )
-    return VOICE_PROCESSING
+    return START_ROUTES
 
 
 @log_journal

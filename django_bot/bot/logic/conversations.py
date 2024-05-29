@@ -22,17 +22,15 @@ class MainConversationHandler(BaseConversationHandler):
             START_ROUTES: [
                 CallbackQueryHandler(main.subscription, pattern="^subscription"),
                 CallbackQueryHandler(main.category_menu, pattern="^category_menu$"),
-                # CallbackQueryHandler(search.search_all, pattern="^search_all$"),
+                CallbackQueryHandler(search.search_all, pattern="^search_all$"),
                 CallbackQueryHandler(main.subcategory_menu, pattern="^category_"),
                 CallbackQueryHandler(main.voice_set, pattern="record"),
                 CallbackQueryHandler(main.voice_set_0, pattern="^voice_set_0$"),
                 CallbackQueryHandler(main.pitch_setting, pattern="^voice_set_sub$"),
                 CallbackQueryHandler(main.pitch_setting, pattern="^voice_set_add$"),
-                # CallbackQueryHandler(main.voice_set, pattern="record"),
-                # CallbackQueryHandler(paid_subscription.show_paid_subscriptions, pattern="^paid_subscriptions$"),
-                # CallbackQueryHandler(paid_subscription.preview_paid_subscription, pattern="^paid_subscription_"),
-                # CallbackQueryHandler(main.voice_set, pattern="^record"),
-                # CommandHandler('menu', main.category_menu)
+                CallbackQueryHandler(paid_subscription.show_paid_subscriptions, pattern="^paid_subscriptions$"),
+                CallbackQueryHandler(paid_subscription.preview_paid_subscription, pattern="^paid_subscription_"),
+                CommandHandler('menu', main.category_menu)
             ]
         }
 
