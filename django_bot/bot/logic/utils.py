@@ -51,6 +51,8 @@ def log_journal(func):
             _id = str(update.inline_query.from_user.id)
         else:
             _id = 'Not found'
+
+        logger.info(f'JOURNAL: {func.__name__} - was called by user - {_id} - tg_id')
         await func(*args, **kwargs)
         logger.info(f'JOURNAL: {func.__name__} - was returned to user - {_id} - tg_id')
         return

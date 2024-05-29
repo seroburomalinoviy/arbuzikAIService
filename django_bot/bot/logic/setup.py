@@ -1,11 +1,11 @@
 import telegram.ext as tg_ext
+from telegram import Update
+
+from bot.handlers.main import inline_query
 from bot.logic.conversations import (
     MainConversationHandler,
     VoiceConversationHandler, AudioConversationHandler
 )
-
-from bot.handlers.main import inline_query
-from telegram import Update
 
 import logging
 
