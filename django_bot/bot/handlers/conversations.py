@@ -10,19 +10,19 @@ AUDIO, PARAMETRS, START_ROUTES, WAITING, END_ROUTES
 
 from telegram.ext import CommandHandler, MessageHandler, filters, CallbackQueryHandler
 
-
-class TestConversationHandler(BaseConversationHandler):
-    def entrypoints(self):
-        return [CommandHandler("test", TestHandler())]
-
-    def states(self):
-        return {
-            AUDIO: [MessageHandler(filters.ALL, processors.get_audio)],
-            PARAMETRS:[MessageHandler(filters.TEXT, processors.get_parameters)]
-        }
-
-    def fallbacks(self):
-        return [CommandHandler("cancel", CancelHandler())]
+#
+# class TestConversationHandler(BaseConversationHandler):
+#     def entrypoints(self):
+#         return [CommandHandler("test", TestHandler())]
+#
+#     def states(self):
+#         return {
+#             AUDIO: [MessageHandler(filters.ALL, processors.get_audio)],
+#             PARAMETRS:[MessageHandler(filters.TEXT, processors.get_parameters)]
+#         }
+#
+#     def fallbacks(self):
+#         return [CommandHandler("cancel", CancelHandler())]
 
 
 class MainConversationHandler(BaseConversationHandler):
