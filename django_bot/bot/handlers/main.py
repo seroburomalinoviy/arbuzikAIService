@@ -260,7 +260,7 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
         )
     await update.inline_query.answer(results, cache_time=100, auto_pagination=True)
-    return ConversationHandler.END
+    return VOICE_PROCESSING
 
 
 @log_journal
