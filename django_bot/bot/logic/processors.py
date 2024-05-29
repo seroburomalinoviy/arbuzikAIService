@@ -456,7 +456,6 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return WAITING
 
 
-
 @log_journal
 async def audio_process():
     pass
@@ -464,39 +463,3 @@ async def audio_process():
 
 
 
-
-
-
-
-
-
-
-# # for TestHandler
-# async def get_audio(update: Update, context: ContextTypes.DEFAULT_TYPE):
-#     audio = await update.message.effective_attachment.get_file()
-#     filename = f'audio_file_{update.message.from_user.id}.ogg'
-#     await audio.download_to_drive(filename)
-#     logger.info('file downloaded')
-#
-#     context.user_data['path_to_file'] = filename
-#
-#     await update.message.reply_text(
-#         f"File is downloaded and named as`{filename}`\nSend a parameters."
-#     )
-#     return PARAMETRS
-#
-#
-# async def get_parameters(update: Update, context: ContextTypes.DEFAULT_TYPE):
-#     parameters = update.message.text
-#     logger.info(f'{parameters=}')
-#     filename = context.user_data.get('path_to_file')
-#     logger.info(f'{filename=}')
-#     command = f'{filename} {parameters}'
-#
-#     await update.message.reply_text(
-#         f"The command I collected:\n\n{command}\n\nStart script ..."
-#     )
-#
-#     await push_amqp_message('privet')
-#
-#     return ConversationHandler.END

@@ -1,11 +1,9 @@
 import telegram.ext as tg_ext
 from bot.handlers.conversations import (
-    TestConversationHandler, MainConversationHandler, 
+    MainConversationHandler,
     VoiceConversationHandler, AudioConversationHandler
 )
-from bot.handlers.commands import (
-    StatusHandler
-)
+
 from bot.logic.processors import inline_query
 from telegram import Update
 
@@ -21,19 +19,9 @@ async def on_result_chosen(update: Update, context: tg_ext.ContextTypes.DEFAULT_
 
 
 def init_handlers(application: tg_ext.Application):
-    # test = TestConversationHandler()
     main = MainConversationHandler()
     voice = VoiceConversationHandler()
     audio = AudioConversationHandler()
-
-    # # Test
-    # application.add_handler(
-    #     tg_ext.ConversationHandler(
-    #         entry_points=test.entrypoints(),
-    #         states=test.states(),
-    #         fallbacks=test.fallbacks()
-    #     )
-    # )
 
     # Main
     application.add_handler(
