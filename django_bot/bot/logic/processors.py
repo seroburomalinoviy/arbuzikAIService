@@ -357,8 +357,7 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
 @log_journal
 async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
-    Тональность голоса
-    1. Меняем pitch voice'a
+    Представление голоса
     :param update:
     :param context:
     :return:
@@ -391,6 +390,7 @@ async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def voice_set_0(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Обнуление тональности
+    1. Выводим плашку с обновленным значением тональности
     :param update:
     :param context:
     :return:
@@ -404,6 +404,15 @@ async def voice_set_0(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 @log_journal
 async def pitch_setting(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """
+    Настройка тональности
+    1. Меняем значение тональности
+    2. Сохраняем обновленное значение в кеш
+    3. Возвращаем представление голоса с обновленным значением тональности
+    :param update:
+    :param context:
+    :return:
+    """
     query = update.callback_query
     await query.answer()
 
@@ -436,6 +445,14 @@ async def pitch_setting(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 @log_journal
 async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """
+    Захват голосового сообщения
+    1. Получаем голосовое сообщение, данные пользователя и тональность голоса
+    2. Сохраняем файл с голосовым сообщением
+    :param update:
+    :param context:
+    :return:
+    """
     voice = await update.message.voice.get_file()  # get voice file from user
     user_id = str(update.message.from_user.id)
     chat_id = str(update.message.chat.id)
