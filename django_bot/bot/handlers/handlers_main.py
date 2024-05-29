@@ -9,7 +9,7 @@ import django
 import json
 
 from bot.logic import message_text, keyboards
-from bot.amqp_driver import push_amqp_message
+from bot.logic.amqp_driver import push_amqp_message
 from bot.logic.constants import (
     PARAMETRS, START_ROUTES, END_ROUTES, WAITING
 )
