@@ -42,7 +42,7 @@ class VoiceConversationHandler(BaseConversationHandler):
             START_ROUTES: [
                 # MessageHandler(filters.TEXT, main.voice_preview),
                 CallbackQueryHandler(main.voice_set, pattern="^record"),
-                CallbackQueryHandler(main.category_menu, pattern="^category_menu$"),
+                # CallbackQueryHandler(main.category_menu, pattern="^category_menu$"),
                 CallbackQueryHandler(main.voice_preview, pattern="^voice_preview$"),
                 CallbackQueryHandler(main.voice_set_0, pattern="^voice_set_0$"),
                 CallbackQueryHandler(main.pitch_setting, pattern="^voice_set_sub$"),
