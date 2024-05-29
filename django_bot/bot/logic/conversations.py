@@ -14,7 +14,7 @@ class MainConversationHandler(BaseConversationHandler):
     def entrypoints(self):
         return [
                 CommandHandler("start", StartHandler()),
-                MessageHandler(filters.TEXT, main.voice_preview)
+                # MessageHandler(filters.TEXT, main.voice_preview)
             ]
 
     def states(self):
@@ -30,7 +30,7 @@ class MainConversationHandler(BaseConversationHandler):
                 # CommandHandler('menu', main.category_menu)
             ],
             VOICE_PROCESSING: [
-                MessageHandler(filters.TEXT, main.voice_preview),
+                # MessageHandler(filters.TEXT, main.voice_preview),
                 CallbackQueryHandler(main.voice_set, pattern="record"),
                 CallbackQueryHandler(main.voice_set_0, pattern="^voice_set_0$"),
                 CallbackQueryHandler(main.pitch_setting, pattern="^voice_set_sub$"),
