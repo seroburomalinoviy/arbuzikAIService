@@ -319,6 +319,11 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if slug_voice in voice.slug_voice:
             flag_is_favorite = 1
 
+    if flag_is_favorite:
+        button_favorite = ('Удалить из избранного', 'favorite-remove')
+    else:
+        button_favorite = ('⭐ В избранное', 'favorite-add')
+
     voice_media_data = await get_object(MediaData, slug=slug_voice)
     demka_path = voice_media_data.demka.path
 
@@ -342,7 +347,7 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
                 ],
                 [
-                    InlineKeyboardButton('⭐ В избранное' if not flag_is_favorite else 'Удалить из избранного', callback_data="favorite-add"),
+                    InlineKeyboardButton(button_favorite[0], callback_data=button_favorite[1]),
                 ]
             ]
         )
