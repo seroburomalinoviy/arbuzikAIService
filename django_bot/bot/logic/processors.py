@@ -69,9 +69,8 @@ def get_or_create_objets(model: models.Model, **kwargs):
 def log_journal(func):
     @functools.wraps(func)
     async def wrapper(*args, **kwargs):
-        logger.info(f'JOURNAL: {func.__name__} called at {get_moscow_time()}')
+        logger.info(f'JOURNAL: {func.__name__} called at {get_moscow_time()} with args: {args}, kwargs: {kwargs}')
         await func(*args, **kwargs)
-        logger.info(f'JOURNAL: {func.__name__} finished at {get_moscow_time()}')
         return
     return wrapper
 
