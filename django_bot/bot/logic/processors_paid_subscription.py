@@ -6,12 +6,13 @@ import os
 from django.conf import settings
 import django
 
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
+django.setup()
+
 from bot.models import Subscription
 from bot.logic.utils import log_journal, get_object
 from bot.logic import message_text
 from bot.logic.constants import START_ROUTES
-
-django.setup()
 
 
 @log_journal

@@ -20,13 +20,14 @@ from telegram import (Update, InlineKeyboardMarkup, InlineKeyboardButton, Inline
                       InputTextMessageContent, InlineQueryResultsButton)
 from telegram.ext import ContextTypes, ConversationHandler
 
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
+django.setup()
+
 from bot.models import Voice, Category, Subcategory, Subscription, MediaData
 from user.models import User
 
 logger = logging.getLogger(__name__)
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
-django.setup()
 
 load_dotenv()
 
