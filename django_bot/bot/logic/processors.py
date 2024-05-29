@@ -308,14 +308,16 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         context.user_data[f'pitch_{update.message.text}'] = 0
 
-    # todo: проверка голоса в избранном, в зависимости от этого отдавать кнопку избранное/удалить из избранного
     favorite_voices = []
     try:
         favorite_voices = await filter_objects(User, favorites__slug_voice=slug_voice)
     except Exception as e:
         logger.info(f'{e}')
 
-    logger.info(f'{favorite_voices=}')
+    flag_is_favorite = 0
+    for voice in favorite_voices:
+        if slug_voice in voice.slug_voice:
+            flag_is_favorite = 1
 
     voice_media_data = await get_object(MediaData, slug=slug_voice)
     demka_path = voice_media_data.demka.path
@@ -340,7 +342,7 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
                 ],
                 [
-                    InlineKeyboardButton('⭐ В избранное' if favorite_voices else 'Удалить из избранного', callback_data="favorite-add"),
+                    InlineKeyboardButton('⭐ В избранное' if not flag_is_favorite else 'Удалить из избранного', callback_data="favorite-add"),
                 ]
             ]
         )
