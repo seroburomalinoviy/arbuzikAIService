@@ -14,7 +14,7 @@ class MainConversationHandler(BaseConversationHandler):
     def entrypoints(self):
         return [
                 CommandHandler("start", StartHandler()),
-                # MessageHandler(filters.TEXT, main.voice_preview)
+                MessageHandler(filters.TEXT, main.voice_preview)
             ]
 
     def states(self):
@@ -24,6 +24,7 @@ class MainConversationHandler(BaseConversationHandler):
                 CallbackQueryHandler(main.category_menu, pattern="^category_menu$"),
                 # CallbackQueryHandler(search.search_all, pattern="^search_all$"),
                 CallbackQueryHandler(main.subcategory_menu, pattern="^category_"),
+                CallbackQueryHandler(main.voice_set, pattern="record"),
                 # CallbackQueryHandler(paid_subscription.show_paid_subscriptions, pattern="^paid_subscriptions$"),
                 # CallbackQueryHandler(paid_subscription.preview_paid_subscription, pattern="^paid_subscription_"),
                 # CallbackQueryHandler(main.voice_set, pattern="^record"),
