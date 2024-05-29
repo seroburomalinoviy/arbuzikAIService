@@ -328,7 +328,7 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(
             'Демонстрация голоса в работе'
         )
-    logger.info('here')
+
     await update.message.reply_text(
         message_text.voice_preview,
         reply_markup=InlineKeyboardMarkup(
@@ -355,6 +355,7 @@ async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
     :param context:
     :return:
     """
+    logger.info('here')
     query = update.callback_query
     await query.answer()
 
