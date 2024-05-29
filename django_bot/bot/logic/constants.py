@@ -1,5 +1,5 @@
 # starthandler
-START_ROUTES, VOICE_PROCESSING, END_ROUTES = range(3)
+START_ROUTES, VOICE_PROCESSING, END_ROUTES = '0', '1', '2'
 
 # audiuconversation handler
 WAITING = range(1)
