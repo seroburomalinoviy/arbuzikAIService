@@ -11,6 +11,7 @@ import json
 from datetime import datetime
 from zoneinfo import ZoneInfo
 from django.conf import settings
+import functools
 
 from bot.logic import message_text, keyboards
 from bot.amqp_driver import push_amqp_message
@@ -63,6 +64,16 @@ def save_model(model: models.Model) -> None:
 @sync_to_async
 def get_or_create_objets(model: models.Model, **kwargs):
     return model.objects.get_or_create(**kwargs)
+
+
+def log_journal(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        logger.info(f'TRACE: {func.__name__} called at {get_moscow_time()}')
+        return func(*args, **kwargs)
+
+    logger.info(f'TRACE: {func.__name__} finished at {get_moscow_time()}')
+    return wrapper
 
 
 async def subscription_list():
@@ -234,6 +245,7 @@ async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 # INLINE_MODE - QUERY
+@log_journal
 async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
     subscription_name = context.user_data['subscription_name']
 
