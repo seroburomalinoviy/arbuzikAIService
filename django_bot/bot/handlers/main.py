@@ -214,7 +214,7 @@ async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
     keyboard.append(
         [
-            InlineKeyboardButton('⏪ Вернуться назад', callback_data='back')
+            InlineKeyboardButton('⏪ Вернуться назад', callback_data='category_menu')
         ]
     )  # add button
 

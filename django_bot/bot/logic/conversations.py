@@ -57,7 +57,7 @@ class VoiceConversationHandler(BaseConversationHandler):
 
     def fallbacks(self):
         # todo: try change on cancel handler command
-        return [CallbackQueryHandler(main.category_menu, pattern="^back_category$")]
+        return [CallbackQueryHandler(main.category_menu, pattern="^category_menu")]
 
 
 class AudioConversationHandler(BaseConversationHandler):
