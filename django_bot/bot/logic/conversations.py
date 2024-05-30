@@ -21,12 +21,10 @@ class MainConversationHandler(BaseConversationHandler):
             SUBSCRIBE_CHANNEL: [
                 CallbackQueryHandler(main.subscription, pattern="^subscription"),
                 ],
-            CATEGORY_MENU: [
+            CHOOSE_VOICE: [
                 CallbackQueryHandler(main.category_menu, pattern="^category_menu$"),
-                ],
-            SUBCATEGORY_MENU: [
                 CallbackQueryHandler(main.subcategory_menu, pattern="^category_"),
-                CallbackQueryHandler(main.get_back, pattern="^back$"),
+                # CallbackQueryHandler(main.get_back, pattern="^back$"),
 
                 # CallbackQueryHandler(search.search_all, pattern="^search_all$"),
                 # CallbackQueryHandler(paid_subscription.show_paid_subscriptions, pattern="^paid_subscriptions$"),
