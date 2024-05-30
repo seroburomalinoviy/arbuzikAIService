@@ -10,9 +10,9 @@ search_all_voices = [
         InlineKeyboardButton('🔍 Поиск по всем голосам', callback_data='search_all')
     ]
 
-category_menu = [
-    InlineKeyboardButton('⏪ Вернуться назад', callback_data='category_menu')
-]
+# category_menu = [
+#     InlineKeyboardButton('⏪ Вернуться назад', callback_data='back')
+# ]
 
 check_subscription = [
                         [

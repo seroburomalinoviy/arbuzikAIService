@@ -5,7 +5,7 @@ from ast import literal_eval
 
 from bot.structures.base_classes import BaseCommandHandler
 from bot.logic import (message_text, keyboards)
-from bot.logic.constants import (START_ROUTES, AUDIO)
+from bot.logic.constants import START_ROUTES, AUDIO, SUBSCRIBE_CHANNEL, CATEGORY_MENU, SUBCATEGORY_MENU
 
 from telegram.ext import ContextTypes, ConversationHandler
 from telegram import Update, InlineKeyboardMarkup
@@ -34,7 +34,7 @@ class StartHandler(BaseCommandHandler):
             message_text.subscription_question,
             reply_markup=InlineKeyboardMarkup(keyboards.check_subscription)
         )
-        return START_ROUTES
+        return SUBSCRIBE_CHANNEL
 
 
 class VoiceChangeHandler(BaseCommandHandler):

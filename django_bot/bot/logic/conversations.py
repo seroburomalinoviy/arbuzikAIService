@@ -3,7 +3,7 @@ from bot.logic.commands import CancelHandler, StartHandler, MenuHandler
 
 from bot.handlers import main, search, paid_subscription, status, favorite
 from bot.logic.constants import (
-AUDIO, PARAMETRS, START_ROUTES, WAITING, END_ROUTES, VOICE_PROCESSING
+AUDIO, PARAMETRS, START_ROUTES, WAITING, END_ROUTES, VOICE_PROCESSING, SUBSCRIBE_CHANNEL, CATEGORY_MENU, SUBCATEGORY_MENU
 )
 
 from telegram.ext import CommandHandler, MessageHandler, filters, CallbackQueryHandler
@@ -18,13 +18,19 @@ class MainConversationHandler(BaseConversationHandler):
 
     def states(self):
         return {
-            START_ROUTES: [
+            SUBSCRIBE_CHANNEL: [
                 CallbackQueryHandler(main.subscription, pattern="^subscription"),
+                ],
+            CATEGORY_MENU: [
                 CallbackQueryHandler(main.category_menu, pattern="^category_menu$"),
-                CallbackQueryHandler(search.search_all, pattern="^search_all$"),
+                ],
+            SUBCATEGORY_MENU: [
                 CallbackQueryHandler(main.subcategory_menu, pattern="^category_"),
-                CallbackQueryHandler(paid_subscription.show_paid_subscriptions, pattern="^paid_subscriptions$"),
-                CallbackQueryHandler(paid_subscription.preview_paid_subscription, pattern="^paid_subscription_"),
+                CallbackQueryHandler(main.get_back, pattern="^back$"),
+
+                # CallbackQueryHandler(search.search_all, pattern="^search_all$"),
+                # CallbackQueryHandler(paid_subscription.show_paid_subscriptions, pattern="^paid_subscriptions$"),
+                # CallbackQueryHandler(paid_subscription.preview_paid_subscription, pattern="^paid_subscription_"),
                 # CommandHandler('menu', main.category_menu)
             ]
         }

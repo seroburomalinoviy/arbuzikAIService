@@ -1,6 +1,6 @@
 # starthandler
-START_ROUTES, VOICE_PROCESSING, END_ROUTES = range(3)
-
+# START_ROUTES, VOICE_PROCESSING, END_ROUTES = range(3)
+SUBSCRIBE_CHANNEL, CATEGORY_MENU, SUBCATEGORY_MENU = range(4)
 # audiuconversation handler
 WAITING = range(1)
 

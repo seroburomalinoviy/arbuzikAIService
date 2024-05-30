@@ -11,7 +11,7 @@ import json
 from bot.logic import message_text, keyboards
 from bot.logic.amqp_driver import push_amqp_message
 from bot.logic.constants import (
-    PARAMETRS, START_ROUTES, END_ROUTES, WAITING, VOICE_PROCESSING
+    PARAMETRS, START_ROUTES, END_ROUTES, WAITING, VOICE_PROCESSING, SUBSCRIBE_CHANNEL, CATEGORY_MENU, SUBCATEGORY_MENU
 )
 from bot.logic.utils import (get_moscow_time, log_journal, save_model, get_object,
                    get_or_create_objets, filter_objects)
@@ -49,6 +49,12 @@ async def set_demo_to_user(user_model: User, tg_user_name, tg_nick_name) -> None
     await save_model(user_model)
     
     return user_model.subscription.title
+
+
+async def get_back_to_category(update, context):
+    await category_menu(update, context)
+    return CATEGORY_MENU
+
 
 
 @sync_to_async
@@ -96,14 +102,14 @@ async def subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
             message_text.demo_rights,
             reply_markup=InlineKeyboardMarkup(keyboards.is_subscribed)
         )
-        return START_ROUTES
+        return CATEGORY_MENU
     elif is_member.status in unresolved_user_statuses:
         await query.answer(text='Сначала подпишись :)')
         await update.message.reply_text(
             message_text.subscription_check,
             reply_markup=InlineKeyboardMarkup(keyboards.check_subscription)
         )
-        return START_ROUTES
+        return SUBSCRIBE_CHANNEL
 
 
 @log_journal
@@ -172,7 +178,7 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
 
-    return START_ROUTES
+    return SUBCATEGORY_MENU
 
 
 @log_journal
@@ -212,7 +218,11 @@ async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
                                      )
             ]
         )
-    keyboard.append(keyboards.category_menu)  # add button
+    keyboard.append(
+        [
+            InlineKeyboardButton('⏪ Вернуться назад', callback_data='back')
+        ]
+    )  # add button
 
     category = await get_object(Category, id=current_category_id)
     await query.edit_message_text(
@@ -260,6 +270,7 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
         )
     await update.inline_query.answer(results, cache_time=100, auto_pagination=True)
+    # await context.bot.answer_inline_query(update.inline_query.id, results)
     return VOICE_PROCESSING
 
 
