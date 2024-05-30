@@ -43,7 +43,7 @@ class VoiceConversationHandler(BaseConversationHandler):
 
     def states(self):
         return {
-            START_ROUTES: [
+            SETUP_VOICE: [
                 # MessageHandler(filters.TEXT, main.voice_preview),
                 CallbackQueryHandler(main.voice_set, pattern="^record"),
                 # CallbackQueryHandler(main.category_menu, pattern="^category_menu$"),

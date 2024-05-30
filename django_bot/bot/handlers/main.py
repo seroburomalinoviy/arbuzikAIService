@@ -11,7 +11,7 @@ import json
 from bot.logic import message_text, keyboards
 from bot.logic.amqp_driver import push_amqp_message
 from bot.logic.constants import (
-    PARAMETRS, START_ROUTES, END_ROUTES, WAITING, VOICE_PROCESSING, SUBSCRIBE_CHANNEL, CHOOSE_VOICE
+    PARAMETRS, START_ROUTES, END_ROUTES, WAITING, VOICE_PROCESSING, SUBSCRIBE_CHANNEL, CHOOSE_VOICE, SETUP_VOICE
 )
 from bot.logic.utils import (get_moscow_time, log_journal, save_model, get_object,
                    get_or_create_objets, filter_objects)
@@ -349,7 +349,7 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
             ]
         )
     )
-    return START_ROUTES
+    return SETUP_VOICE
 
 
 @log_journal
@@ -382,7 +382,7 @@ async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
             ]
         )
     )
-    return START_ROUTES
+    return SETUP_VOICE
 
 
 @log_journal
@@ -398,7 +398,8 @@ async def voice_set_0(update: Update, context: ContextTypes.DEFAULT_TYPE):
     slug_voice = context.user_data.get('slug_voice')
     pitch = context.user_data.get(f'pitch_{slug_voice}') if context.user_data.get(f'pitch_{slug_voice}') else "0"
     await query.answer(f'Тональность {pitch}')
-    return VOICE_PROCESSING
+
+    return SETUP_VOICE
 
 
 @log_journal
@@ -439,7 +440,7 @@ async def pitch_setting(update: Update, context: ContextTypes.DEFAULT_TYPE):
             ]
         )
     )
-    return START_ROUTES
+    return SETUP_VOICE
 
 
 @log_journal
