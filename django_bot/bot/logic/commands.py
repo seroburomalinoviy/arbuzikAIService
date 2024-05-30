@@ -14,20 +14,6 @@ load_dotenv()
 logger = logging.getLogger(__name__)
 
 
-class TestHandler(BaseCommandHandler):
-    async def __call__(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        admins = literal_eval(os.environ.get("ADMIN_IDS"))
-        if update.effective_user.id in admins:
-            await update.message.reply_text(
-                "Send an audio file."
-            )
-            return AUDIO
-        else:
-            await update.message.reply_text(
-                "Sorry, that's a test function."
-            )
-
-
 class StartHandler(BaseCommandHandler):
     async def __call__(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(
