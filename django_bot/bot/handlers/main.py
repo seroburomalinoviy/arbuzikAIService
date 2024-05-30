@@ -103,7 +103,7 @@ async def subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
             message_text.subscription_check,
             reply_markup=InlineKeyboardMarkup(keyboards.check_subscription)
         )
-        return SUBSCRIBE_CHANNEL
+        return CHOOSE_VOICE
 
 
 @log_journal

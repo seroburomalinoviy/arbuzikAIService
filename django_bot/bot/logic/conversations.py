@@ -18,10 +18,8 @@ class MainConversationHandler(BaseConversationHandler):
 
     def states(self):
         return {
-            SUBSCRIBE_CHANNEL: [
-                CallbackQueryHandler(main.subscription, pattern="^subscription"),
-                ],
             CHOOSE_VOICE: [
+                CallbackQueryHandler(main.subscription, pattern="^subscription"),
                 CallbackQueryHandler(main.category_menu, pattern="^category_menu$"),
                 CallbackQueryHandler(main.subcategory_menu, pattern="^category_"),
                 # CallbackQueryHandler(main.get_back, pattern="^back$"),
