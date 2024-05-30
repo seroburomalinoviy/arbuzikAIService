@@ -1,7 +1,7 @@
 from bot.structures.base_classes import BaseConversationHandler
 from bot.logic.commands import CancelHandler, StartHandler, MenuHandler
 
-from bot.handlers import main, search, paid_subscription, status, favorite
+from bot.handlers import main, search, paid_subscription, favorite
 from bot.logic.constants import (
 AUDIO, PARAMETRS, START_ROUTES, WAITING, END_ROUTES, VOICE_PROCESSING, CHOOSE_VOICE, SETUP_VOICE
 )
@@ -44,7 +44,7 @@ class VoiceConversationHandler(BaseConversationHandler):
     def states(self):
         return {
             SETUP_VOICE: [
-                # MessageHandler(filters.TEXT, main.voice_preview),
+                MessageHandler(filters.TEXT, main.voice_preview),
                 CallbackQueryHandler(main.voice_set, pattern="^record"),
                 # CallbackQueryHandler(main.category_menu, pattern="^category_menu$"),
                 # CallbackQueryHandler(main.voice_preview, pattern="^voice_preview$"),
@@ -71,7 +71,7 @@ class AudioConversationHandler(BaseConversationHandler):
     def states(self):
         return {
             WAITING: [
-                CallbackQueryHandler(status.check_status, pattern='^check_status$')
+                CallbackQueryHandler(main.check_status, pattern='^check_status$')
             ]
         }
 

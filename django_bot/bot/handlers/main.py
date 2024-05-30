@@ -492,7 +492,25 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await push_amqp_message(json.dumps(payload))
     # todo: write to db
 
-    return WAITING
+    return SETUP_VOICE
+
+
+@log_journal
+async def check_status(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """
+    Заглушка проверки состояния обработки запроса преобразования аудио нейросетью
+    :param update:
+    :param context:
+    :return:
+    """
+    query = update.callback_query
+    await query.answer()
+
+    await query.edit_message_text(
+        text=message_text.check_status_text,
+        reply_markup=InlineKeyboardMarkup(keyboards.check_status)
+    )
+    return SETUP_VOICE
 
 
 @log_journal
