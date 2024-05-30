@@ -14,7 +14,6 @@ class MainConversationHandler(BaseConversationHandler):
     def entrypoints(self):
         return [
                 CommandHandler("start", StartHandler()),
-                MessageHandler(filters.TEXT, main.voice_preview)
             ]
 
     def states(self):
@@ -24,13 +23,9 @@ class MainConversationHandler(BaseConversationHandler):
                 CallbackQueryHandler(main.category_menu, pattern="^category_menu$"),
                 CallbackQueryHandler(search.search_all, pattern="^search_all$"),
                 CallbackQueryHandler(main.subcategory_menu, pattern="^category_"),
-                CallbackQueryHandler(main.voice_set, pattern="record"),
-                CallbackQueryHandler(main.voice_set_0, pattern="^voice_set_0$"),
-                CallbackQueryHandler(main.pitch_setting, pattern="^voice_set_sub$"),
-                CallbackQueryHandler(main.pitch_setting, pattern="^voice_set_add$"),
                 CallbackQueryHandler(paid_subscription.show_paid_subscriptions, pattern="^paid_subscriptions$"),
                 CallbackQueryHandler(paid_subscription.preview_paid_subscription, pattern="^paid_subscription_"),
-                CommandHandler('menu', main.category_menu)
+                # CommandHandler('menu', main.category_menu)
             ]
         }
 
@@ -38,29 +33,29 @@ class MainConversationHandler(BaseConversationHandler):
         return [CommandHandler("cancel", CancelHandler())]
 
 
-# class VoiceConversationHandler(BaseConversationHandler):
-#
-#     def entrypoints(self):
-#         return [MessageHandler(filters.TEXT, main.voice_preview)]
-#
-#
-#     def states(self):
-#         return {
-#             START_ROUTES: [
-#                 # MessageHandler(filters.TEXT, main.voice_preview),
-#                 CallbackQueryHandler(main.voice_set, pattern="^record"),
-#                 # CallbackQueryHandler(main.category_menu, pattern="^category_menu$"),
-#                 # CallbackQueryHandler(main.voice_preview, pattern="^voice_preview$"),
-#                 CallbackQueryHandler(main.voice_set_0, pattern="^voice_set_0$"),
-#                 CallbackQueryHandler(main.pitch_setting, pattern="^voice_set_sub$"),
-#                 CallbackQueryHandler(main.pitch_setting, pattern="^voice_set_add$"),
-#                 # CommandHandler('menu', main.category_menu)
-#             ]
-#         }
-#
-#     def fallbacks(self):
-#         # todo: try change on cancel handler command
-#         return [CallbackQueryHandler(main.category_menu, pattern="^back_category$")]
+class VoiceConversationHandler(BaseConversationHandler):
+
+    def entrypoints(self):
+        return [MessageHandler(filters.TEXT, main.voice_preview)]
+
+
+    def states(self):
+        return {
+            START_ROUTES: [
+                # MessageHandler(filters.TEXT, main.voice_preview),
+                CallbackQueryHandler(main.voice_set, pattern="^record"),
+                # CallbackQueryHandler(main.category_menu, pattern="^category_menu$"),
+                # CallbackQueryHandler(main.voice_preview, pattern="^voice_preview$"),
+                CallbackQueryHandler(main.voice_set_0, pattern="^voice_set_0$"),
+                CallbackQueryHandler(main.pitch_setting, pattern="^voice_set_sub$"),
+                CallbackQueryHandler(main.pitch_setting, pattern="^voice_set_add$"),
+                # CommandHandler('menu', main.category_menu)
+            ]
+        }
+
+    def fallbacks(self):
+        # todo: try change on cancel handler command
+        return [CallbackQueryHandler(main.category_menu, pattern="^back_category$")]
 
 
 class AudioConversationHandler(BaseConversationHandler):
