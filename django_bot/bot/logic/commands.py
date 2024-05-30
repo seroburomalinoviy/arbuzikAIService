@@ -5,7 +5,7 @@ from ast import literal_eval
 
 from bot.structures.base_classes import BaseCommandHandler
 from bot.logic import (message_text, keyboards)
-from bot.logic.constants import START_ROUTES, AUDIO, SUBSCRIBE_CHANNEL, CATEGORY_MENU, SUBCATEGORY_MENU
+from bot.logic.constants import START_ROUTES, AUDIO, SUBSCRIBE_CHANNEL
 
 from telegram.ext import ContextTypes, ConversationHandler
 from telegram import Update, InlineKeyboardMarkup
