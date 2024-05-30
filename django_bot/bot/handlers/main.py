@@ -224,7 +224,7 @@ async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
 
-    return ConversationHandler.END
+    return -1
 
 
 @log_journal
@@ -265,7 +265,7 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
     await update.inline_query.answer(results, cache_time=100, auto_pagination=True)
     # await context.bot.answer_inline_query(update.inline_query.id, results)
-    return ConversationHandler.END
+    return -1
 
 
 @log_journal
@@ -349,7 +349,7 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
             ]
         )
     )
-    return VOICE_PROCESSING
+    return START_ROUTES
 
 
 @log_journal
@@ -382,7 +382,7 @@ async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
             ]
         )
     )
-    return VOICE_PROCESSING
+    return START_ROUTES
 
 
 @log_journal

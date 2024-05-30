@@ -3,7 +3,7 @@ from bot.logic.commands import CancelHandler, StartHandler, MenuHandler
 
 from bot.handlers import main, search, paid_subscription, status, favorite
 from bot.logic.constants import (
-AUDIO, PARAMETRS, START_ROUTES, WAITING, END_ROUTES, VOICE_PROCESSING, SUBSCRIBE_CHANNEL, CATEGORY_MENU, SUBCATEGORY_MENU
+AUDIO, PARAMETRS, START_ROUTES, WAITING, END_ROUTES, VOICE_PROCESSING, SUBSCRIBE_CHANNEL, CHOOSE_VOICE
 )
 
 from telegram.ext import CommandHandler, MessageHandler, filters, CallbackQueryHandler
