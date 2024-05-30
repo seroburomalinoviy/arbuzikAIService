@@ -268,6 +268,7 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return -1
 
 
+@log_journal
 async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Превью голоса
@@ -351,6 +352,7 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return SETUP_VOICE
 
 
+@log_journal
 async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Представление голоса
