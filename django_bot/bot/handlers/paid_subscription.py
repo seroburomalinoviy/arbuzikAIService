@@ -1,5 +1,6 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ContextTypes
+from telegram.constants import ParseMode
 
 import os
 
@@ -49,6 +50,7 @@ async def show_paid_subscriptions(update: Update, context: ContextTypes.DEFAULT_
     await context.bot.send_message(
         chat_id=query.message.chat.id,
         text=message_text.all_paid_subs,
+        parse_mode=ParseMode.MARKDOWN_V2,
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
 
@@ -89,6 +91,7 @@ async def preview_paid_subscription(update: Update, context: ContextTypes.DEFAUL
     # await query.edit_message_text(
         chat_id=query.message.chat.id,
         text=subscription.description,
+        parse_mode=ParseMode.MARKDOWN_V2,
         reply_markup=InlineKeyboardMarkup(
             [
                 [

@@ -21,13 +21,39 @@ base_states = {
         }
 
 
-class MainConversationHandler(BaseConversationHandler):
+class StartConversationHandler(BaseConversationHandler):
 
     def entrypoints(self):
         return [
                 CommandHandler("start", StartHandler()),
+            ]
+
+    def states(self):
+        return base_states
+
+    def fallbacks(self):
+        return [CommandHandler("cancel", CancelHandler())]
+
+
+class MainConversationHandler(BaseConversationHandler):
+
+    def entrypoints(self):
+        return [
+                CommandHandler("menu", main.category_menu),
+            ]
+
+    def states(self):
+        return base_states
+
+    def fallbacks(self):
+        return [CommandHandler("cancel", CancelHandler())]
+
+
+class VoiceConversationHandler(BaseConversationHandler):
+
+    def entrypoints(self):
+        return [
                 MessageHandler(filters.TEXT, main.voice_preview),
-                CommandHandler("menu", main.category_menu)
             ]
 
     def states(self):
