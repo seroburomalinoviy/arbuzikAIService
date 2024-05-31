@@ -12,7 +12,7 @@ django.setup()
 from bot.models import Subscription
 from bot.logic.utils import log_journal, get_object
 from bot.logic import message_text
-from bot.logic.constants import START_ROUTES
+from bot.logic.constants import *
 
 
 @log_journal
@@ -52,7 +52,7 @@ async def show_paid_subscriptions(update: Update, context: ContextTypes.DEFAULT_
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
 
-    return START_ROUTES
+    return CHOOSE_VOICE
 
 
 @log_journal
@@ -101,4 +101,4 @@ async def preview_paid_subscription(update: Update, context: ContextTypes.DEFAUL
         )
     )
 
-    return START_ROUTES
+    return CHOOSE_VOICE

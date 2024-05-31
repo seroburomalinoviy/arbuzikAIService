@@ -14,3 +14,5 @@ async def search_all(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     query = update.callback_query
     await query.answer()
+
+    return CHOOSE_VOICE
