@@ -94,14 +94,14 @@ async def subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
             message_text.demo_rights,
             reply_markup=InlineKeyboardMarkup(keyboards.is_subscribed)
         )
-        return CHOOSE_VOICE
+        return BASE_STATES
     elif is_member.status in unresolved_user_statuses:
         await query.answer(text='Сначала подпишись :)')
         await update.message.reply_text(
             message_text.subscription_check,
             reply_markup=InlineKeyboardMarkup(keyboards.check_subscription)
         )
-        return CHOOSE_VOICE
+        return BASE_STATES
 
 
 @log_journal
@@ -170,7 +170,7 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
 
-    return CHOOSE_VOICE
+    return BASE_STATES
 
 
 @log_journal
@@ -219,7 +219,7 @@ async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
 
-    return CHOOSE_VOICE
+    return BASE_STATES
 
 
 @log_journal
@@ -344,7 +344,7 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
             ]
         )
     )
-    return SETUP_VOICE
+    return BASE_STATES
 
 
 @log_journal
@@ -377,7 +377,7 @@ async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
             ]
         )
     )
-    return SETUP_VOICE
+    return BASE_STATES
 
 
 @log_journal
@@ -394,7 +394,7 @@ async def voice_set_0(update: Update, context: ContextTypes.DEFAULT_TYPE):
     pitch = context.user_data.get(f'pitch_{slug_voice}') if context.user_data.get(f'pitch_{slug_voice}') else "0"
     await query.answer(f'Тональность {pitch}')
 
-    return SETUP_VOICE
+    return BASE_STATES
 
 
 @log_journal
@@ -487,7 +487,7 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await push_amqp_message(json.dumps(payload))
     # todo: write to db
 
-    return GET_RESULT
+    return BASE_STATES
 
 
 @log_journal
@@ -505,7 +505,7 @@ async def check_status(update: Update, context: ContextTypes.DEFAULT_TYPE):
         text=message_text.check_status_text,
         reply_markup=InlineKeyboardMarkup(keyboards.check_status)
     )
-    return GET_RESULT
+    return WAITING
 
 
 @log_journal

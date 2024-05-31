@@ -52,7 +52,7 @@ async def show_paid_subscriptions(update: Update, context: ContextTypes.DEFAULT_
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
 
-    return CHOOSE_VOICE
+    return BASE_STATES
 
 
 @log_journal
@@ -101,4 +101,4 @@ async def preview_paid_subscription(update: Update, context: ContextTypes.DEFAUL
         )
     )
 
-    return CHOOSE_VOICE
+    return BASE_STATES

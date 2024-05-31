@@ -4,6 +4,7 @@ from telegram import Update
 from bot.handlers.main import inline_query
 from bot.handlers.search import search_all
 from bot.logic.conversations import (
+    StartConversationHandler,
     MainConversationHandler,
     VoiceConversationHandler,
     AudioConversationHandler
@@ -22,8 +23,19 @@ async def on_result_chosen(update: Update, context: tg_ext.ContextTypes.DEFAULT_
 
 def init_handlers(application: tg_ext.Application):
     main = MainConversationHandler()
+    start = StartConversationHandler()
     voice = VoiceConversationHandler()
     audio = AudioConversationHandler()
+
+    # Start
+    application.add_handler(
+        tg_ext.ConversationHandler(
+            entry_points=start.entrypoints(),
+            states=start.states(),
+            fallbacks=start.fallbacks(),
+            allow_reentry=True
+        )
+    )
 
     # Main
     application.add_handler(
