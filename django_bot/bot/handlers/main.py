@@ -321,7 +321,16 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if slug_voice in voice.slug_voice:
             button_favorite = ('Удалить из избранного', 'favorite-remove')
 
-    voice_media_data = await get_object(MediaData, slug=slug_voice)
+    try:
+        voice_media_data = await get_object(MediaData, slug=slug_voice)
+    except Exception as e:
+        logger.warning(f'Voice {slug_voice} DOES NOT EXIST: {e}')
+        await update.message.reply_text(
+            text=,
+            reply_markup=InlineKeyboardMarkup(keyboards.is_subscribed)
+        )
+        return ConversationHandler.END
+
     demka_path = voice_media_data.demka.path
 
     try:
@@ -492,7 +501,7 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await push_amqp_message(json.dumps(payload))
     # todo: write to db
 
-    return WAITING
+    return -2
 
 
 @log_journal
@@ -510,7 +519,7 @@ async def check_status(update: Update, context: ContextTypes.DEFAULT_TYPE):
         text=message_text.check_status_text,
         reply_markup=InlineKeyboardMarkup(keyboards.check_status)
     )
-    return WAITING
+    return -2
 
 
 @log_journal
