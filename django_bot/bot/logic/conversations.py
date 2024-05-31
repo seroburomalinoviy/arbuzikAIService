@@ -4,8 +4,28 @@ from bot.logic.commands import CancelHandler, StartHandler, MenuHandler
 from bot.handlers import main, search, paid_subscription, favorite
 from bot.logic.constants import *
 
-from telegram.ext import CommandHandler, MessageHandler, filters, CallbackQueryHandler
+from telegram.ext import CommandHandler, MessageHandler, filters, CallbackQueryHandler, ConversationHandler
 
+nested_conv = ConversationHandler(
+    entry_points=[
+        MessageHandler(filters.VOICE & ~filters.COMMAND, main.voice_process),
+        MessageHandler(filters.AUDIO & ~filters.COMMAND, main.audio_process),
+    ],
+    states={
+        SETUP_VOICE:[
+            CallbackQueryHandler(main.voice_set_0, pattern="^voice_set_0$"),
+            CallbackQueryHandler(main.pitch_setting, pattern="^voice_set_sub$"),
+            CallbackQueryHandler(main.pitch_setting, pattern="^voice_set_add$")
+        ],
+        WAITING: [
+            CallbackQueryHandler(main.check_status, pattern='^check_status$')
+        ]
+    },
+    fallbacks=[CommandHandler("cancel", CancelHandler())],
+    map_to_parent={
+        END: BASE_STATES
+    }
+)
 
 class MainConversationHandler(BaseConversationHandler):
 
@@ -13,8 +33,7 @@ class MainConversationHandler(BaseConversationHandler):
         return [
                 CommandHandler("start", StartHandler()),
                 CommandHandler("menu", main.category_menu),
-                MessageHandler(filters.VOICE & ~filters.COMMAND, main.voice_process),
-                MessageHandler(filters.AUDIO & ~filters.COMMAND, main.audio_process),
+
                 MessageHandler(filters.TEXT, main.voice_preview)
             ]
 
@@ -28,37 +47,11 @@ class MainConversationHandler(BaseConversationHandler):
                 CallbackQueryHandler(paid_subscription.show_paid_subscriptions, pattern="^paid_subscriptions$"),
                 CallbackQueryHandler(paid_subscription.preview_paid_subscription, pattern="^paid_subscription_"),
                 CallbackQueryHandler(main.voice_set, pattern="^record$"),
-                CallbackQueryHandler(main.voice_set_0, pattern="^voice_set_0$"),
-                CallbackQueryHandler(main.pitch_setting, pattern="^voice_set_sub$"),
-                CallbackQueryHandler(main.pitch_setting, pattern="^voice_set_add$")
             ],
-            # todo: чтобы не обрабатывать команды от пользователя во время ожидания голоса, нужно создать вложенные
-            # todo: конверсейшн, в котором будут переодпрелены кобеки на внешние команды старт и меню, заменив функции
-            # todo: последних на возвращение в стейт ваитинг и возможно отправкой доп сообщения
-            WAITING: [
-                CallbackQueryHandler(main.check_status, pattern='^check_status$')
+             VOICE_PROCESS: [
+                 nested_conv
             ]
         }
 
     def fallbacks(self):
         return [CommandHandler("cancel", CancelHandler())]
-
-#
-# class AudioConversationHandler(BaseConversationHandler):
-#
-#     def entrypoints(self):
-#         return [
-#                 MessageHandler(filters.VOICE & ~filters.COMMAND, main.voice_process),
-#                 MessageHandler(filters.AUDIO & ~filters.COMMAND, main.audio_process)
-#         ]
-#
-#     def states(self):
-#         return {
-#             WAITING:[
-#                 CallbackQueryHandler(main.check_status, pattern='^check_status$')
-#             ]
-#         }
-#
-#     def fallbacks(self):
-#         return [CommandHandler("cancel", CancelHandler())]
-#

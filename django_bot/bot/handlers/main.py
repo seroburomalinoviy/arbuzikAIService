@@ -392,7 +392,7 @@ async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
             ]
         )
     )
-    return BASE_STATES
+    return VOICE_PROCESS
 
 
 @log_journal
@@ -437,6 +437,7 @@ async def pitch_setting(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await query.edit_message_text(
         message_text.voice_set.format(name=slug_voice),
+        parse_mode=ParseMode.MARKDOWN_V2,
         reply_markup=InlineKeyboardMarkup(
             [
                 [
@@ -503,7 +504,7 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup=InlineKeyboardMarkup(keyboards.check_status)
     )
 
-    return WAITING
+    return ConversationHandler.WAITING
 
 
 @log_journal
