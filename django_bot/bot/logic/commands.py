@@ -20,7 +20,7 @@ class StartHandler(BaseCommandHandler):
             message_text.subscription_question,
             reply_markup=InlineKeyboardMarkup(keyboards.check_subscription)
         )
-        return CHOOSE_VOICE
+        return BASE_STATES
 
 
 class VoiceChangeHandler(BaseCommandHandler):
