@@ -219,7 +219,7 @@ async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
 
-    return ConversationHandler.END
+    return CHOOSE_VOICE
 
 
 @log_journal
@@ -465,11 +465,11 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     voice_model_pth = str(voice_media_data.model_pth)
     voice_model_index = str(voice_media_data.model_index)
 
-    logger.info(f'\n\nvoice_model_pth = {voice_model_pth}')
-    logger.info(f'voice_model_index = {voice_model_index}\n\n')
+    logger.debug(f'{voice_model_pth=}')
+    logger.debug(f'{voice_model_index=}')
 
     await voice.download_to_drive(custom_path=voice_path)  # download voice file to host
-    logger.info(f'The voice file with name {user_id} downloaded to {voice_path}')
+    logger.info(f'JOURNAL: Voice {slug_voice} downloaded to {voice_path} for user - {user_id} - tg_id')
 
     await update.message.reply_text(
         message_text.conversation_end,
