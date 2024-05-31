@@ -304,7 +304,9 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return ConversationHandler.END
 
     # if update.message: # todo ест ли случаи когда нет update.message ?
-    slug_voice = update.message.text
+
+    # Ограничение на количество символов - безопасность
+    slug_voice = update.message.text[0:50]
     context.user_data['slug_voice'] = slug_voice
 
     if not context.user_data.get(f'pitch_{update.message.text}'):
@@ -326,10 +328,10 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         logger.warning(f'Voice {slug_voice} DOES NOT EXIST: {e}')
         await update.message.reply_text(
-            text=,
+            text='Такой модели не существует попробуйте еще раз',
             reply_markup=InlineKeyboardMarkup(keyboards.is_subscribed)
         )
-        return ConversationHandler.END
+        return BASE_STATES
 
     demka_path = voice_media_data.demka.path
 
