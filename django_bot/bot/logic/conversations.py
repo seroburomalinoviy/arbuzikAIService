@@ -6,24 +6,6 @@ from bot.logic.constants import *
 
 from telegram.ext import CommandHandler, MessageHandler, filters, CallbackQueryHandler
 
-base_states = {
-            BASE_STATES: [
-                CallbackQueryHandler(main.subscription, pattern="^subscription"),
-                CallbackQueryHandler(main.category_menu, pattern="^category_menu$"),
-                CallbackQueryHandler(main.subcategory_menu, pattern="^category_"),
-                CallbackQueryHandler(search.search_all, pattern="^search_all$"),
-                CallbackQueryHandler(paid_subscription.show_paid_subscriptions, pattern="^paid_subscriptions$"),
-                CallbackQueryHandler(paid_subscription.preview_paid_subscription, pattern="^paid_subscription_"),
-                CallbackQueryHandler(main.voice_set, pattern="^record$"),
-                CallbackQueryHandler(main.voice_set_0, pattern="^voice_set_0$"),
-                CallbackQueryHandler(main.pitch_setting, pattern="^voice_set_sub$"),
-                CallbackQueryHandler(main.pitch_setting, pattern="^voice_set_add$")
-            ],
-            WAITING: [
-                CallbackQueryHandler(main.check_status, pattern='^check_status$')
-            ]
-        }
-
 
 class MainConversationHandler(BaseConversationHandler):
 
@@ -37,7 +19,26 @@ class MainConversationHandler(BaseConversationHandler):
             ]
 
     def states(self):
-        return base_states
+        return {
+            BASE_STATES: [
+                CallbackQueryHandler(main.subscription, pattern="^subscription"),
+                CallbackQueryHandler(main.category_menu, pattern="^category_menu$"),
+                CallbackQueryHandler(main.subcategory_menu, pattern="^category_"),
+                CallbackQueryHandler(search.search_all, pattern="^search_all$"),
+                CallbackQueryHandler(paid_subscription.show_paid_subscriptions, pattern="^paid_subscriptions$"),
+                CallbackQueryHandler(paid_subscription.preview_paid_subscription, pattern="^paid_subscription_"),
+                CallbackQueryHandler(main.voice_set, pattern="^record$"),
+                CallbackQueryHandler(main.voice_set_0, pattern="^voice_set_0$"),
+                CallbackQueryHandler(main.pitch_setting, pattern="^voice_set_sub$"),
+                CallbackQueryHandler(main.pitch_setting, pattern="^voice_set_add$")
+            ],
+            # todo: чтобы не обрабатывать команды от пользователя во время ожидания голоса, нужно создать вложенные
+            # todo: конверсейшн, в котором будут переодпрелены кобеки на внешние команды старт и меню, заменив функции
+            # todo: последних на возвращение в стейт ваитинг и возможно отправкой доп сообщения
+            WAITING: [
+                CallbackQueryHandler(main.check_status, pattern='^check_status$')
+            ]
+        }
 
     def fallbacks(self):
         return [CommandHandler("cancel", CancelHandler())]

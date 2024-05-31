@@ -392,7 +392,7 @@ async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
             ]
         )
     )
-    return ConversationHandler.END
+    return BASE_STATES
 
 
 @log_journal
