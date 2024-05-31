@@ -371,7 +371,6 @@ async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
     :param context:
     :return:
     """
-    logger.info('here')
     query = update.callback_query
     await query.answer()
 
@@ -393,7 +392,7 @@ async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
             ]
         )
     )
-    return BASE_STATES
+    return ConversationHandler.END
 
 
 @log_journal
@@ -522,7 +521,7 @@ async def check_status(update: Update, context: ContextTypes.DEFAULT_TYPE):
         text=message_text.check_status_text,
         reply_markup=InlineKeyboardMarkup(keyboards.check_status)
     )
-    raise ApplicationHandlerStop(BASE_STATES)
+    return WAITING
 
 
 @log_journal
