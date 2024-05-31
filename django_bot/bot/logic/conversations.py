@@ -6,28 +6,6 @@ from bot.logic.constants import *
 
 from telegram.ext import CommandHandler, MessageHandler, filters, CallbackQueryHandler, ConversationHandler
 
-nested_conv = ConversationHandler(
-    entry_points=[
-        MessageHandler(filters.VOICE & ~filters.COMMAND, main.voice_process),
-        MessageHandler(filters.AUDIO & ~filters.COMMAND, main.audio_process),
-    ],
-    states={
-        SETUP_VOICE:[
-            CallbackQueryHandler(main.voice_set_0, pattern="^voice_set_0$"),
-            CallbackQueryHandler(main.pitch_setting, pattern="^voice_set_sub$"),
-            CallbackQueryHandler(main.pitch_setting, pattern="^voice_set_add$")
-        ],
-        WAITING: [
-            CallbackQueryHandler(main.check_status, pattern='^check_status$')
-        ]
-    },
-    fallbacks=[CommandHandler("cancel", CancelHandler())],
-    map_to_parent={
-        END: BASE_STATES
-    }
-)
-
-
 
 class MainConversationHandler(BaseConversationHandler):
 
@@ -35,7 +13,8 @@ class MainConversationHandler(BaseConversationHandler):
         return [
                 CommandHandler("start", StartHandler()),
                 CommandHandler("menu", main.category_menu),
-
+                MessageHandler(filters.VOICE & ~filters.COMMAND, main.voice_process),
+                MessageHandler(filters.AUDIO & ~filters.COMMAND, main.audio_process),
                 MessageHandler(filters.TEXT, main.voice_preview)
             ]
 
@@ -49,9 +28,12 @@ class MainConversationHandler(BaseConversationHandler):
                 CallbackQueryHandler(paid_subscription.show_paid_subscriptions, pattern="^paid_subscriptions$"),
                 CallbackQueryHandler(paid_subscription.preview_paid_subscription, pattern="^paid_subscription_"),
                 CallbackQueryHandler(main.voice_set, pattern="^record$"),
+                CallbackQueryHandler(main.voice_set_0, pattern="^voice_set_0$"),
+                CallbackQueryHandler(main.pitch_setting, pattern="^voice_set_sub$"),
+                CallbackQueryHandler(main.pitch_setting, pattern="^voice_set_add$")
             ],
-             VOICE_PROCESS: [
-                 nested_conv
+            WAITING: [
+                CallbackQueryHandler(main.check_status, pattern='^check_status$')
             ]
         }
 

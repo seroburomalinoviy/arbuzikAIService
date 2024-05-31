@@ -392,7 +392,7 @@ async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
             ]
         )
     )
-    return VOICE_PROCESS
+    return BASE_STATES
 
 
 @log_journal
@@ -504,7 +504,7 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup=InlineKeyboardMarkup(keyboards.check_status)
     )
 
-    return ConversationHandler.WAITING
+    return WAITING
 
 
 @log_journal
