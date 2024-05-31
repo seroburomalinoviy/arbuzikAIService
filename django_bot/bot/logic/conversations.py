@@ -14,6 +14,7 @@ base_states = {
                 CallbackQueryHandler(search.search_all, pattern="^search_all$"),
                 CallbackQueryHandler(paid_subscription.show_paid_subscriptions, pattern="^paid_subscriptions$"),
                 CallbackQueryHandler(paid_subscription.preview_paid_subscription, pattern="^paid_subscription_"),
+                CallbackQueryHandler(main.voice_set, pattern="^record$"),
                 CallbackQueryHandler(main.voice_set_0, pattern="^voice_set_0$"),
                 CallbackQueryHandler(main.pitch_setting, pattern="^voice_set_sub$"),
                 CallbackQueryHandler(main.pitch_setting, pattern="^voice_set_add$")
@@ -21,39 +22,13 @@ base_states = {
         }
 
 
-class StartConversationHandler(BaseConversationHandler):
-
-    def entrypoints(self):
-        return [
-                CommandHandler("start", StartHandler()),
-            ]
-
-    def states(self):
-        return base_states
-
-    def fallbacks(self):
-        return [CommandHandler("cancel", CancelHandler())]
-
-
 class MainConversationHandler(BaseConversationHandler):
 
     def entrypoints(self):
         return [
-                CommandHandler("menu", main.category_menu),
-            ]
-
-    def states(self):
-        return base_states
-
-    def fallbacks(self):
-        return [CommandHandler("cancel", CancelHandler())]
-
-
-class VoiceConversationHandler(BaseConversationHandler):
-
-    def entrypoints(self):
-        return [
+                CommandHandler("start", StartHandler()),
                 MessageHandler(filters.TEXT, main.voice_preview),
+                CommandHandler("menu", main.category_menu)
             ]
 
     def states(self):
