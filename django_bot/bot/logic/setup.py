@@ -5,7 +5,7 @@ from bot.handlers.main import inline_query
 from bot.handlers.search import search_all
 from bot.logic.conversations import (
     MainConversationHandler,
-    AudioConversationHandler,
+    # AudioConversationHandler,
     # VoiceConversationHandler
 )
 
@@ -23,7 +23,7 @@ async def on_result_chosen(update: Update, context: tg_ext.ContextTypes.DEFAULT_
 def init_handlers(application: tg_ext.Application):
     main = MainConversationHandler()
     # voice = VoiceConversationHandler()
-    audio = AudioConversationHandler()
+    # audio = AudioConversationHandler()
 
     # Main
     application.add_handler(
@@ -53,12 +53,12 @@ def init_handlers(application: tg_ext.Application):
     #     )
     # )
 
-    application.add_handler(
-        tg_ext.ConversationHandler(
-            entry_points=audio.entrypoints(),
-            states=audio.states(),
-            fallbacks=audio.fallbacks(),
-        )
-    )
+    # application.add_handler(
+    #     tg_ext.ConversationHandler(
+    #         entry_points=audio.entrypoints(),
+    #         states=audio.states(),
+    #         fallbacks=audio.fallbacks(),
+    #     )
+    # )
 
     return application

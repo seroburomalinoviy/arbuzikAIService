@@ -18,6 +18,9 @@ base_states = {
                 CallbackQueryHandler(main.voice_set_0, pattern="^voice_set_0$"),
                 CallbackQueryHandler(main.pitch_setting, pattern="^voice_set_sub$"),
                 CallbackQueryHandler(main.pitch_setting, pattern="^voice_set_add$")
+            ],
+            WAITING: [
+                CallbackQueryHandler(main.check_status, pattern='^check_status$')
             ]
         }
 
@@ -28,6 +31,8 @@ class MainConversationHandler(BaseConversationHandler):
         return [
                 CommandHandler("start", StartHandler()),
                 CommandHandler("menu", main.category_menu),
+                MessageHandler(filters.VOICE & ~filters.COMMAND, main.voice_process),
+                MessageHandler(filters.AUDIO & ~filters.COMMAND, main.audio_process),
                 MessageHandler(filters.TEXT, main.voice_preview)
             ]
 
@@ -37,22 +42,22 @@ class MainConversationHandler(BaseConversationHandler):
     def fallbacks(self):
         return [CommandHandler("cancel", CancelHandler())]
 
-
-class AudioConversationHandler(BaseConversationHandler):
-
-    def entrypoints(self):
-        return [
-                MessageHandler(filters.VOICE & ~filters.COMMAND, main.voice_process),
-                MessageHandler(filters.AUDIO & ~filters.COMMAND, main.audio_process)
-        ]
-
-    def states(self):
-        return {
-            WAITING:[
-                CallbackQueryHandler(main.check_status, pattern='^check_status$')
-            ]
-        }
-
-    def fallbacks(self):
-        return [CommandHandler("cancel", CancelHandler())]
-
+#
+# class AudioConversationHandler(BaseConversationHandler):
+#
+#     def entrypoints(self):
+#         return [
+#                 MessageHandler(filters.VOICE & ~filters.COMMAND, main.voice_process),
+#                 MessageHandler(filters.AUDIO & ~filters.COMMAND, main.audio_process)
+#         ]
+#
+#     def states(self):
+#         return {
+#             WAITING:[
+#                 CallbackQueryHandler(main.check_status, pattern='^check_status$')
+#             ]
+#         }
+#
+#     def fallbacks(self):
+#         return [CommandHandler("cancel", CancelHandler())]
+#
