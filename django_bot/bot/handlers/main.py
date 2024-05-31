@@ -487,7 +487,7 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await push_amqp_message(json.dumps(payload))
     # todo: write to db
 
-    return BASE_STATES
+    return WAITING
 
 
 @log_journal
