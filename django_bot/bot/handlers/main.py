@@ -16,7 +16,7 @@ from bot.logic.utils import (get_moscow_time, log_journal, save_model, get_objec
 
 
 from telegram.constants import ParseMode
-from telegram.ext import ContextTypes, ConversationHandler
+from telegram.ext import ContextTypes, ConversationHandler, ApplicationHandlerStop
 from telegram import (Update, InlineKeyboardMarkup, InlineKeyboardButton, InlineQueryResultArticle,
                       InputTextMessageContent, InlineQueryResultsButton)
 
@@ -451,7 +451,7 @@ async def pitch_setting(update: Update, context: ContextTypes.DEFAULT_TYPE):
             ]
         )
     )
-    return ConversationHandler.END
+    return BASE_STATES
 
 
 @log_journal
@@ -487,10 +487,6 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await voice.download_to_drive(custom_path=voice_path)  # download voice file to host
     logger.info(f'JOURNAL: Voice {slug_voice} downloaded to {voice_path} for user - {user_id} - tg_id')
 
-    await update.message.reply_text(
-        message_text.conversation_end,
-        reply_markup=InlineKeyboardMarkup(keyboards.check_status)
-    )
     payload = {
         "user_id": user_id,
         "chat_id": chat_id,
@@ -503,7 +499,12 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await push_amqp_message(json.dumps(payload))
     # todo: write to db
 
-    return -2
+    await update.message.reply_text(
+        message_text.conversation_end,
+        reply_markup=InlineKeyboardMarkup(keyboards.check_status)
+    )
+
+    return WAITING
 
 
 @log_journal
@@ -521,7 +522,7 @@ async def check_status(update: Update, context: ContextTypes.DEFAULT_TYPE):
         text=message_text.check_status_text,
         reply_markup=InlineKeyboardMarkup(keyboards.check_status)
     )
-    return -2
+    return ApplicationHandlerStop(BASE_STATES)
 
 
 @log_journal
