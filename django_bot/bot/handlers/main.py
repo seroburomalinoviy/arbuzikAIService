@@ -14,9 +14,11 @@ from bot.logic.constants import *
 from bot.logic.utils import (get_moscow_time, log_journal, save_model, get_object,
                    get_or_create_objets, filter_objects)
 
+
+from telegram.constants import ParseMode
+from telegram.ext import ContextTypes, ConversationHandler
 from telegram import (Update, InlineKeyboardMarkup, InlineKeyboardButton, InlineQueryResultArticle,
                       InputTextMessageContent, InlineQueryResultsButton)
-from telegram.ext import ContextTypes, ConversationHandler
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 django.setup()
@@ -162,12 +164,14 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await query.answer()
         await query.edit_message_text(
             message_text.category_menu,
-            reply_markup=InlineKeyboardMarkup(keyboard)
+            reply_markup=InlineKeyboardMarkup(keyboard),
+            parse_mode=ParseMode.MARKDOWN_V2
         )
     else:
         await update.message.reply_text(
             message_text.category_menu,
-            reply_markup=InlineKeyboardMarkup(keyboard)
+            reply_markup=InlineKeyboardMarkup(keyboard),
+            parse_mode=ParseMode.MARKDOWN_V2
         )
 
     return BASE_STATES

@@ -23,18 +23,17 @@ class StartHandler(BaseCommandHandler):
         return BASE_STATES
 
 
-class VoiceChangeHandler(BaseCommandHandler):
+class MenuHandler(BaseCommandHandler):
     async def __call__(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        ...
+        await update.message.reply_text(
+            message_text.subscription_question,
+            reply_markup=InlineKeyboardMarkup(keyboards.check_subscription)
+        )
+        return BASE_STATES
 
 
 class HelpHandler(BaseCommandHandler):
     def __call__(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        ...
-
-
-class StatusHandler(BaseCommandHandler):
-    async def __call__(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         ...
         
         
@@ -44,11 +43,6 @@ class PitchHandler(BaseCommandHandler):
 
 
 class ProfileHandler(BaseCommandHandler):
-    def __call__(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        ...
-
-
-class MenuHandler(BaseCommandHandler):
     def __call__(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         ...
 
