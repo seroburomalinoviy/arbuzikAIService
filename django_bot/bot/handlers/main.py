@@ -227,7 +227,7 @@ async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return BASE_STATES
 
 
-# @log_journal
+@log_journal
 async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Меню выбора голосов
@@ -268,7 +268,7 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return ConversationHandler.END
 
 
-# @log_journal
+@log_journal
 async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Превью голоса
@@ -363,7 +363,7 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return BASE_STATES
 
 
-# @log_journal
+@log_journal
 async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Представление голоса
@@ -522,7 +522,7 @@ async def check_status(update: Update, context: ContextTypes.DEFAULT_TYPE):
         text=message_text.check_status_text,
         reply_markup=InlineKeyboardMarkup(keyboards.check_status)
     )
-    return ApplicationHandlerStop(BASE_STATES)
+    raise ApplicationHandlerStop(BASE_STATES)
 
 
 @log_journal
