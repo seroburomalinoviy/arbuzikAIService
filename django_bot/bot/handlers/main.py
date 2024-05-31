@@ -219,7 +219,7 @@ async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     category = await get_object(Category, id=current_category_id)
     await query.edit_message_text(
-        category.title + '\n' + category.description,
+        f'*{category.title}*\n{category.description}',
         reply_markup=InlineKeyboardMarkup(keyboard),
         parse_mode=ParseMode.MARKDOWN_V2
     )
