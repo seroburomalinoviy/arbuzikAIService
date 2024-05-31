@@ -220,13 +220,14 @@ async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     category = await get_object(Category, id=current_category_id)
     await query.edit_message_text(
         category.title + '\n' + category.description,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode=ParseMode.MARKDOWN_V2
     )
 
     return BASE_STATES
 
 
-@log_journal
+# @log_journal
 async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Меню выбора голосов
@@ -267,7 +268,7 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return ConversationHandler.END
 
 
-@log_journal
+# @log_journal
 async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Превью голоса
@@ -351,7 +352,7 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return BASE_STATES
 
 
-@log_journal
+# @log_journal
 async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Представление голоса
