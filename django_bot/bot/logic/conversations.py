@@ -27,8 +27,8 @@ class MainConversationHandler(BaseConversationHandler):
     def entrypoints(self):
         return [
                 CommandHandler("start", StartHandler()),
-                MessageHandler(filters.TEXT, main.voice_preview),
-                CommandHandler("menu", main.category_menu)
+                CommandHandler("menu", main.category_menu),
+                MessageHandler(filters.TEXT, main.voice_preview)
             ]
 
     def states(self):
