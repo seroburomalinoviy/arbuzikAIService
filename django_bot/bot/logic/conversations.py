@@ -2,9 +2,7 @@ from bot.structures.base_classes import BaseConversationHandler
 from bot.logic.commands import CancelHandler, StartHandler, MenuHandler
 
 from bot.handlers import main, search, paid_subscription, favorite
-from bot.logic.constants import (
-AUDIO, PARAMETRS, START_ROUTES, WAITING, END_ROUTES, VOICE_PROCESSING, CHOOSE_VOICE, SETUP_VOICE
-)
+from bot.logic.constants import *
 
 from telegram.ext import CommandHandler, MessageHandler, filters, CallbackQueryHandler
 
@@ -22,12 +20,10 @@ class MainConversationHandler(BaseConversationHandler):
                 CallbackQueryHandler(main.subscription, pattern="^subscription"),
                 CallbackQueryHandler(main.category_menu, pattern="^category_menu$"),
                 CallbackQueryHandler(main.subcategory_menu, pattern="^category_"),
-                # CallbackQueryHandler(main.get_back, pattern="^back$"),
-
-                # CallbackQueryHandler(search.search_all, pattern="^search_all$"),
-                # CallbackQueryHandler(paid_subscription.show_paid_subscriptions, pattern="^paid_subscriptions$"),
-                # CallbackQueryHandler(paid_subscription.preview_paid_subscription, pattern="^paid_subscription_"),
-                # CommandHandler('menu', main.category_menu)
+                CallbackQueryHandler(search.search_all, pattern="^search_all$"),
+                CallbackQueryHandler(paid_subscription.show_paid_subscriptions, pattern="^paid_subscriptions$"),
+                CallbackQueryHandler(paid_subscription.preview_paid_subscription, pattern="^paid_subscription_"),
+                CommandHandler('menu', main.category_menu)
             ]
         }
 
@@ -46,18 +42,16 @@ class VoiceConversationHandler(BaseConversationHandler):
             SETUP_VOICE: [
                 MessageHandler(filters.TEXT, main.voice_preview),
                 CallbackQueryHandler(main.voice_set, pattern="^record"),
-                # CallbackQueryHandler(main.category_menu, pattern="^category_menu$"),
-                # CallbackQueryHandler(main.voice_preview, pattern="^voice_preview$"),
+                CallbackQueryHandler(main.category_menu, pattern="^category_menu$"),
                 CallbackQueryHandler(main.voice_set_0, pattern="^voice_set_0$"),
                 CallbackQueryHandler(main.pitch_setting, pattern="^voice_set_sub$"),
                 CallbackQueryHandler(main.pitch_setting, pattern="^voice_set_add$"),
-                # CommandHandler('menu', main.category_menu)
+                CommandHandler('menu', main.category_menu)
             ]
         }
 
     def fallbacks(self):
-        # todo: try change on cancel handler command
-        return [CallbackQueryHandler(main.category_menu, pattern="^category_menu")]
+        return [CommandHandler("cancel", CancelHandler())]
 
 
 class AudioConversationHandler(BaseConversationHandler):
@@ -70,7 +64,7 @@ class AudioConversationHandler(BaseConversationHandler):
 
     def states(self):
         return {
-            WAITING: [
+            GET_RESULT: [
                 CallbackQueryHandler(main.check_status, pattern='^check_status$')
             ]
         }

@@ -10,9 +10,7 @@ import json
 
 from bot.logic import message_text, keyboards
 from bot.logic.amqp_driver import push_amqp_message
-from bot.logic.constants import (
-    PARAMETRS, START_ROUTES, END_ROUTES, WAITING, VOICE_PROCESSING, SUBSCRIBE_CHANNEL, CHOOSE_VOICE, SETUP_VOICE
-)
+from bot.logic.constants import *
 from bot.logic.utils import (get_moscow_time, log_journal, save_model, get_object,
                    get_or_create_objets, filter_objects)
 
@@ -212,11 +210,8 @@ async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
                                      )
             ]
         )
-    keyboard.append(
-        [
-            InlineKeyboardButton('⏪ Вернуться назад', callback_data='category_menu')
-        ]
-    )  # add button
+    # category menu button
+    keyboard.append(keyboards.category_menu)
 
     category = await get_object(Category, id=current_category_id)
     await query.edit_message_text(
@@ -224,7 +219,7 @@ async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
 
-    return -1
+    return ConversationHandler.END
 
 
 @log_journal
@@ -265,7 +260,7 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
     await update.inline_query.answer(results, cache_time=100, auto_pagination=True)
     # await context.bot.answer_inline_query(update.inline_query.id, results)
-    return -1
+    return ConversationHandler.END
 
 
 @log_journal
@@ -440,7 +435,7 @@ async def pitch_setting(update: Update, context: ContextTypes.DEFAULT_TYPE):
             ]
         )
     )
-    return SETUP_VOICE
+    return ConversationHandler.END
 
 
 @log_journal
@@ -492,7 +487,7 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await push_amqp_message(json.dumps(payload))
     # todo: write to db
 
-    return SETUP_VOICE
+    return GET_RESULT
 
 
 @log_journal
@@ -510,7 +505,7 @@ async def check_status(update: Update, context: ContextTypes.DEFAULT_TYPE):
         text=message_text.check_status_text,
         reply_markup=InlineKeyboardMarkup(keyboards.check_status)
     )
-    return SETUP_VOICE
+    return GET_RESULT
 
 
 @log_journal
