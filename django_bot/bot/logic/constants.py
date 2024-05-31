@@ -1,1 +1,1 @@
-BASE_STATES, WAITING = range(1)
+BASE_STATES, WAITING = range(2)
