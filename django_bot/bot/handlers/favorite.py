@@ -7,7 +7,7 @@ from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.constants import ParseMode
 from telegram.ext import ContextTypes
 
-from bot.logic.utils import get_object, filter_objects, log_journal, save_model, many_rel_add
+from bot.logic.utils import get_object, filter_objects, log_journal, save_model
 from bot.logic.constants import *
 from bot.logic import message_text
 
@@ -41,7 +41,7 @@ async def add(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await voice_add_favorite(user, voice)
 
     await query.edit_message_text(
-        text=message_text.format(title=voice.title) + '\n' + message_text.voice_preview,
+        text=message_text.format(title=voice.title),
         parse_mode=ParseMode.HTML,
         reply_markup=InlineKeyboardMarkup(
             [
