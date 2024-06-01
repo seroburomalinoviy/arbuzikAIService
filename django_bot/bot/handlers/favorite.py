@@ -14,7 +14,7 @@ from bot.logic import message_text
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 django.setup()
 
-from bot.models import Voice
+from bot.models import Voice, Subscription
 from user.models import User
 
 logger = logging.getLogger(__name__)
@@ -27,14 +27,14 @@ async def add(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     slug_voice = query.data.split('favorite-add-')[1]
 
-    user = await get_object(User, telegram_id=query.from_user.id)
-    user_subscription = user.subscription
+    user_subscription = await get_object(Subscription, users__telegram_id=query.from_user.id)
     voice = await get_object(Voice, slug_voice=slug_voice, subcategory__category__subscription=user_subscription)
+    user = await get_object(User, telegram_id=query.from_user.id)
 
     user.favorites.add(voice)
 
     await query.edit_message_text(
-        text=message_text.format(title=voice.title),
+        text=message_text.format(title=voice.title) + '\n' + message_text.voice_preview,
         parse_mode=ParseMode.HTML,
         reply_markup=InlineKeyboardMarkup(
             [
@@ -51,8 +51,10 @@ async def add(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 @log_journal
 async def remove(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.callback_query.answer()
+    query = update.callback_query
+    await query.answer()
 
+    slug_voice = query.data.split('favorite-remove-')[1]
 
 
     return BASE_STATES
