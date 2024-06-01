@@ -10,7 +10,7 @@ from bot.logic.utils import log_journal, get_object
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 django.setup()
 
-from bot.models import Voice, Subscription, MediData
+from bot.models import Voice, Subscription, MediaData
 
 
 @log_journal
