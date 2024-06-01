@@ -2,7 +2,7 @@ import telegram.ext as tg_ext
 from telegram import Update
 
 from bot.handlers.main import voice_inline_query
-from bot.handlers.search import search_all
+from bot.handlers import search
 from bot.handlers import favorite
 from bot.logic.conversations import (
     MainConversationHandler,
@@ -35,11 +35,11 @@ def init_handlers(application: tg_ext.Application):
     # Inline for favorites
     application.add_handler(tg_ext.InlineQueryHandler(favorite.roll_out, pattern='^favorites$'))
 
+    # Inline for search
+    application.add_handler(tg_ext.InlineQueryHandler(search.search_all))
+
     # Inline for Voice
     application.add_handler(tg_ext.InlineQueryHandler(voice_inline_query))
-
-    # Inline for search
-    # application.add_handler(tg_ext.InlineQueryHandler(search_all, pattern='^search_'))
 
     # ChosenInlineResult
     # application.add_handler(tg_ext.ChosenInlineResultHandler(on_result_chosen))
