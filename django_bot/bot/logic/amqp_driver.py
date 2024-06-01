@@ -23,19 +23,6 @@ sentry_sdk.init(
 )
 
 
-def convert_to_voice(input_path: str, output_path: str) -> None:
-    """
-    Creates a new file with `opus` format using `libopus` plugin. The new file can be recognized as a voice message by
-    Telegram.
-
-    :param input_path: str: The path of the input file
-    :param output_path: str: The output path of the converted file
-    """
-    os.system(
-        f"ffmpeg -i {input_path} -c:a libopus -b:a 32k -vbr on "
-        f"-compression_level 10 -frame_duration 60 -application voip"
-        f" {output_path}")
-
 async def send_answer(message):
     """
     Send voice to user from RVC-NN
@@ -45,14 +32,12 @@ async def send_answer(message):
     chat_id = payload.get('chat_id')
     voice_id = payload.get('voice_id')
     voice_path = os.environ.get('USER_VOICES_PROCESSED_VOLUME') + '/' + voice_id
-    output_path = f"{voice_path}.opus"
+    # output_path = f"{voice_path}.opus"
     # $url = 'https://api.telegram.org/bot'.token.'/sendVideo?chat_id='.uid."&video=".$file."&caption="
-    convert_to_voice(voice_path, output_path)
     logger.info(f'voice_path: {voice_path}')
-    logger.info(f'output_path: {output_path}')
     # await bot.send_message(chat_id=chat_id, text='Получай сука')
 
-    await bot.send_voice(chat_id=chat_id, voice=open(output_path, 'rb'))
+    await bot.send_voice(chat_id=chat_id, voice=open(voice_path, 'rb'))
 
 
 async def push_amqp_message(payload):

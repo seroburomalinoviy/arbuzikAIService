@@ -52,6 +52,20 @@ def _create_connection():
     return pika.BlockingConnection(param)
 
 
+def convert_to_voice(input_path: str, output_path: str) -> None:
+    """
+    Creates a new file with `opus` format using `libopus` plugin. The new file can be recognized as a voice message by
+    Telegram.
+
+    :param input_path: str: The path of the input file
+    :param output_path: str: The output path of the converted file
+    """
+    os.system(
+        f"ffmpeg -i {input_path} -c:a libopus -b:a 32k -vbr on "
+        f"-compression_level 10 -frame_duration 60 -application voip"
+        f" {output_path}")
+
+
 def push_amqp_message(payload):
     queue_name = "rvc-to-bot" # ???
     routing_key = "rvc-to-bot"
@@ -103,7 +117,8 @@ async def reader(channel: aioredis.client.PubSub):
                     except Exception as e:
                         logger.info(f'Have an error: {e}')
                     logger.info(f'NN finished for: {perf_counter() - start}')
-
+                    voice_path = rf"weights/{infer_parameters['output_file_name']}"
+                    convert_to_voice(voice_path, voice_path)
                     payload = {
                         "user_id": user_id,
                         "chat_id": chat_id,
