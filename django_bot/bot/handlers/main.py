@@ -165,13 +165,13 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await query.edit_message_text(
             message_text.category_menu,
             reply_markup=InlineKeyboardMarkup(keyboard),
-            parse_mode=ParseMode.MARKDOWN_V2
+            parse_mode=ParseMode.HTML
         )
     else:
         await update.message.reply_text(
             message_text.category_menu,
             reply_markup=InlineKeyboardMarkup(keyboard),
-            parse_mode=ParseMode.MARKDOWN_V2
+            parse_mode=ParseMode.HTML
         )
 
     return BASE_STATES
@@ -219,9 +219,9 @@ async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     category = await get_object(Category, id=current_category_id)
     await query.edit_message_text(
-        f'*{category.title}*\n{category.description}',
+        f'<strong>{category.title}</strong>\n{category.description}',
         reply_markup=InlineKeyboardMarkup(keyboard),
-        parse_mode=ParseMode.MARKDOWN_V2
+        parse_mode=ParseMode.HTML
     )
 
     return BASE_STATES
@@ -437,7 +437,7 @@ async def pitch_setting(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await query.edit_message_text(
         message_text.voice_set.format(name=slug_voice),
-        parse_mode=ParseMode.MARKDOWN_V2,
+        parse_mode=ParseMode.HTML,
         reply_markup=InlineKeyboardMarkup(
             [
                 [
