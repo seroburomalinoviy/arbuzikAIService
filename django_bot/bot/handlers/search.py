@@ -6,6 +6,8 @@ from telegram import Update, InlineQueryResultArticle, InputTextMessageContent
 from telegram.ext import ContextTypes, ConversationHandler
 
 from bot.logic.utils import log_journal, get_object
+from bot.logic.constants import *
+
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 django.setup()
@@ -13,6 +15,11 @@ django.setup()
 from bot.models import Voice, Subscription, MediaData
 
 
+@log_journal
+async def search_all(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+
+    return BASE_STATES
 
 
 @log_journal

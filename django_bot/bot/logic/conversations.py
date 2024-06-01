@@ -24,7 +24,6 @@ class MainConversationHandler(BaseConversationHandler):
                 CallbackQueryHandler(main.subscription, pattern="^subscription"),
                 CallbackQueryHandler(main.category_menu, pattern="^category_menu$"),
                 CallbackQueryHandler(main.subcategory_menu, pattern="^category_"),
-                CallbackQueryHandler(search.search_all, pattern="^search_all$"),
                 CallbackQueryHandler(paid_subscription.show_paid_subscriptions, pattern="^paid_subscriptions$"),
                 CallbackQueryHandler(paid_subscription.preview_paid_subscription, pattern="^paid_subscription_"),
                 CallbackQueryHandler(main.voice_set, pattern="^record$"),
