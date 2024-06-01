@@ -10,15 +10,15 @@ import json
 
 from bot.logic import message_text, keyboards
 from bot.logic.amqp_driver import push_amqp_message
-from bot.logic.constants import (
-    PARAMETRS, START_ROUTES, END_ROUTES, WAITING, VOICE_PROCESSING
-)
+from bot.logic.constants import *
 from bot.logic.utils import (get_moscow_time, log_journal, save_model, get_object,
                    get_or_create_objets, filter_objects)
 
+
+from telegram.constants import ParseMode
+from telegram.ext import ContextTypes, ConversationHandler, ApplicationHandlerStop
 from telegram import (Update, InlineKeyboardMarkup, InlineKeyboardButton, InlineQueryResultArticle,
                       InputTextMessageContent, InlineQueryResultsButton)
-from telegram.ext import ContextTypes, ConversationHandler
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 django.setup()
@@ -96,14 +96,14 @@ async def subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
             message_text.demo_rights,
             reply_markup=InlineKeyboardMarkup(keyboards.is_subscribed)
         )
-        return START_ROUTES
+        return BASE_STATES
     elif is_member.status in unresolved_user_statuses:
         await query.answer(text='Сначала подпишись :)')
         await update.message.reply_text(
             message_text.subscription_check,
             reply_markup=InlineKeyboardMarkup(keyboards.check_subscription)
         )
-        return START_ROUTES
+        return BASE_STATES
 
 
 @log_journal
@@ -164,15 +164,17 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await query.answer()
         await query.edit_message_text(
             message_text.category_menu,
-            reply_markup=InlineKeyboardMarkup(keyboard)
+            reply_markup=InlineKeyboardMarkup(keyboard),
+            parse_mode=ParseMode.HTML
         )
     else:
         await update.message.reply_text(
             message_text.category_menu,
-            reply_markup=InlineKeyboardMarkup(keyboard)
+            reply_markup=InlineKeyboardMarkup(keyboard),
+            parse_mode=ParseMode.HTML
         )
 
-    return START_ROUTES
+    return BASE_STATES
 
 
 @log_journal
@@ -212,15 +214,17 @@ async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
                                      )
             ]
         )
-    keyboard.append(keyboards.category_menu)  # add button
+    # category menu button
+    keyboard.append(keyboards.category_menu)
 
     category = await get_object(Category, id=current_category_id)
     await query.edit_message_text(
-        category.title + '\n' + category.description,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        f'<strong>{category.title}</strong>\n{category.description}',
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode=ParseMode.HTML
     )
 
-    return ConversationHandler.END
+    return BASE_STATES
 
 
 @log_journal
@@ -260,6 +264,7 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
         )
     await update.inline_query.answer(results, cache_time=100, auto_pagination=True)
+    # await context.bot.answer_inline_query(update.inline_query.id, results)
     return ConversationHandler.END
 
 
@@ -299,7 +304,9 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return ConversationHandler.END
 
     # if update.message: # todo ест ли случаи когда нет update.message ?
-    slug_voice = update.message.text
+
+    # Ограничение на количество символов - безопасность
+    slug_voice = update.message.text[0:50]
     context.user_data['slug_voice'] = slug_voice
 
     if not context.user_data.get(f'pitch_{update.message.text}'):
@@ -316,7 +323,16 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if slug_voice in voice.slug_voice:
             button_favorite = ('Удалить из избранного', 'favorite-remove')
 
-    voice_media_data = await get_object(MediaData, slug=slug_voice)
+    try:
+        voice_media_data = await get_object(MediaData, slug=slug_voice)
+    except Exception as e:
+        logger.warning(f'Voice {slug_voice} DOES NOT EXIST: {e}')
+        await update.message.reply_text(
+            text='Такой модели не существует попробуйте еще раз',
+            reply_markup=InlineKeyboardMarkup(keyboards.is_subscribed)
+        )
+        return BASE_STATES
+
     demka_path = voice_media_data.demka.path
 
     try:
@@ -335,7 +351,7 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
             [
                 [
                     InlineKeyboardButton('⏪ Вернуться в меню', callback_data='category_menu'),
-                    InlineKeyboardButton('🔴Начать запись', callback_data="record"),
+                    InlineKeyboardButton('🔴Начать запись', callback_data='record'),
 
                 ],
                 [
@@ -344,7 +360,7 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
             ]
         )
     )
-    return VOICE_PROCESSING
+    return BASE_STATES
 
 
 @log_journal
@@ -363,6 +379,7 @@ async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await query.edit_message_text(
         message_text.voice_set.format(name=slug_voice),
+        parse_mode=ParseMode.HTML,
         reply_markup=InlineKeyboardMarkup(
             [
                 [
@@ -376,7 +393,7 @@ async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
             ]
         )
     )
-    return VOICE_PROCESSING
+    return BASE_STATES
 
 
 @log_journal
@@ -392,7 +409,8 @@ async def voice_set_0(update: Update, context: ContextTypes.DEFAULT_TYPE):
     slug_voice = context.user_data.get('slug_voice')
     pitch = context.user_data.get(f'pitch_{slug_voice}') if context.user_data.get(f'pitch_{slug_voice}') else "0"
     await query.answer(f'Тональность {pitch}')
-    return VOICE_PROCESSING
+
+    return BASE_STATES
 
 
 @log_journal
@@ -420,6 +438,7 @@ async def pitch_setting(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await query.edit_message_text(
         message_text.voice_set.format(name=slug_voice),
+        parse_mode=ParseMode.HTML,
         reply_markup=InlineKeyboardMarkup(
             [
                 [
@@ -433,7 +452,7 @@ async def pitch_setting(update: Update, context: ContextTypes.DEFAULT_TYPE):
             ]
         )
     )
-    return VOICE_PROCESSING
+    return BASE_STATES
 
 
 @log_journal
@@ -463,16 +482,12 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     voice_model_pth = str(voice_media_data.model_pth)
     voice_model_index = str(voice_media_data.model_index)
 
-    logger.info(f'\n\nvoice_model_pth = {voice_model_pth}')
-    logger.info(f'voice_model_index = {voice_model_index}\n\n')
+    logger.debug(f'{voice_model_pth=}')
+    logger.debug(f'{voice_model_index=}')
 
     await voice.download_to_drive(custom_path=voice_path)  # download voice file to host
-    logger.info(f'The voice file with name {user_id} downloaded to {voice_path}')
+    logger.info(f'JOURNAL: Voice {slug_voice} downloaded to {voice_path} for user - {user_id} - tg_id')
 
-    await update.message.reply_text(
-        message_text.conversation_end,
-        reply_markup=InlineKeyboardMarkup(keyboards.check_status)
-    )
     payload = {
         "user_id": user_id,
         "chat_id": chat_id,
@@ -485,6 +500,29 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await push_amqp_message(json.dumps(payload))
     # todo: write to db
 
+    await update.message.reply_text(
+        message_text.conversation_end,
+        reply_markup=InlineKeyboardMarkup(keyboards.check_status)
+    )
+
+    return WAITING
+
+
+@log_journal
+async def check_status(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """
+    Заглушка проверки состояния обработки запроса преобразования аудио нейросетью
+    :param update:
+    :param context:
+    :return:
+    """
+    query = update.callback_query
+    await query.answer()
+
+    await query.edit_message_text(
+        text=message_text.check_status_text,
+        reply_markup=InlineKeyboardMarkup(keyboards.check_status)
+    )
     return WAITING
 
 

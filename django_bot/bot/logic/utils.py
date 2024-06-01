@@ -53,8 +53,6 @@ def log_journal(func):
             _id = 'Not found'
 
         logger.info(f'JOURNAL: {func.__name__} - was called for user - {_id} - tg_id')
-        await func(*args, **kwargs)
-        logger.info(f'JOURNAL: {func.__name__} - was returned to user - {_id} - tg_id')
-        return
+        return await func(*args, **kwargs)
     return wrapper
 
