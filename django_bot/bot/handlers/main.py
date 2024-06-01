@@ -238,7 +238,7 @@ async def voice_inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE)
     """
     subscription_name = context.user_data['subscription_name']
 
-    slug_subcategory = update.inline_query.query
+    slug_subcategory = update.inline_query.query.split('voice_')[1]
     if not slug_subcategory:
         return
     context.user_data['slug_subcategory'] = slug_subcategory
