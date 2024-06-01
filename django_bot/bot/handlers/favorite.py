@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 @sync_to_async
 def voice_add_favorite(model, arg):
-    model.favorite.add(arg)
+    model.favorites.add(arg)
     return
 
 
