@@ -64,3 +64,4 @@ all_paid_subs = """
 ⚡️ Сохраняй понравившийся голос в избранное."""
 
 favorite_added = """Модель <strong>{title}</strong> добавлена в избранное!"""
+favorite_deleted = """Модель <strong>{title}</strong> удалена из избранного!"""

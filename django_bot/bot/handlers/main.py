@@ -313,13 +313,6 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not context.user_data.get(f'pitch_{update.message.text}'):
         context.user_data[f'pitch_{update.message.text}'] = 0
 
-    favorite_voices = []
-    try:
-        favorite_voices = await filter_objects(User, favorites__slug_voice=slug_voice,
-                                               subcategory__category__subscription__title=subscription_name)
-    except Exception as e:
-        logger.warning(f'{e}')
-
     button_favorite = ('⭐ В избранное', f'favorite-add-{slug_voice}')
     async for voice in Voice.objects.filter(
             user=user,

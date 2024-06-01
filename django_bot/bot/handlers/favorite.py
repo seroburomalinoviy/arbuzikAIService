@@ -27,6 +27,12 @@ def voice_add_favorite(model, arg):
     return
 
 
+@sync_to_async
+def voice_delete_favorite(model, arg):
+    model.favorites.delete(arg)
+    return
+
+
 @log_journal
 async def add(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
@@ -63,5 +69,23 @@ async def remove(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     slug_voice = query.data.split('favorite-remove-')[1]
 
+    user_subscription = await get_object(Subscription, users__telegram_id=query.from_user.id)
+    voice = await get_object(Voice, slug_voice=slug_voice, subcategory__category__subscription=user_subscription)
+    user = await get_object(User, telegram_id=query.from_user.id)
+
+    await voice_delete_favorite(user, voice)
+
+    await query.edit_message_text(
+        text=message_text.favorite_deleted.format(title=voice.title),
+        parse_mode=ParseMode.HTML,
+        reply_markup=InlineKeyboardMarkup(
+            [
+                [
+                    InlineKeyboardButton('⏪ Вернуться в меню', callback_data='category_menu'),
+                    InlineKeyboardButton('🔴Начать запись', callback_data='record'),
+                ]
+            ]
+        )
+    )
 
     return BASE_STATES
