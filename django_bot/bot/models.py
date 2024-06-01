@@ -84,7 +84,7 @@ class MediaData(models.Model):
     )
     model_pth = models.FileField(
         'Файл pth',
-        upload_to='voices/',
+        upload_to='models/',
         editable=True,
         null=True,
         blank=True,  # todo: change on Prod
@@ -92,7 +92,7 @@ class MediaData(models.Model):
     )
     model_index = models.FileField(
         'Файл index',
-        upload_to='voices/',
+        upload_to='models/',
         editable=True,
         null=True,
         blank=True,  # todo: change on Prod

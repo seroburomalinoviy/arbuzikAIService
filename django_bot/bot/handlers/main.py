@@ -140,7 +140,8 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
                                       subscription__title=subscription_name)
     len_cat = len(categories)
 
-    keyboard = [keyboards.search_all_voices]  # add button
+    # Кнопки Поиск по всем голосам и Избранное
+    keyboard = [keyboards.search_all_voices, keyboards.favorites]
     async for i, _ in a.enumerate(categories[0:int(len_cat / 2)]):
         keyboard.append(
             [
@@ -228,7 +229,7 @@ async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 @log_journal
-async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def voice_inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Меню выбора голосов
     :param update:
@@ -303,6 +304,7 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return ConversationHandler.END
 
+    subscription_name = context.user_data['subscription_name']
     # if update.message: # todo ест ли случаи когда нет update.message ?
 
     # Ограничение на количество символов - безопасность
@@ -312,16 +314,14 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not context.user_data.get(f'pitch_{update.message.text}'):
         context.user_data[f'pitch_{update.message.text}'] = 0
 
-    favorite_voices = []
-    try:
-        favorite_voices = await filter_objects(User, favorites__slug_voice=slug_voice)
-    except Exception as e:
-        logger.warning(f'{e}')
-
-    button_favorite = ('⭐ В избранное', 'favorite-add')
-    for voice in favorite_voices:
+    button_favorite = ('⭐ В избранное', f'favorite-add-{slug_voice}')
+    async for voice in Voice.objects.filter(
+            user=user,
+            user__favorites__slug_voice=slug_voice,
+            subcategory__category__subscription__title=subscription_name
+    ):
         if slug_voice in voice.slug_voice:
-            button_favorite = ('Удалить из избранного', 'favorite-remove')
+            button_favorite = ('Удалить из избранного', f'favorite-remove-{slug_voice}')
 
     try:
         voice_media_data = await get_object(MediaData, slug=slug_voice)
@@ -479,8 +479,8 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     slug = context.user_data.get('slug_voice')
     voice_media_data: MediaData = await get_object(MediaData, slug=slug)
-    voice_model_pth = str(voice_media_data.model_pth)
-    voice_model_index = str(voice_media_data.model_index)
+    voice_model_pth = str(voice_media_data.model_pth).split('models/')[1]
+    voice_model_index = str(voice_media_data.model_index).split('models/')[1]
 
     logger.debug(f'{voice_model_pth=}')
     logger.debug(f'{voice_model_index=}')
@@ -517,7 +517,7 @@ async def check_status(update: Update, context: ContextTypes.DEFAULT_TYPE):
     :return:
     """
     query = update.callback_query
-    await query.answer()
+    await query.answer('Еще в работе')
 
     await query.edit_message_text(
         text=message_text.check_status_text,

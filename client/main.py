@@ -115,7 +115,7 @@ async def reader(channel: aioredis.client.PubSub):
                     try:
                         starter_infer(**infer_parameters)
                     except Exception as e:
-                        logger.info(f'Have an error: {e}')
+                        logger.info(f'ERROR: {e}')
                     logger.info(f'NN finished for: {perf_counter() - start}')
                     voice_path = rf"weights/{infer_parameters['output_file_name']}"
                     convert_to_voice(voice_path, voice_path)

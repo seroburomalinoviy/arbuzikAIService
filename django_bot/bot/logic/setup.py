@@ -1,12 +1,11 @@
 import telegram.ext as tg_ext
 from telegram import Update
 
-from bot.handlers.main import inline_query
+from bot.handlers.main import voice_inline_query
 from bot.handlers.search import search_all
+from bot.handlers import favorite
 from bot.logic.conversations import (
     MainConversationHandler,
-    # AudioConversationHandler,
-    # VoiceConversationHandler
 )
 
 import logging
@@ -22,8 +21,6 @@ async def on_result_chosen(update: Update, context: tg_ext.ContextTypes.DEFAULT_
 
 def init_handlers(application: tg_ext.Application):
     main = MainConversationHandler()
-    # voice = VoiceConversationHandler()
-    # audio = AudioConversationHandler()
 
     # Main
     application.add_handler(
@@ -35,30 +32,16 @@ def init_handlers(application: tg_ext.Application):
         )
     )
 
+    # Inline for favorites
+    application.add_handler(tg_ext.InlineQueryHandler(favorite.roll_out, pattern='^favorites$'))
+
     # Inline for Voice
-    application.add_handler(tg_ext.InlineQueryHandler(inline_query))
+    application.add_handler(tg_ext.InlineQueryHandler(voice_inline_query))
 
     # Inline for search
     # application.add_handler(tg_ext.InlineQueryHandler(search_all, pattern='^search_'))
 
     # ChosenInlineResult
     # application.add_handler(tg_ext.ChosenInlineResultHandler(on_result_chosen))
-
-    # # Voice
-    # application.add_handler(
-    #     tg_ext.ConversationHandler(
-    #         entry_points=voice.entrypoints(),
-    #         states=voice.states(),
-    #         fallbacks=main.fallbacks()
-    #     )
-    # )
-
-    # application.add_handler(
-    #     tg_ext.ConversationHandler(
-    #         entry_points=audio.entrypoints(),
-    #         states=audio.states(),
-    #         fallbacks=audio.fallbacks(),
-    #     )
-    # )
 
     return application
