@@ -27,8 +27,10 @@ async def add(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     slug_voice = query.data.split('favorite-add-')[1]
 
-    voice = await get_object(Voice, slug_voice=slug_voice)
     user = await get_object(User, telegram_id=query.from_user.id)
+    user_subscription = user.subscription
+    voice = await get_object(Voice, slug_voice=slug_voice, subcategory__category__subscription=user_subscription)
+
     user.favorites.add(voice)
 
     await query.edit_message_text(
