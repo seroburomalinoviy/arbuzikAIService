@@ -140,7 +140,8 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
                                       subscription__title=subscription_name)
     len_cat = len(categories)
 
-    keyboard = [keyboards.search_all_voices]  # add button
+    # Кнопки Поиск по всем голосам и Избранное
+    keyboard = [keyboards.search_all_voices, keyboards.favorites]
     async for i, _ in a.enumerate(categories[0:int(len_cat / 2)]):
         keyboard.append(
             [
