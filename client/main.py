@@ -117,8 +117,8 @@ async def reader(channel: aioredis.client.PubSub):
                     except Exception as e:
                         logger.info(f'ERROR: {e}')
                     logger.info(f'NN finished for: {perf_counter() - start}')
-                    voice_path = rf"weights/{infer_parameters['output_file_name']}"
-                    voice_outpath = "weights/TESTFORMATED.ogg"
+                    voice_path = rf"media/user-voice/processed/{infer_parameters['output_file_name']}"
+                    voice_outpath = "media/user-voice/processed/TESTFORMATED.ogg"
                     convert_to_voice(voice_path, voice_outpath)
                     payload = {
                         "user_id": user_id,
