@@ -36,7 +36,7 @@ def init_handlers(application: tg_ext.Application):
     application.add_handler(tg_ext.InlineQueryHandler(favorite.roll_out, pattern='^favorites$'))
 
     # Inline for Voice
-    application.add_handler(tg_ext.InlineQueryHandler(voice_inline_query, pattern='^voice_'))
+    application.add_handler(tg_ext.InlineQueryHandler(voice_inline_query, pattern='^_'))
 
     # Inline for search
     application.add_handler(tg_ext.InlineQueryHandler(search.inline_searching))
