@@ -379,6 +379,7 @@ async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await query.edit_message_text(
         message_text.voice_set.format(name=slug_voice),
+        parse_mode=ParseMode.HTML,
         reply_markup=InlineKeyboardMarkup(
             [
                 [
