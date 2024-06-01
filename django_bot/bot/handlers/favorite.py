@@ -41,7 +41,7 @@ async def add(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await voice_add_favorite(user, voice)
 
     await query.edit_message_text(
-        text=message_text.format(title=voice.title),
+        text=message_text.favorite_added.format(title=voice.title),
         parse_mode=ParseMode.HTML,
         reply_markup=InlineKeyboardMarkup(
             [
