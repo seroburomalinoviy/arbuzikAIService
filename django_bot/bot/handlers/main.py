@@ -318,10 +318,10 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         logger.warning(f'{e}')
 
-    button_favorite = ('⭐ В избранное', 'favorite-add')
+    button_favorite = ('⭐ В избранное', f'favorite-add-{slug_voice}')
     for voice in favorite_voices:
         if slug_voice in voice.slug_voice:
-            button_favorite = ('Удалить из избранного', 'favorite-remove')
+            button_favorite = ('Удалить из избранного', f'favorite-remove-{slug_voice}')
 
     try:
         voice_media_data = await get_object(MediaData, slug=slug_voice)
