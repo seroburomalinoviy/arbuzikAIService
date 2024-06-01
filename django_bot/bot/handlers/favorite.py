@@ -100,15 +100,16 @@ async def remove(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 @log_journal
 async def roll_out(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    query = update.inline_query
+    query = update.inline_query.query
     if not query:
         return
 
-    # user_subscription = await get_object(Subscription, users__telegram_id=query.from_user.id)
-    # voice = await get_object(Voice, slug_voice=slug_voice, subcategory__category__subscription=user_subscription)
-    user = await get_object(User, telegram_id=query.from_user.id)
+    user = await get_object(User, telegram_id=update.inline_query.from_user.id)
 
     all_favorites = await get_all_favorites(user)
+
+    if len(all_favorites) == 0:
+        return ConversationHandler.END
 
     default_image = "https://img.freepik.com/free-photo/3d-rendering-hydraulic-elements_23-2149333332.jpg?t=st=1714904107~exp=1714907707~hmac=98d51596c9ad15af1086b0d1916f5567c1191255c42d157c87c59bab266d6e84&w=2000"
     results = []
