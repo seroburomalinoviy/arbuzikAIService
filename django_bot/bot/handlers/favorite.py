@@ -7,7 +7,7 @@ from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.constants import ParseMode
 from telegram.ext import ContextTypes
 
-from bot.logic.utils import get_object, filter_objects, log_journal, save_model
+from bot.logic.utils import get_object, filter_objects, log_journal, save_model, many_rel_add
 from bot.logic.constants import *
 from bot.logic import message_text
 
@@ -21,6 +21,12 @@ from user.models import User
 logger = logging.getLogger(__name__)
 
 
+@sync_to_async
+def voice_add_favorite(model, arg):
+    model.favorite.add(arg)
+    return
+
+
 @log_journal
 async def add(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
@@ -32,8 +38,7 @@ async def add(update: Update, context: ContextTypes.DEFAULT_TYPE):
     voice = await get_object(Voice, slug_voice=slug_voice, subcategory__category__subscription=user_subscription)
     user = await get_object(User, telegram_id=query.from_user.id)
 
-    # def many_rel_add(model, field, arg)L
-    user.favorites.add(voice)
+    await voice_add_favorite(user, voice)
 
     await query.edit_message_text(
         text=message_text.format(title=voice.title) + '\n' + message_text.voice_preview,
