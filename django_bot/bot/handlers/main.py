@@ -322,7 +322,7 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     button_favorite = ('⭐ В избранное', f'favorite-add-{slug_voice}')
     async for voice in Voice.objects.filter(
-            favorites__user_id=user.id,
+            favorites__user_id=user,
             subcategory__category__subscription__title=subscription_name
     ):
         if slug_voice in voice.slug_voice:
