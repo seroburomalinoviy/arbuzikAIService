@@ -98,7 +98,10 @@ async def reader(channel: aioredis.client.PubSub):
                                 )
 
                     start = perf_counter()
-                    starter_infer(**infer_parameters)
+                    try:
+                        starter_infer(**infer_parameters)
+                    except Exception as e:
+                        logger.info(f'Have an error: {e}')
                     logger.info(f'NN finished for: {perf_counter() - start}')
 
                     payload = {
