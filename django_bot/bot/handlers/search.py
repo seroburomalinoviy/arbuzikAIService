@@ -16,13 +16,6 @@ from bot.models import Voice, Subscription, MediaData
 
 
 @log_journal
-async def search_all(update: Update, context: ContextTypes.DEFAULT_TYPE):
-
-
-    return BASE_STATES
-
-
-@log_journal
 async def inline_searching(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Поиск по всем голосам
@@ -51,5 +44,5 @@ async def inline_searching(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 input_message_content=InputTextMessageContent(voice.slug_voice)
             )
         )
-    await update.inline_query.answer(results, cache_time=100, auto_pagination=True)
+    await update.inline_query.answer(results, cache_time=1, auto_pagination=True)
     return ConversationHandler.END
