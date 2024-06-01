@@ -229,7 +229,7 @@ async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 @log_journal
-async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def voice_inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Меню выбора голосов
     :param update:

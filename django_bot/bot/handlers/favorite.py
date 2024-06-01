@@ -3,6 +3,7 @@ from uuid import uuid4
 import django
 import logging
 from asgiref.sync import sync_to_async
+import asyncstdlib as a
 
 from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton, InlineQueryResultArticle, InputTextMessageContent
 from telegram.constants import ParseMode
@@ -111,7 +112,7 @@ async def roll_out(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     default_image = "https://img.freepik.com/free-photo/3d-rendering-hydraulic-elements_23-2149333332.jpg?t=st=1714904107~exp=1714907707~hmac=98d51596c9ad15af1086b0d1916f5567c1191255c42d157c87c59bab266d6e84&w=2000"
     results = []
-    async for voice in all_favorites:
+    async for _, voice in a.enumerate(all_favorites):
         # voice_media_data = await get_object(MediaData, slug=voice.slug_voice)
         results.append(
             InlineQueryResultArticle(
