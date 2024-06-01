@@ -303,6 +303,7 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return ConversationHandler.END
 
+    subscription_name = context.user_data['subscription_name']
     # if update.message: # todo ест ли случаи когда нет update.message ?
 
     # Ограничение на количество символов - безопасность
@@ -314,12 +315,16 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     favorite_voices = []
     try:
-        favorite_voices = await filter_objects(User, favorites__slug_voice=slug_voice)
+        favorite_voices = await filter_objects(User, favorites__slug_voice=slug_voice,
+                                               subcategory__category__subscription__title=subscription_name)
     except Exception as e:
         logger.warning(f'{e}')
 
     button_favorite = ('⭐ В избранное', f'favorite-add-{slug_voice}')
-    for voice in favorite_voices:
+    async for voice in Voice.objects.filter(
+            favorites__user_id=user.id,
+            subcategory__category__subscription__title=subscription_name
+    ):
         if slug_voice in voice.slug_voice:
             button_favorite = ('Удалить из избранного', f'favorite-remove-{slug_voice}')
 
