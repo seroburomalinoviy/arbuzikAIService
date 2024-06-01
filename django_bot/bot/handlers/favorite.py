@@ -1,6 +1,7 @@
 import os
 import django
 import logging
+from asgiref.sync import sync_to_async
 
 from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.constants import ParseMode
@@ -31,6 +32,7 @@ async def add(update: Update, context: ContextTypes.DEFAULT_TYPE):
     voice = await get_object(Voice, slug_voice=slug_voice, subcategory__category__subscription=user_subscription)
     user = await get_object(User, telegram_id=query.from_user.id)
 
+    @sync_to_async()
     user.favorites.add(voice)
 
     await query.edit_message_text(

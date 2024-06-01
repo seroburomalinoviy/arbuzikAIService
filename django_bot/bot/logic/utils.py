@@ -10,6 +10,7 @@ from asgiref.sync import sync_to_async
 logger = logging.getLogger(__name__)
 
 
+
 @sync_to_async
 def get_all_objects(model: models.Model) -> list:
     return list(model.objects.all())
