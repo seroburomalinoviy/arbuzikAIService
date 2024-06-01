@@ -200,10 +200,10 @@ async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         keyboard.append(
             [
                 InlineKeyboardButton(subcategories[i].title,
-                                     switch_inline_query_current_chat=subcategories[i].slug,
+                                     switch_inline_query_current_chat='voice_' + subcategories[i].slug,
                                      ),
                 InlineKeyboardButton(subcategories[int(len_subc / 2) + i].title,
-                                     switch_inline_query_current_chat=subcategories[int(len_subc / 2) + i].slug,
+                                     switch_inline_query_current_chat='voice_' + subcategories[int(len_subc / 2) + i].slug,
                                      )
             ]
         )
@@ -211,7 +211,7 @@ async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         keyboard.append(
             [
                 InlineKeyboardButton(subcategories[len_subc - 1].title,
-                                     switch_inline_query_current_chat=subcategories[len_subc - 1].slug,
+                                     switch_inline_query_current_chat='voice_' + subcategories[len_subc - 1].slug,
                                      )
             ]
         )

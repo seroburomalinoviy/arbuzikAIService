@@ -13,8 +13,10 @@ django.setup()
 from bot.models import Voice, Subscription, MediaData
 
 
+
+
 @log_journal
-async def search_all(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def inline_searching(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Поиск по всем голосам
     :param update:
