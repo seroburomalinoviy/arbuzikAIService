@@ -517,7 +517,7 @@ async def check_status(update: Update, context: ContextTypes.DEFAULT_TYPE):
     :return:
     """
     query = update.callback_query
-    await query.answer()
+    await query.answer('Еще в работе')
 
     await query.edit_message_text(
         text=message_text.check_status_text,
