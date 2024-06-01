@@ -118,7 +118,8 @@ async def reader(channel: aioredis.client.PubSub):
                         logger.info(f'ERROR: {e}')
                     logger.info(f'NN finished for: {perf_counter() - start}')
                     voice_path = rf"weights/{infer_parameters['output_file_name']}"
-                    convert_to_voice(voice_path, voice_path)
+                    voice_outpath = "weights/TESTFORMATED.ogg"
+                    convert_to_voice(voice_path, voice_outpath)
                     payload = {
                         "user_id": user_id,
                         "chat_id": chat_id,
