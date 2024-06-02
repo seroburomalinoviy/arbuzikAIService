@@ -122,7 +122,6 @@ async def reader(channel: aioredis.client.PubSub):
                     logger.info(f'NN finished for: {perf_counter() - start}')
                     voice_path = os.environ.get('USER_VOICES_PROCESSED_VOLUME') + '/' + infer_parameters['output_file_name']
                     voice_outpath = os.environ.get('USER_VOICES_PROCESSED_VOLUME') + '/' + voice_filename
-                    # voice_outpath = "media/user-voice/processed/TESTFORMATED.ogg"
                     convert_to_voice(voice_path, voice_outpath)
                     logger.info(f'NN + Formatting finished for: {perf_counter() - start}')
                     payload = {
