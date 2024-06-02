@@ -65,3 +65,6 @@ all_paid_subs = """
 
 favorite_added = """Модель <strong>{title}</strong> добавлена в избранное!"""
 favorite_deleted = """Модель <strong>{title}</strong> удалена из избранного!"""
+
+
+audio_permission_denied = """Для обработки голоса необходимо выбрать этот голос, начните сначала."""

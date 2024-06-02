@@ -110,6 +110,7 @@ async def subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Главное меню / Категории
+
     1. Создаем или получаем пользователя в бд
     2. Получаем параметры подписки пользователя
     3. Отравляем пользователю категории в соответствии с его подпиской
@@ -367,13 +368,15 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Представление голоса
+
+    1. Задаем processing_permission в True, разрешаем отправлять аудио
     :param update:
     :param context:
     :return:
     """
     query = update.callback_query
     await query.answer()
-
+    context.user_data['processing_permission'] = True 
     slug_voice = context.user_data.get('slug_voice')
     pitch = context.user_data.get(f'pitch_{slug_voice}') if context.user_data.get(f'pitch_{slug_voice}') else "0"
 
@@ -459,6 +462,7 @@ async def pitch_setting(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Захват голосового сообщения
+    0. Проверяем, можно ли обрабатывать голосовое сообщение
     1. Получаем голосовое сообщение, данные пользователя и тональность голоса
     2. Сохраняем файл с голосовым сообщением
     3. Отправляем пользователю статус
@@ -467,6 +471,12 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     :param context:
     :return:
     """
+    permission = context.user_data.get('processing_permission')
+    if not permission:
+        await update.message.reply_text(
+            message_text.audio_permission_denied,
+        )
+        return ConversationHandler.END
     voice = await update.message.voice.get_file()  # get voice file from user
     user_id = str(update.message.from_user.id)
     chat_id = str(update.message.chat.id)
@@ -500,6 +510,8 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await push_amqp_message(json.dumps(payload))
     # todo: write to db
 
+    # Задаем processing_permission в False, запрещаем отправлять аудио
+    context.user_data['processing_permission'] = False
     await update.message.reply_text(
         message_text.conversation_end,
         reply_markup=InlineKeyboardMarkup(keyboards.check_status)
