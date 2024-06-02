@@ -7,7 +7,7 @@ check_status = [
 ]
 
 search_all_voices = [
-        InlineKeyboardButton('🔍 Поиск по всем голосам', callback_data='search_all')
+        InlineKeyboardButton('🔍 Поиск по всем голосам', switch_inline_query_current_chat='')
     ]
 
 favorites = [
