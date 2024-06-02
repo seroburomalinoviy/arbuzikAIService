@@ -61,7 +61,7 @@ def convert_to_voice(input_path: str, output_path: str) -> None:
     :param output_path: str: The output path of the converted file
     """
     os.system(
-        f"ffmpeg -i {input_path} -c:a libopus -b:a 32k -vbr on "
+        f"ffmpeg -y -i {input_path} -c:a libopus -b:a 32k -vbr on "
         f"-compression_level 10 -frame_duration 60 -application voip"
         f" {output_path}")
 
