@@ -511,6 +511,7 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # todo: write to db
 
     # Задаем processing_permission в False, запрещаем отправлять аудио
+    # TODO: удалять ключ del context.user_data['processing_permission']
     context.user_data['processing_permission'] = False
     await update.message.reply_text(
         message_text.conversation_end,
