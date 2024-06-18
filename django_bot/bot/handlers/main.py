@@ -436,9 +436,10 @@ async def pitch_setting(update: Update, context: ContextTypes.DEFAULT_TYPE):
         context.user_data[f'pitch_{slug_voice}'] -= 1
     elif query.data == 'voice_set_add':
         context.user_data[f'pitch_{slug_voice}'] += 1
+    #check limit    
     pitch = context.user_data.get(f'pitch_{slug_voice}')
     pitch = TONE_LIMIT if pitch > TONE_LIMIT else (-TONE_LIMIT if pitch < TONE_LIMIT else pitch)
-    pitch = str(context.user_data.get(f'pitch_{slug_voice}'))
+    pitch = str(pitch)
 
     await query.edit_message_text(
         message_text.voice_set.format(name=slug_voice),
@@ -495,6 +496,7 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     logger.debug(f'{voice_model_pth=}')
     logger.debug(f'{voice_model_index=}')
+    logger.debug(f'voice size = {voice.file_size}')
 
     await voice.download_to_drive(custom_path=voice_path)  # download voice file to host
     logger.info(f'JOURNAL: Voice {slug_voice} downloaded to {voice_path} for user - {user_id} - tg_id')
