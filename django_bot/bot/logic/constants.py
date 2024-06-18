@@ -1,1 +1,2 @@
 BASE_STATES, WAITING = range(2)
+TONE_LIMIT = 10

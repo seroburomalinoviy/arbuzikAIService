@@ -436,7 +436,8 @@ async def pitch_setting(update: Update, context: ContextTypes.DEFAULT_TYPE):
         context.user_data[f'pitch_{slug_voice}'] -= 1
     elif query.data == 'voice_set_add':
         context.user_data[f'pitch_{slug_voice}'] += 1
-
+    pitch = context.user_data.get(f'pitch_{slug_voice}')
+    pitch = TONE_LIMIT if pitch > TONE_LIMIT else (-TONE_LIMIT if pitch < TONE_LIMIT else pitch)
     pitch = str(context.user_data.get(f'pitch_{slug_voice}'))
 
     await query.edit_message_text(
