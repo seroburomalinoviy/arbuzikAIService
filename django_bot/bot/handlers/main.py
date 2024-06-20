@@ -432,21 +432,20 @@ async def pitch_setting(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     slug_voice = context.user_data.get('slug_voice')
     pitch = context.user_data.get(f'pitch_{slug_voice}')
-
+    logger.info(f'pitch = {pitch}')
+    logger.info(f'type of pitch = {type(pitch)}')
     if query.data == 'voice_set_sub':
-        pitch -= pitch 
+        pitch_next = pitch - 1 if pitch > -TONE_LIMIT else pitch
+        logger.info(f'pitch_next voice_set_sub = {pitch_next}')
     elif query.data == 'voice_set_add':
-        pitch += pitch 
+        pitch_next = pitch + 1 if pitch < TONE_LIMIT else pitch
+        logger.info(f'pitch_next voice_set_sub = {pitch_next}')
 
-    logger.info(f'pitch  = {pitch}')
-    if pitch > TONE_LIMIT:
-        pitch = TONE_LIMIT
-        context.user_data[f'pitch_{slug_voice}'] = pitch
-    elif pitch < -TONE_LIMIT:
-        pitch = -TONE_LIMIT
-        context.user_data[f'pitch_{slug_voice}'] = pitch
-    else:
-        context.user_data[f'pitch_{slug_voice}'] = pitch
+    logger.info(f'pitch_next  = {pitch_next}')
+    context.user_data[f'pitch_{slug_voice}'] = pitch_next
+
+    if not pitch_next == pitch:
+        context.user_data[f'pitch_{slug_voice}'] = pitch_next
         pitch = str(context.user_data.get(f'pitch_{slug_voice}'))
         await query.edit_message_text(
             message_text.voice_set.format(name=slug_voice),
@@ -464,9 +463,6 @@ async def pitch_setting(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 ]
             )
         )
-
-    context.user_data[f'pitch_{slug_voice}'] = pitch if isinstance(pitch, int) else int(pitch)
-
     return BASE_STATES
 
 
