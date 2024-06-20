@@ -432,35 +432,41 @@ async def pitch_setting(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     slug_voice = context.user_data.get('slug_voice')
     pitch = context.user_data.get(f'pitch_{slug_voice}')
-    logger.info(f'pitch  = {pitch}')
+
     if query.data == 'voice_set_sub':
-        context.user_data[f'pitch_{slug_voice}'] = pitch + 1 if pitch < TONE_LIMIT else pitch
-        logger.info(f'pitch sub  = {pitch + 1 if pitch < TONE_LIMIT else pitch}')
+        pitch -= pitch 
     elif query.data == 'voice_set_add':
-        context.user_data[f'pitch_{slug_voice}'] = pitch - 1 if pitch > -TONE_LIMIT else pitch
-        logger.info(f'pitch add  = {pitch - 1 if pitch > -TONE_LIMIT else pitch}')
-    #check limit    
-    # pitch = context.user_data.get(f'pitch_{slug_voice}')
-    # logger.info(f'pitch  = {pitch}')
-    # pitch = TONE_LIMIT if pitch > TONE_LIMIT else (-TONE_LIMIT if pitch < TONE_LIMIT else pitch)
-    # logger.info(f'pitch after checking  = {pitch}')
-    pitch = str(context.user_data.get(f'pitch_{slug_voice}'))
-    await query.edit_message_text(
-        message_text.voice_set.format(name=slug_voice),
-        parse_mode=ParseMode.HTML,
-        reply_markup=InlineKeyboardMarkup(
-            [
+        pitch += pitch 
+
+    logger.info(f'pitch  = {pitch}')
+    if pitch > TONE_LIMIT:
+        pitch = TONE_LIMIT
+        context.user_data[f'pitch_{slug_voice}'] = pitch
+    elif pitch < -TONE_LIMIT:
+        pitch = -TONE_LIMIT
+        context.user_data[f'pitch_{slug_voice}'] = pitch
+    else:
+        context.user_data[f'pitch_{slug_voice}'] = pitch
+        pitch = str(context.user_data.get(f'pitch_{slug_voice}'))
+        await query.edit_message_text(
+            message_text.voice_set.format(name=slug_voice),
+            parse_mode=ParseMode.HTML,
+            reply_markup=InlineKeyboardMarkup(
                 [
-                    InlineKeyboardButton('-1', callback_data='voice_set_sub'),
-                    InlineKeyboardButton(pitch, callback_data='voice_set_0'),
-                    InlineKeyboardButton('+1', callback_data='voice_set_add'),
-                ],
-                [
-                    InlineKeyboardButton('⏪ Вернуться в меню', callback_data='category_menu')
+                    [
+                        InlineKeyboardButton('-1', callback_data='voice_set_sub'),
+                        InlineKeyboardButton(pitch, callback_data='voice_set_0'),
+                        InlineKeyboardButton('+1', callback_data='voice_set_add'),
+                    ],
+                    [
+                        InlineKeyboardButton('⏪ Вернуться в меню', callback_data='category_menu')
+                    ]
                 ]
-            ]
+            )
         )
-    )
+
+    context.user_data[f'pitch_{slug_voice}'] = pitch if isinstance(pitch, int) else int(pitch)
+
     return BASE_STATES
 
 
