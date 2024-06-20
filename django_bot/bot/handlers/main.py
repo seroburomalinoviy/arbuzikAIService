@@ -433,19 +433,22 @@ async def pitch_setting(update: Update, context: ContextTypes.DEFAULT_TYPE):
     slug_voice = context.user_data.get('slug_voice')
     pitch = context.user_data.get(f'pitch_{slug_voice}')
     logger.info(f'pitch  = {pitch}')
+    print(f'pitch  = {pitch}')
     if query.data == 'voice_set_sub':
         context.user_data[f'pitch_{slug_voice}'] = pitch + 1 if pitch < TONE_LIMIT else pitch
         logger.info(f'pitch sub  = {pitch + 1 if pitch < TONE_LIMIT else pitch}')
+        print(f'pitch sub  = {pitch + 1 if pitch < TONE_LIMIT else pitch}')
     elif query.data == 'voice_set_add':
         context.user_data[f'pitch_{slug_voice}'] = pitch - 1 if pitch > -TONE_LIMIT else pitch
         logger.info(f'pitch add  = {pitch - 1 if pitch > -TONE_LIMIT else pitch}')
+        print(f'pitch add  = {pitch - 1 if pitch > -TONE_LIMIT else pitch}')
     #check limit    
     # pitch = context.user_data.get(f'pitch_{slug_voice}')
     # logger.info(f'pitch  = {pitch}')
     # pitch = TONE_LIMIT if pitch > TONE_LIMIT else (-TONE_LIMIT if pitch < TONE_LIMIT else pitch)
     # logger.info(f'pitch after checking  = {pitch}')
     pitch = str(context.user_data.get(f'pitch_{slug_voice}'))
-
+    print(f'pitch  = {pitch}')
     await query.edit_message_text(
         message_text.voice_set.format(name=slug_voice),
         parse_mode=ParseMode.HTML,
@@ -502,6 +505,7 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     logger.debug(f'{voice_model_pth=}')
     logger.debug(f'{voice_model_index=}')
     logger.info(f'voice size = {voice.file_size}')
+    print(f'voice size = {voice.file_size}')
 
     await voice.download_to_drive(custom_path=voice_path)  # download voice file to host
     logger.info(f'JOURNAL: Voice {slug_voice} downloaded to {voice_path} for user - {user_id} - tg_id')

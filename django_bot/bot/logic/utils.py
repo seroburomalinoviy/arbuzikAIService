@@ -7,7 +7,7 @@ import logging
 from django.db import models
 from asgiref.sync import sync_to_async
 
-logger = logging.getLogger(__name__)
+logger_journal = logging.getLogger(__name__)
 
 
 @sync_to_async
@@ -52,7 +52,7 @@ def log_journal(func):
         else:
             _id = 'Not found'
 
-        logger.info(f'JOURNAL: {func.__name__} - was called for user - {_id} - tg_id')
+        logger_journal.info(f'JOURNAL: {func.__name__} - was called for user - {_id} - tg_id')
         return await func(*args, **kwargs)
     return wrapper
 
