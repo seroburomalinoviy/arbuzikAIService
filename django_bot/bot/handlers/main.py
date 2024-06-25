@@ -136,6 +136,7 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     context.user_data['subscription_name'] = subscription_name
     context.user_data['subscription_status'] = subscription_status
+    context.user_data['processing_permission'] = False 
 
     categories = await filter_objects(Category,
                                       subscription__title=subscription_name)

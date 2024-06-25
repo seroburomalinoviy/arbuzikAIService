@@ -37,6 +37,10 @@ async def send_answer(message):
     # await bot.send_message(chat_id=chat_id, text='Получай сука')
 
     await bot.send_voice(chat_id=chat_id, voice=open(voice_path, 'rb'))
+    # TODO: отправить сообщение о том, что закончилась обработка, дать кнопки вернуться в меню и выбор тональности
+    # того же голосового сообщения 
+    # TODO: отправить в определенную очередь данные о том, что голос успешно отправлен, и можно удалять голосовые связанные с ним
+    # await end_of_voce_processing() # вызывает функцию начала конверсейшена, которую нельзя вызвать снаружи
 
 
 async def push_amqp_message(payload):
