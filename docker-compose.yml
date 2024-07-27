@@ -1,5 +1,5 @@
 services:
-  postgres:
+  db-postgres:
     image: postgres:13
     container_name: postgres
     environment:
@@ -12,7 +12,7 @@ services:
     volumes:
       - $HOME/postgresql/data:/var/lib/postgresql/data
 
-  rabbitmq:
+  broker-rabbit:
     image: rabbitmq:3.10.7-management
     hostname: rabbitmq
     container_name: rabbitmq
@@ -32,7 +32,7 @@ services:
       retries: 3
       start_period: 10s
 
-  redis:
+  cash-redis:
     container_name: redis
     image: redis
     command: ["redis-server"]
@@ -109,7 +109,7 @@ services:
       - ~/dem-volume:${DEM_VOLUME}
       - ~/covers-volume:/app/media/covers
 
-  django:
+  adminka-django:
     build: ./django_bot
     container_name: django
     command: sh -c 'python manage.py makemigrations && 
@@ -132,19 +132,19 @@ services:
       - ~/covers-volume:/app/media/covers
 
 
-  nginx:
-    container_name: nginx
-    image: nginx:latest
-    ports:
-      - "80:80"
-    env_file:
-      - .env
-    volumes:
-      - ~/covers-volume:/data/covers:rw
-#      - ./my_nginx.conf:/etc/nginx/nginx.conf
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
-    restart:
-      always
+#  contentDistributer-nginx:
+#    container_name: nginx
+#    image: nginx:latest
+#    ports:
+#      - "80:80"
+#    env_file:
+#      - .env
+#    volumes:
+#      - ~/covers-volume:/data/covers:rw
+##      - ./my_nginx.conf:/etc/nginx/nginx.conf
+#      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+#    restart:
+#      always
 
 
 volumes:
