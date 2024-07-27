@@ -55,9 +55,9 @@ services:
     restart:
       always
     depends_on:
-      redis:
+      cash-redis:
         condition: service_started
-      rabbitmq:
+      broker-rabbit:
         condition: service_healthy
 
   client:
@@ -69,9 +69,9 @@ services:
     restart:
       always
     depends_on:
-      rabbitmq:
+      broker-rabbit:
         condition: service_healthy
-      redis:
+      cash-redis:
         condition: service_started
     volumes:
       - type: volume
@@ -91,9 +91,9 @@ services:
     container_name: bot
     command: ["python", "start_bot.py"]
     depends_on:
-      rabbitmq:
+      broker-rabbit:
         condition: service_healthy
-      postgres:
+      db-postgres:
         condition: service_started
     restart:
       always
@@ -118,7 +118,7 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      postgres:
+      db-postgres:
         condition: service_started
     restart:
       always
