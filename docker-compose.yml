@@ -1,5 +1,5 @@
 services:
-  db-postgres:
+  db:
     image: postgres:13
     container_name: postgres
     environment:
@@ -12,7 +12,7 @@ services:
     volumes:
       - $HOME/postgresql/data:/var/lib/postgresql/data
 
-  broker-rabbit:
+  broker:
     image: rabbitmq:3.10.7-management
     hostname: rabbitmq
     container_name: rabbitmq
@@ -32,7 +32,7 @@ services:
       retries: 3
       start_period: 10s
 
-  cash-redis:
+  cash:
     container_name: redis
     image: redis
     command: ["redis-server"]
@@ -55,9 +55,9 @@ services:
     restart:
       always
     depends_on:
-      cash-redis:
+      cash:
         condition: service_started
-      broker-rabbit:
+      broker:
         condition: service_healthy
 
   client:
@@ -69,9 +69,9 @@ services:
     restart:
       always
     depends_on:
-      broker-rabbit:
+      broker:
         condition: service_healthy
-      cash-redis:
+      cash:
         condition: service_started
     volumes:
       - type: volume
@@ -91,9 +91,9 @@ services:
     container_name: bot
     command: ["python", "start_bot.py"]
     depends_on:
-      broker-rabbit:
+      broker:
         condition: service_healthy
-      db-postgres:
+      db:
         condition: service_started
     restart:
       always
@@ -118,7 +118,7 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      db-postgres:
+      db:
         condition: service_started
     restart:
       always
