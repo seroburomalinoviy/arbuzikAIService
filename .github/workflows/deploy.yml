@@ -16,8 +16,8 @@ jobs:
         username: ${{ secrets.SSH_USER_PROD }}
         key: ${{ secrets.SSH_KEY_PROD }}
         script: |
-          cd arbuzik-rvc-bot/
-          docker compose down
+          cd arbuzikAIService/
           git pull origin main
+          docker compose down
           docker compose build
           docker compose up -d
