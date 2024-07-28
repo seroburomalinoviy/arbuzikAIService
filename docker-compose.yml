@@ -112,9 +112,15 @@ services:
   adminka:
     build: ./django_bot
     container_name: django
-    command: gunicorn config.asgi:application -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000
+#    command: gunicorn config.asgi:application -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000
+
+    command: sh -c 'python manage.py makemigrations && 
+                    python manage.py migrate &&
+                    python manage.py runserver 0.0.0.0:3000'
     ports:
-      - "8000:80"
+      - "3000:3000"
+#    ports:
+#      - "8000:80"
     depends_on:
       db:
         condition: service_started
