@@ -39,3 +39,4 @@ urllib3==2.2.0
 yarl==1.9.4
 uvicorn
 gunicorn
+uvicorn-worker
