@@ -1,5 +1,5 @@
 services:
-  db:
+  postgres:
     image: postgres:13
     container_name: postgres
     environment:
@@ -12,7 +12,7 @@ services:
     volumes:
       - $HOME/postgresql/data:/var/lib/postgresql/data
 
-  broker:
+  rabbitmq:
     image: rabbitmq:3.10.7-management
     hostname: rabbitmq
     container_name: rabbitmq
@@ -32,7 +32,7 @@ services:
       retries: 3
       start_period: 10s
 
-  cache:
+  redis:
     container_name: redis
     image: redis
     command: ["redis-server"]
@@ -55,9 +55,9 @@ services:
     restart:
       always
     depends_on:
-      cache:
+      redis:
         condition: service_started
-      broker:
+      rabbitmq:
         condition: service_healthy
 
   client:
@@ -69,9 +69,9 @@ services:
     restart:
       always
     depends_on:
-      broker:
+      rabbitmq:
         condition: service_healthy
-      cache:
+      redis:
         condition: service_started
     volumes:
       - type: volume
@@ -91,9 +91,9 @@ services:
     container_name: bot
     command: ["python", "start_bot.py"]
     depends_on:
-      broker:
+      rabbitmq:
         condition: service_healthy
-      db:
+      postgres:
         condition: service_started
     restart:
       always
@@ -109,7 +109,7 @@ services:
       - ~/dem-volume:${DEM_VOLUME}
       - ~/covers-volume:/app/media/covers
 
-  adminka:
+  django:
     build: ./django_bot
     container_name: django
 #    command: gunicorn config.asgi:application -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000
@@ -122,7 +122,7 @@ services:
 #    ports:
 #      - "8000:80"
     depends_on:
-      db:
+      postgres:
         condition: service_started
     restart:
       always
