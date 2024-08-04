@@ -118,16 +118,22 @@ async def reader(channel: aioredis.client.PubSub):
                     try:
                         starter_infer(**infer_parameters)
                     except Exception as e:
-                        logger.info(f'ERROR: {e}')
+                        logger.error(f'ERROR in starter_infer: {e}')
+                        continue
+
                     logger.info(f'NN finished for: {perf_counter() - start}')
+
                     voice_path = os.environ.get('USER_VOICES_PROCESSED_VOLUME') + '/' + infer_parameters['output_file_name']
                     voice_outpath = os.environ.get('USER_VOICES_PROCESSED_VOLUME') + '/' + voice_filename
+
                     convert_to_voice(voice_path, voice_outpath)
+
                     logger.info(f'NN + Formatting finished for: {perf_counter() - start}')
+
                     payload = {
                         "user_id": user_id,
                         "chat_id": chat_id,
-                        "voice_id": payload.get('voice_filename')
+                        "voice_id": voice_filename
                     }
                     logger.debug(payload)
 
