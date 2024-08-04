@@ -241,8 +241,7 @@ async def voice_inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE)
                 input_message_content=InputTextMessageContent(voice.slug_voice)
             )
         )
-    await update.inline_query.answer(results, cache_time=100, auto_pagination=True)
-    # await context.bot.answer_inline_query(update.inline_query.id, results)
+    await update.inline_query.answer(results, cache_time=1000, auto_pagination=True)
     return ConversationHandler.END
 
 
@@ -474,8 +473,8 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     slug = context.user_data.get('slug_voice')
     voice_media_data: MediaData = await MediaData.objects.aget(slug=slug)
-    voice_model_pth = str(voice_media_data.model_pth).split('models/')[1]
-    voice_model_index = str(voice_media_data.model_index).split('models/')[1]
+    voice_model_pth = str(voice_media_data.model_pth).split('/')[-1]
+    voice_model_index = str(voice_media_data.model_index).split('/')[-1]
 
     logger.debug(f'{voice_model_pth=}')
     logger.debug(f'{voice_model_index=}')

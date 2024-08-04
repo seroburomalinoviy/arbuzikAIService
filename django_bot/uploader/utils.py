@@ -1,3 +1,5 @@
+import os
+
 import pandas as pd
 import csv
 from bot.models import Subscription, Category, Subcategory, Voice, MediaData
@@ -51,10 +53,10 @@ def voice_parser(filepath):
         for row in reader:
             media_data = MediaData.objects.create(
                 slug=row[SLUG_VOICE],
-                model_pth="voices/" + row[FILE] + ".pth",
-                model_index="voices/" + row[FILE] + ".index",
-                demka="dem/" + row[FILE] + ".mp3",
-                image="covers/" + row[FILE] + ".png"
+                model_pth=os.environ.get('MODELS_VOLUME').strip('/').split('/')[-1] + "/" + row[FILE] + ".pth",
+                model_index=os.environ.get('MODELS_VOLUME').strip('/').split('/')[-1] + "/" + row[FILE] + ".index",
+                demka=os.environ.get('DEM_VOLUME').strip('/').split('/')[-1] + "/" + row[FILE] + ".mp3",
+                image="covers/" + row[FILE] + ".png"  # todo remove or add env
             )
             for sub in row[SUBSCRIPTIOS].split(', '):
                 subscription = Subscription.objects.get(title=sub)
