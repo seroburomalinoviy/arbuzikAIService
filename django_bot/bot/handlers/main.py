@@ -136,7 +136,7 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data['subscription_name'] = subscription_name
     context.user_data['subscription_status'] = subscription_status
 
-    categories = await Category.objects.filter(subscription__title=subscription_name)
+    categories = Category.objects.filter(subscription__title=subscription_name)
     len_cat = len(categories)
 
     # Кнопки Поиск по всем голосам и Избранное
@@ -191,7 +191,7 @@ async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     current_category_id = int(query.data.split('category_')[1])
     context.user_data['current_category_id'] = current_category_id
 
-    subcategories = await Subcategory.objects.filter(category__id=current_category_id)
+    subcategories = Subcategory.objects.filter(category__id=current_category_id)
 
     len_subc = len(subcategories)
     keyboard = []
