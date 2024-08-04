@@ -2,7 +2,6 @@ from pathlib import Path
 import logging
 from dotenv import load_dotenv
 import os
-import asyncstdlib as a
 from uuid import uuid4
 from asgiref.sync import sync_to_async
 import django
@@ -192,31 +191,6 @@ async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if row:
         keyboard.append(row)
 
-
-    # subcategories = Subcategory.objects.filter(category__id=current_category_id)
-    #
-    # len_subc = await subcategories.acount()
-    # keyboard = []
-    # async for i, _ in a.enumerate(subcategories[0:int(len_subc / 2)]):
-    #     keyboard.append(
-    #         [
-    #             InlineKeyboardButton(subcategories[i].title,
-    #                                  switch_inline_query_current_chat='sub_' + subcategories[i].slug,
-    #                                  ),
-    #             InlineKeyboardButton(subcategories[int(len_subc / 2) + i].title,
-    #                                  switch_inline_query_current_chat='sub_' + subcategories[int(len_subc / 2) + i].slug,
-    #                                  )
-    #         ]
-    #     )
-    # if len_subc % 2 != 0:
-    #     keyboard.append(
-    #         [
-    #             InlineKeyboardButton(subcategories[len_subc - 1].title,
-    #                                  switch_inline_query_current_chat='sub_' + subcategories[len_subc - 1].slug,
-    #                                  )
-    #         ]
-    #     )
-
     # category menu button
     keyboard.append(keyboards.category_menu)
 
@@ -262,6 +236,7 @@ async def voice_inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE)
                 title=voice.title,
                 description=voice.description,
                 # todo установить ssl сертификат
+                # todo или хостить на гитхаб
                 thumbnail_url=default_image, #str(settings.MEDIA_URL) + str(voice_media_data.image),
                 input_message_content=InputTextMessageContent(voice.slug_voice)
             )
