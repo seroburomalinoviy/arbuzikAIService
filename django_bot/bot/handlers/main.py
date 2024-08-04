@@ -146,15 +146,13 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     i = 0
     row = []
     async for category in Category.objects.filter(subscription__title=subscription_name).values('title', 'id'):
-        logger.info(f"{category['title']=}, {subscription_name=}")
         i += 1
         row.append(InlineKeyboardButton(category['title'], callback_data='category_' + str(category['id'])))
         if i % 2 == 0:
             keyboard.append(row)
             row = []
-    #
-    # if i % 2 != 0:
-    #     keyboard.append([])
+    if row:
+        keyboard.append(row)
 
 
     # if len_cat % 2 != 0:
