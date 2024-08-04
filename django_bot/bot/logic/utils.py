@@ -10,9 +10,9 @@ from asgiref.sync import sync_to_async
 logger_journal = logging.getLogger(__name__)
 
 
-@sync_to_async
-def get_all_objects(model: models.Model) -> list:
-    return list(model.objects.all())
+# @sync_to_async
+# def get_all_objects(model: models.Model) -> list:
+#     return list(model.objects.all())
 
 
 @sync_to_async
@@ -21,18 +21,8 @@ def get_object(model: models.Model, **kwargs):
 
 
 @sync_to_async
-def filter_objects(model: models.Model, **kwargs) -> list:
-    return list(model.objects.filter(**kwargs))
-
-
-@sync_to_async
 def save_model(model: models.Model) -> None:
     return model.save()
-
-
-@sync_to_async
-def get_or_create_objets(model: models.Model, **kwargs):
-    return model.objects.get_or_create(**kwargs)
 
 
 def get_moscow_time() -> datetime:
