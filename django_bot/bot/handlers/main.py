@@ -136,8 +136,8 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data['subscription_name'] = subscription_name
     context.user_data['subscription_status'] = subscription_status
 
-    categories = Category.objects.filter(subscription__title=subscription_name)
-    len_cat = await categories.acount()
+    categories = await sync_to_async(Category.objects.filter(subscription__title=subscription_name), thread_sensitive=True)
+    len_cat = len(categories)
 
     # Кнопки Поиск по всем голосам и Избранное
     keyboard = [keyboards.search_all_voices, keyboards.favorites]
