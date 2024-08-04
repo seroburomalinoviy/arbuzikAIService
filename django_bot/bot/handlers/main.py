@@ -136,7 +136,7 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data['subscription_name'] = subscription_name
     context.user_data['subscription_status'] = subscription_status
 
-    categories = Category.objects.filter(subscription__title=subscription_name).values_list('title', 'id')
+    categories = Category.objects.filter(subscription__title=subscription_name).values_list('title', 'id').aiterator()
     len_cat = await categories.acount()
 
     # Кнопки Поиск по всем голосам и Избранное
