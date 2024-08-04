@@ -11,8 +11,7 @@ import json
 from bot.logic import message_text, keyboards
 from bot.logic.amqp_driver import push_amqp_message
 from bot.logic.constants import *
-from bot.logic.utils import (get_moscow_time, log_journal, save_model, get_object,
-                   get_or_create_objets, filter_objects)
+from bot.logic.utils import get_moscow_time, log_journal
 
 
 from telegram.constants import ParseMode
@@ -36,7 +35,7 @@ unresolved_user_statuses = ['kicked', 'restricted', 'left']
 
 
 async def set_demo_to_user(user_model: User, tg_user_name, tg_nick_name) -> None:
-    demo_subscription: Subscription = await get_object(Subscription, title=os.environ.get('DEFAULT_SUBSCRIPTION'))
+    demo_subscription: Subscription = await Subscription.objects.aget(title=os.environ.get('DEFAULT_SUBSCRIPTION'))
     current_date = get_moscow_time()
 
     user_model.subscription_status = True
@@ -46,7 +45,7 @@ async def set_demo_to_user(user_model: User, tg_user_name, tg_nick_name) -> None
     user_model.subscription_attempts = demo_subscription.days_limit
     user_model.subscription_final_date = current_date
 
-    await save_model(user_model)
+    await user_model.asave()
     
     return user_model.subscription.title
 
@@ -127,7 +126,7 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         tg_user_name = update.effective_user.username
         tg_nick_name = update.effective_user.first_name
 
-    user, user_created = await get_or_create_objets(User, telegram_id=tg_user_id)
+    user, user_created = await User.objects.aget_or_create(telegram_id=tg_user_id)
     if user_created:
         subscription_name = await set_demo_to_user(user, tg_user_name, tg_nick_name)
         subscription_status = True
@@ -137,8 +136,7 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data['subscription_name'] = subscription_name
     context.user_data['subscription_status'] = subscription_status
 
-    categories = await filter_objects(Category,
-                                      subscription__title=subscription_name)
+    categories = await Category.objects.filter(subscription__title=subscription_name)
     len_cat = len(categories)
 
     # Кнопки Поиск по всем голосам и Избранное
@@ -193,7 +191,7 @@ async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     current_category_id = int(query.data.split('category_')[1])
     context.user_data['current_category_id'] = current_category_id
 
-    subcategories = await filter_objects(Subcategory, category__id=current_category_id)
+    subcategories = await Subcategory.objects.filter(category__id=current_category_id)
 
     len_subc = len(subcategories)
     keyboard = []
@@ -219,7 +217,7 @@ async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # category menu button
     keyboard.append(keyboards.category_menu)
 
-    category = await get_object(Category, id=current_category_id)
+    category = await Category.objects.aget(id=current_category_id)
     await query.edit_message_text(
         f'<strong>{category.title}</strong>\n{category.description}',
         reply_markup=InlineKeyboardMarkup(keyboard),
@@ -254,7 +252,7 @@ async def voice_inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE)
             subcategory__slug=slug_subcategory,
             subcategory__category__subscription__title=subscription_name
     ):
-        voice_media_data = await get_object(MediaData, slug=voice.slug_voice)
+        voice_media_data = await MediaData.objects.aget(slug=voice.slug_voice)
         results.append(
             InlineQueryResultArticle(
                 id=str(uuid4()),
@@ -281,7 +279,7 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
     :param context:
     :return:
     """
-    user = await get_object(User, telegram_id=update.effective_user.id)
+    user = await User.objects.aget(telegram_id=update.effective_user.id)
     context.user_data['subscription_name'], context.user_data['subscription_status'] = await check_subscription(user)
 
     if context.user_data.get('subscription_status'):
@@ -289,15 +287,15 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
             user.subscription_attempts -= 1
             if user.subscription_attempts <= 0:
                 user.subscription_status = False
-                await save_model(user)
-            await save_model(user)
+                await user.asave()
+            await user.asave()
 
         else:
             if user.subscription_final_date < get_moscow_time():
                 user.subscription_status = False
-                await save_model(user)
+                await user.asave()
 
-    user = await get_object(User, telegram_id=update.effective_user.id)
+    user = await User.objects.aget(telegram_id=update.effective_user.id)
     if not user.subscription_status:
         await update.message.reply_text(
             message_text.subscription_finished,
@@ -325,7 +323,7 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
             button_favorite = ('Удалить из избранного', f'favorite-remove-{slug_voice}')
 
     try:
-        voice_media_data = await get_object(MediaData, slug=slug_voice)
+        voice_media_data = await MediaData.objects.aget(slug=slug_voice)
     except Exception as e:
         logger.warning(f'Voice {slug_voice} DOES NOT EXIST: {e}')
         await update.message.reply_text(
@@ -432,6 +430,7 @@ async def pitch_setting(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     slug_voice = context.user_data.get('slug_voice')
     pitch = context.user_data.get(f'pitch_{slug_voice}')
+
     logger.info(f'pitch = {pitch}')
     logger.info(f'type of pitch = {type(pitch)}')
     if query.data == 'voice_set_sub':
@@ -496,7 +495,7 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     pitch = context.user_data.get(f'pitch_{slug_voice}')
 
     slug = context.user_data.get('slug_voice')
-    voice_media_data: MediaData = await get_object(MediaData, slug=slug)
+    voice_media_data: MediaData = await MediaData.objects.aget(slug=slug)
     voice_model_pth = str(voice_media_data.model_pth).split('models/')[1]
     voice_model_index = str(voice_media_data.model_index).split('models/')[1]
 
