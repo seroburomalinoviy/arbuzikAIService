@@ -193,7 +193,7 @@ async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     subcategories = Subcategory.objects.filter(category__id=current_category_id)
 
-    len_subc = len(subcategories)
+    len_subc = subcategories.count()
     keyboard = []
     async for i, _ in a.enumerate(subcategories[0:int(len_subc / 2)]):
         keyboard.append(
