@@ -145,7 +145,7 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = [keyboards.search_all_voices, keyboards.favorites]
     i = 0
     row = []
-    async for category in Category.objects.filter(subscription__title=subscription_name).values_list('title', 'id'):
+    async for category in Category.objects.filter(subscription__title=subscription_name).values('title', 'id'):
         i += 1
         row.append(InlineKeyboardButton(category['title'], callback_data='category_' + str(category['id'])))
         if i % 2 == 0:
