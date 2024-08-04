@@ -136,28 +136,48 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data['subscription_name'] = subscription_name
     context.user_data['subscription_status'] = subscription_status
 
-    categories = Category.objects.filter(subscription__title=subscription_name).values_list('title', 'id').aiterator()
-    len_cat = await Category.objects.filter(subscription__title=subscription_name).acount()
+    # categories = Category.objects.filter(subscription__title=subscription_name).values_list('title', 'id').aiterator()
+    # len_cat = await Category.objects.filter(subscription__title=subscription_name).acount()
+    # categories = Category.objects.filter(subscription__title=subscription_name).values_list('title', 'id')
+    # len_cat = await categories.acount()
 
     # Кнопки Поиск по всем голосам и Избранное
     keyboard = [keyboards.search_all_voices, keyboards.favorites]
-    async for i, _ in a.enumerate(categories[0:int(len_cat / 2)]):
-        keyboard.append(
-            [
-                InlineKeyboardButton(categories[i].title,
-                                     callback_data='category_' + str(categories[i].id)
-                                     ),
-                InlineKeyboardButton(categories[int(len_cat / 2) + i].title,
-                                     callback_data='category_' + str(categories[int(len_cat / 2) + i].id)
-                                    )
-            ]
-        )
+    i = 0
+    row = []
+    async for category in Category.objects.filter(subscription__title=subscription_name).values_list('title', 'id'):
+        i += 1
+        row.append(InlineKeyboardButton(category.title, callback_data='category_' + str(category.id)))
+        if i % 2 == 0:
+            keyboard.append(row)
+            row = []
 
-    if len_cat % 2 != 0:
-        keyboard.append([InlineKeyboardButton(categories[len_cat - 1].title,
-                                              callback_data='category_' + str(categories[len_cat - 1].id)
-                                              )
-                         ])
+
+    # if len_cat % 2 != 0:
+    #     keyboard.append([InlineKeyboardButton(categories[len_cat - 1].title,
+    #                                           callback_data='category_' + str(categories[len_cat - 1].id)
+    #                                           )
+    #                      ])
+
+    # Кнопки Поиск по всем голосам и Избранное
+    # keyboard = [keyboards.search_all_voices, keyboards.favorites]
+    # async for i, _ in a.enumerate(categories[0:int(len_cat / 2)]):
+    #     keyboard.append(
+    #         [
+    #             InlineKeyboardButton(categories[i].title,
+    #                                  callback_data='category_' + str(categories[i].id)
+    #                                  ),
+    #             InlineKeyboardButton(categories[int(len_cat / 2) + i].title,
+    #                                  callback_data='category_' + str(categories[int(len_cat / 2) + i].id)
+    #                                 )
+    #         ]
+    #     )
+    #
+    # if len_cat % 2 != 0:
+    #     keyboard.append([InlineKeyboardButton(categories[len_cat - 1].title,
+    #                                           callback_data='category_' + str(categories[len_cat - 1].id)
+    #                                           )
+    #                      ])
 
     query = update.callback_query
     if query:
