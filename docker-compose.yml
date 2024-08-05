@@ -9,7 +9,7 @@ services:
     ports:
       - '5432:5432'
     restart: always
-    volumes:
+    volumes:  # todo change path for example to another user
       - $HOME/postgresql/data:/var/lib/postgresql/data
 
   rabbitmq:
@@ -38,7 +38,7 @@ services:
     command: ["redis-server"]
     ports:
       - "6379:6379"
-    volumes:
+    volumes:  # todo change path for example to another user
       - ./redis.conf:/usr/local/etc/redis/redis.conf
       - $HOME/redis/data:/root/redis
     # depends_on:
@@ -161,6 +161,7 @@ services:
 
 
 volumes:
+  # todo create models-data-volume instead models, cover, dem
   models-volume:
   covers-volume:
   dem-volume:
