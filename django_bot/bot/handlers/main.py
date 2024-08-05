@@ -466,9 +466,9 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = str(update.message.from_user.id)
     chat_id = str(update.message.chat.id)
     slug_voice = context.user_data.get('slug_voice')
-    voice_filename = slug_voice + '_' + str(uuid4())  # raw voice file name
+    voice_name = slug_voice + '_' + str(uuid4())  # raw voice file name
     extension = '.ogg'
-    voice_path = Path(os.environ.get('USER_VOICES_RAW_VOLUME') + '/' + voice_filename + extension)
+    voice_path = Path(os.environ.get('USER_VOICES_RAW_VOLUME') + '/' + voice_name + extension)
     pitch = context.user_data.get(f'pitch_{slug_voice}')
 
     voice_media_data: MediaData = await MediaData.objects.aget(slug=slug_voice)
@@ -481,7 +481,7 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     payload = {
         "user_id": user_id,
         "chat_id": chat_id,
-        "voice_filename": voice_filename,
+        "voice_name": voice_name,
         "extension": extension,
         "pitch": pitch,
         "voice_model_pth": voice_model_pth,

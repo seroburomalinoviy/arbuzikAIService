@@ -96,13 +96,16 @@ async def reader(channel: aioredis.client.PubSub):
 
                     user_id = payload.get('user_id')
                     chat_id = payload.get('chat_id')
-                    voice_filename = payload.get('voice_filename')
-                    extension = payload.get('extension')
+                    voice_name = payload.get('voice_name')
+                    extension_ogg = payload.get('extension')
+                    voice_raw_path = os.environ['USER_VOICES_RAW_VOLUME'] + '/' + voice_name + extension_ogg
+                    voice_processed_path = os.environ['USER_VOICES_PROCESSED_VOLUME'] + '/' + voice_name
+                    voice_ogg_path = os.environ['USER_VOICES_PROCESSED_VOLUME'] + '/' + voice_name + extension_ogg
 
                     infer_parameters['model_name'] = payload.get('voice_model_pth')
                     infer_parameters['feature_index_path'] = payload.get('voice_model_index')
-                    infer_parameters['source_audio_path'] = os.environ.get('USER_VOICES_RAW_VOLUME') + '/' + voice_filename + extension
-                    infer_parameters['output_file_name'] = voice_filename
+                    infer_parameters['source_audio_path'] = voice_raw_path
+                    infer_parameters['output_file_name'] = voice_processed_path
                     infer_parameters['transposition'] = payload.get('pitch')
 
                     logger.info(f"infer parameters: {infer_parameters['model_name']=},\n"
@@ -118,17 +121,14 @@ async def reader(channel: aioredis.client.PubSub):
 
                     logger.info(f'NN finished for: {perf_counter() - start}')
 
-                    voice_path = os.environ.get('USER_VOICES_PROCESSED_VOLUME') + '/' + voice_filename
-                    voice_outpath = os.environ.get('USER_VOICES_PROCESSED_VOLUME') + '/' + voice_filename + extension
-
-                    convert_to_voice(voice_path, voice_outpath)
+                    convert_to_voice(voice_processed_path, voice_ogg_path)
 
                     logger.info(f'NN + Formatting finished for: {perf_counter() - start}')
 
                     payload = {
                         "user_id": user_id,
                         "chat_id": chat_id,
-                        "voice_id": voice_filename
+                        "voice_filename": voice_name + extension_ogg
                     }
                     logger.debug(payload)
 
