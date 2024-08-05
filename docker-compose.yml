@@ -9,8 +9,10 @@ services:
     ports:
       - '5432:5432'
     restart: always
-    volumes:  # todo change path for example to another user
-      - $HOME/postgresql/data:/var/lib/postgresql/data
+    volumes:
+      - type: volume
+        source: /home/postgres/db-volume
+        target: /var/lib/postgresql/data
 
   rabbitmq:
     image: rabbitmq:3.10.7-management
