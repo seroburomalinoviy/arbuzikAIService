@@ -46,7 +46,6 @@ def starter_infer(
         vc_data = get_vc(model_name, protection_amnt, protect1)
     except Exception as e:
         logger.error(f"[vc_data error] {e}")
-        return
     logger.debug("[Mangio-RVC] starter_infer: Performing inference...")
 
     try:
@@ -68,7 +67,6 @@ def starter_infer(
         )
     except Exception as e:
         logger.error(f"[vc_single error] {e}")
-        return
 
     if "Success." in conversion_data[0]:
         logger.debug(
@@ -84,7 +82,7 @@ def starter_infer(
             )
         except Exception as e:
             logger.error(f"[wavfile error] {e}")
-            return
+
         logger.debug(
             "[Mangio-RVC] starter_infer: Finished! Saved output to %s/%s"
             % (result_path, output_file_name)
@@ -94,5 +92,5 @@ def starter_infer(
             "[Mangio-RVC] starter_infer: Inference failed. Here's the traceback: "
         )
         logger.debug(conversion_data[0])
-        return
+
 
