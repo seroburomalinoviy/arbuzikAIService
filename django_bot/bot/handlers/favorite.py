@@ -104,16 +104,16 @@ async def roll_out(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not query:
         return
 
-    user = await User.objects.aget(User, telegram_id=update.inline_query.from_user.id)
+    user = await User.objects.aget(telegram_id=update.inline_query.from_user.id)
 
-    all_favorites = await get_all_favorites(user)
+    # all_favorites = await get_all_favorites(user)
 
-    if len(all_favorites) == 0:
-        return ConversationHandler.END
+    # if len(all_favorites) == 0:
+    #     return ConversationHandler.END
 
     default_image = "https://img.freepik.com/free-photo/3d-rendering-hydraulic-elements_23-2149333332.jpg?t=st=1714904107~exp=1714907707~hmac=98d51596c9ad15af1086b0d1916f5567c1191255c42d157c87c59bab266d6e84&w=2000"
     results = []
-    async for _, voice in a.enumerate(all_favorites):
+    async for voice in user.favorites.all():
         # voice_media_data = await MediaData.objects.aget(MediaData, slug=voice.slug_voice)
         results.append(
             InlineQueryResultArticle(
