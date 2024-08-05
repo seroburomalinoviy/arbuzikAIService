@@ -35,11 +35,6 @@ def voice_remove_favorite(model, arg):
     return
 
 
-@sync_to_async
-def get_all_favorites(model):
-    return list(model.favorites.all())
-
-
 @log_journal
 async def add(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
@@ -105,11 +100,6 @@ async def roll_out(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     user = await User.objects.aget(telegram_id=update.inline_query.from_user.id)
-
-    # all_favorites = await get_all_favorites(user)
-
-    # if len(all_favorites) == 0:
-    #     return ConversationHandler.END
 
     default_image = "https://img.freepik.com/free-photo/3d-rendering-hydraulic-elements_23-2149333332.jpg?t=st=1714904107~exp=1714907707~hmac=98d51596c9ad15af1086b0d1916f5567c1191255c42d157c87c59bab266d6e84&w=2000"
     results = []
