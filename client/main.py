@@ -1,8 +1,7 @@
 import logging
 import os
 import asyncio
-from pathlib import Path
-import aio_pika
+import sys
 import json
 import pika
 
@@ -25,7 +24,7 @@ infer_parameters = {
     # Get parameters for inference
     "speaker_id": 0,
     "transposition": -2,
-    "f0_method": "rmvpe", #harvest
+    "f0_method": "rmvpe",  #harvest
     "crepe_hop_length": 160,
     "harvest_median_filter": 3,
     "resample": 0,
@@ -33,7 +32,7 @@ infer_parameters = {
     "feature_ratio": 0.95,
     "protection_amnt": 0.33,
     "protect1": 0.45,
-    "DoFormant": False, # was True
+    "DoFormant": False,  # was True
     "Timbre": 8.0,
     "Quefrency": 1.2,
 }
@@ -52,7 +51,7 @@ def _create_connection():
     return pika.BlockingConnection(param)
 
 
-def convert_to_voice(voice_name, extension) -> None:
+def convert_to_voice(voice_name, extension):
     """
     Creates a new file with `opus` format using `libopus` plugin. The new file can be recognized as a voice message by
     Telegram.
@@ -115,9 +114,8 @@ async def reader(channel: aioredis.client.PubSub):
                     start = perf_counter()
 
                     if not starter_infer(**infer_parameters):
-                        logger.warning('[Warning] processing complete with error. Wait another query')
+                        logger.warning('NN processing complete with error. Wait another query')
                         continue
-
                     logger.info(f'NN finished for: {perf_counter() - start}')
 
                     convert_to_voice(voice_name, extension)
@@ -139,22 +137,21 @@ async def reader(channel: aioredis.client.PubSub):
 
 
 async def main():
-    logger.debug(f'\nSTART MAIN\n')
     try:
         redis = aioredis.from_url(
             url=f"redis://{os.environ.get('REDIS_HOST')}",
         )
     except Exception as e:
-        logger.info(f'[{type(e).__name__}] - {e}')
+        logger.error(e)
+        sys.exit(1)
 
     pubsub = redis.pubsub()
     await pubsub.subscribe("channel:raw-data")
-    logger.debug(f'GET REDIS SUBSCRIBE')
     await asyncio.create_task(reader(pubsub))
 
 if __name__ == "__main__":
     logging.basicConfig(
-        level=logging.INFO,
+        level=logging.DEBUG,
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s >>> %(funcName)s(%(lineno)d)",
         datefmt="%Y-%m-%d %H:%M:%S"
     )
