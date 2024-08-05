@@ -52,14 +52,16 @@ def _create_connection():
     return pika.BlockingConnection(param)
 
 
-def convert_to_voice(input_path: str, output_path: str) -> None:
+def convert_to_voice(voice_name, extension) -> None:
     """
     Creates a new file with `opus` format using `libopus` plugin. The new file can be recognized as a voice message by
     Telegram.
 
-    :param input_path: str: The path of the input file
-    :param output_path: str: The output path of the converted file
+    :param voice_name: str: The name of raw file
+    :param extension: str: The extension of resulted file
     """
+    input_path = os.environ['USER_VOICES_PROCESSED_VOLUME'] + '/' + voice_name
+    output_path = os.environ['USER_VOICES_PROCESSED_VOLUME'] + '/' + voice_name + extension
     os.system(
         f"ffmpeg -y -i {input_path} -c:a libopus -b:a 32k -vbr on "
         f"-compression_level 10 -frame_duration 60 -application voip"
@@ -94,10 +96,8 @@ async def reader(channel: aioredis.client.PubSub):
                     user_id = payload.get('user_id')
                     chat_id = payload.get('chat_id')
                     voice_name = payload.get('voice_name')
-                    extension_ogg = payload.get('extension')
-                    voice_raw_path = os.environ['USER_VOICES_RAW_VOLUME'] + '/' + voice_name + extension_ogg
-                    voice_processed_path = os.environ['USER_VOICES_PROCESSED_VOLUME'] + '/' + voice_name
-                    voice_ogg_path = os.environ['USER_VOICES_PROCESSED_VOLUME'] + '/' + voice_name + extension_ogg
+                    extension = payload.get('extension')
+                    voice_raw_path = os.environ['USER_VOICES_RAW_VOLUME'] + '/' + voice_name + extension
 
                     infer_parameters['model_name'] = payload.get('voice_model_pth')
                     infer_parameters['feature_index_path'] = payload.get('voice_model_index')
@@ -115,18 +115,19 @@ async def reader(channel: aioredis.client.PubSub):
                     start = perf_counter()
 
                     if not starter_infer(**infer_parameters):
+                        logger.warning('[Warning] processing complete with error. Wait another query')
                         continue
 
                     logger.info(f'NN finished for: {perf_counter() - start}')
 
-                    convert_to_voice(voice_processed_path, voice_ogg_path)
+                    convert_to_voice(voice_name, extension)
 
                     logger.info(f'NN + Formatting finished for: {perf_counter() - start}')
 
                     payload = {
                         "user_id": user_id,
                         "chat_id": chat_id,
-                        "voice_filename": voice_name + extension_ogg
+                        "voice_filename": voice_name + extension
                     }
                     logger.debug(payload)
 
