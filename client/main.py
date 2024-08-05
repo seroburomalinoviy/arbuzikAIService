@@ -13,8 +13,6 @@ from time import perf_counter
 
 from launch_rvc import starter_infer
 
-NO_OPUS = 'no_opus'
-
 load_dotenv()
 logger = logging.getLogger(__name__)
 
@@ -69,7 +67,6 @@ def convert_to_voice(input_path: str, output_path: str) -> None:
 
 
 def push_amqp_message(payload):
-    queue_name = "rvc-to-bot" # ???
     routing_key = "rvc-to-bot"
 
     with _create_connection() as connection:
@@ -100,11 +97,12 @@ async def reader(channel: aioredis.client.PubSub):
                     user_id = payload.get('user_id')
                     chat_id = payload.get('chat_id')
                     voice_filename = payload.get('voice_filename')
+                    extension = payload.get('extension')
 
                     infer_parameters['model_name'] = payload.get('voice_model_pth')
                     infer_parameters['feature_index_path'] = payload.get('voice_model_index')
-                    infer_parameters['source_audio_path'] = os.environ.get('USER_VOICES_RAW_VOLUME') + '/' + payload.get('voice_filename')
-                    infer_parameters['output_file_name'] = voice_filename + NO_OPUS
+                    infer_parameters['source_audio_path'] = os.environ.get('USER_VOICES_RAW_VOLUME') + '/' + voice_filename + extension
+                    infer_parameters['output_file_name'] = voice_filename
                     infer_parameters['transposition'] = payload.get('pitch')
 
                     logger.info(f"infer parameters: {infer_parameters['model_name']=},\n"
@@ -120,8 +118,8 @@ async def reader(channel: aioredis.client.PubSub):
 
                     logger.info(f'NN finished for: {perf_counter() - start}')
 
-                    voice_path = os.environ.get('USER_VOICES_PROCESSED_VOLUME') + '/' + infer_parameters['output_file_name']
-                    voice_outpath = os.environ.get('USER_VOICES_PROCESSED_VOLUME') + '/' + voice_filename
+                    voice_path = os.environ.get('USER_VOICES_PROCESSED_VOLUME') + '/' + voice_filename
+                    voice_outpath = os.environ.get('USER_VOICES_PROCESSED_VOLUME') + '/' + voice_filename + extension
 
                     convert_to_voice(voice_path, voice_outpath)
 

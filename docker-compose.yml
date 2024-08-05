@@ -106,8 +106,13 @@ services:
       - type: volume
         source: processed-voices-volume
         target: ${USER_VOICES_PROCESSED_VOLUME}
-      - ~/dem-volume:${DEM_VOLUME}
-      - ~/covers-volume:/app/media/covers
+      - type: volume
+        source: covers-volume
+        target: /app/media/covers
+      - type: volume
+        source: dem-volume
+        target: ${DEM_VOLUME}
+
 
   django:
     build: ./django_bot
@@ -132,8 +137,12 @@ services:
       - type: volume
         source: models-volume
         target: ${MODELS_VOLUME}
-      - ~/dem-volume:/app/media/dem/
-      - ~/covers-volume:/app/media/covers
+      - type: volume
+        source: dem-volume
+        target: ${DEM_VOLUME}
+      - type: volume
+        source: covers-volume
+        target: /app/media/covers
 
 
 #  contentDistributer-nginx:

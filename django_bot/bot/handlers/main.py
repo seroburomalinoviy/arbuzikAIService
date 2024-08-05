@@ -461,33 +461,28 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
             message_text.audio_permission_denied,
         )
         return ConversationHandler.END
+
     voice = await update.message.voice.get_file()  # get voice file from user
     user_id = str(update.message.from_user.id)
     chat_id = str(update.message.chat.id)
-    extension = '.ogg'
     slug_voice = context.user_data.get('slug_voice')
-    # current_category_id = context.user_data.get('current_category_id')
-    voice_filename = slug_voice + '_' + str(uuid4()) + extension  # raw voice file name
-    voice_path = Path(os.environ.get('USER_VOICES_RAW_VOLUME') + '/' + voice_filename)
+    voice_filename = slug_voice + '_' + str(uuid4())  # raw voice file name
+    extension = '.ogg'
+    voice_path = Path(os.environ.get('USER_VOICES_RAW_VOLUME') + '/' + voice_filename + extension)
     pitch = context.user_data.get(f'pitch_{slug_voice}')
 
-    slug = context.user_data.get('slug_voice')
-    voice_media_data: MediaData = await MediaData.objects.aget(slug=slug)
-    voice_model_pth = str(voice_media_data.model_pth).split('/')[-1]
-    voice_model_index = str(voice_media_data.model_index).split('/')[-1]
-
-    logger.debug(f'{voice_model_pth=}')
-    logger.debug(f'{voice_model_index=}')
-    logger.info(f'voice size = {voice.file_size}')
-    print(f'voice size = {voice.file_size}')
-
+    voice_media_data: MediaData = await MediaData.objects.aget(slug=slug_voice)
     await voice.download_to_drive(custom_path=voice_path)  # download voice file to host
     logger.info(f'JOURNAL: Voice {slug_voice} downloaded to {voice_path} for user - {user_id} - tg_id')
+
+    voice_model_pth = str(voice_media_data.model_pth).split('/')[-1]
+    voice_model_index = str(voice_media_data.model_index).split('/')[-1]
 
     payload = {
         "user_id": user_id,
         "chat_id": chat_id,
         "voice_filename": voice_filename,
+        "extension": extension,
         "pitch": pitch,
         "voice_model_pth": voice_model_pth,
         "voice_model_index": voice_model_index,
