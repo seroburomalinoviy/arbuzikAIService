@@ -39,10 +39,11 @@ async def show_paid_subscriptions(update: Update, context: ContextTypes.DEFAULT_
     #     chat_id=query.message.chat.id,
     #     message_id=query.message.message_id
     # )
+    demo_sub = await Subscription.objects.aget(title=os.environ.get('DEFAULT_SUBSCRIPTION'))
 
     await context.bot.send_photo(
         chat_id=query.message.chat.id,
-        photo=open(str(settings.MEDIA_ROOT) + '/covers/all_paid_subs.png', 'rb'),  # todo переделать
+        photo=open(str(settings.MEDIA_ROOT) + demo_sub.image_cover, 'rb'),  # в демо подписке лежит специальная картинка
         # caption=message_text.all_paid_subs,
         # reply_markup=InlineKeyboardMarkup(keyboard)
     )
