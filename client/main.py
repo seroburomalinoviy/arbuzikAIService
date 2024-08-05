@@ -104,7 +104,7 @@ async def reader(channel: aioredis.client.PubSub):
                     infer_parameters['output_file_name'] = voice_name
                     infer_parameters['transposition'] = payload.get('pitch')
 
-                    logger.info(f"infer parameters: {infer_parameters['model_name']=},\n"
+                    logger.debug(f"infer parameters: {infer_parameters['model_name']=},\n"
                                 f" {infer_parameters['source_audio_path']=},\n"
                                 f"{infer_parameters['output_file_name']=}\n"
                                 f"{infer_parameters['feature_index_path']=}\n"
@@ -112,14 +112,10 @@ async def reader(channel: aioredis.client.PubSub):
                                 )
 
                     start = perf_counter()
-
                     starter_infer(**infer_parameters)
-                    # logger.warning('NN processing complete with error. Wait another query')
-
                     logger.info(f'NN finished for: {perf_counter() - start}')
 
                     convert_to_voice(voice_name, extension)
-
                     logger.info(f'NN + Formatting finished for: {perf_counter() - start}')
 
                     payload = {
@@ -151,8 +147,8 @@ async def main():
 
 if __name__ == "__main__":
     logging.basicConfig(
-        level=logging.DEBUG,
-        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s >>> %(funcName)s(%(lineno)d)",
+        level=logging.INFO,
+        format="%(asctime)s - %(levelname)s - %(name)s - %(message)s >>> %(funcName)s(%(lineno)d)",
         datefmt="%Y-%m-%d %H:%M:%S"
     )
     asyncio.run(main())
