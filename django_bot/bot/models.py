@@ -54,7 +54,7 @@ class Subscription(models.Model):
     )
     image_cover = models.ImageField(
         'Обложка подписки',
-        upload_to='covers/',
+        upload_to='data/',
         editable=True,
         null=True,
         blank=True,  # todo: change on Prod
@@ -74,17 +74,18 @@ class MediaData(models.Model):
         'Voice slug',
         unique=True,
     )
-    image = models.ImageField(
-        'Картинка',
-        upload_to='covers/',
-        editable=True,
-        null=True,
-        blank=True,  # todo: change on Prod
-        storage=OverwriteStorage()
-    )
+    image = models.URLField('Адрес картинки')
+    # image = models.ImageField(
+    #     'Картинка',
+    #     upload_to='data/',
+    #     editable=True,
+    #     null=True,
+    #     blank=True,  # todo: change on Prod
+    #     storage=OverwriteStorage()
+    # )
     model_pth = models.FileField(
         'Файл pth',
-        upload_to='models/',
+        upload_to='data/',
         editable=True,
         null=True,
         blank=True,  # todo: change on Prod
@@ -92,7 +93,7 @@ class MediaData(models.Model):
     )
     model_index = models.FileField(
         'Файл index',
-        upload_to='models/',
+        upload_to='data/',
         editable=True,
         null=True,
         blank=True,  # todo: change on Prod
@@ -100,7 +101,7 @@ class MediaData(models.Model):
     )
     demka = models.FileField(
         'Демка',
-        upload_to='dem/',
+        upload_to='data/',
         editable=True,
         null=True,
         blank=True,  # todo: change on Prod

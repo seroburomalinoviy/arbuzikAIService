@@ -53,10 +53,9 @@ def voice_parser(filepath):
         for row in reader:
             media_data = MediaData.objects.create(
                 slug=row[SLUG_VOICE],
-                model_pth=os.environ.get('MODELS_VOLUME').strip('/').split('/')[-1] + "/" + row[FILE] + ".pth",
-                model_index=os.environ.get('MODELS_VOLUME').strip('/').split('/')[-1] + "/" + row[FILE] + ".index",
-                demka=os.environ.get('DEM_VOLUME').strip('/').split('/')[-1] + "/" + row[FILE] + ".mp3",
-                image="covers/" + row[FILE] + ".png"  # todo remove or add env
+                model_pth=os.environ.get('MEDIA_DATA_VOLUME').strip('/').split('/')[-1] + "/" + row[FILE] + ".pth",
+                model_index=os.environ.get('MEDIA_DATA_VOLUME').strip('/').split('/')[-1] + "/" + row[FILE] + ".index",
+                demka=os.environ.get('MEDIA_DATA_VOLUME').strip('/').split('/')[-1] + "/" + row[FILE] + ".mp3",
             )
             for sub in row[SUBSCRIPTIOS].split(', '):
                 subscription = Subscription.objects.get(title=sub)

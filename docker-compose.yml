@@ -77,7 +77,7 @@ services:
         condition: service_started
     volumes:
       - type: volume
-        source: models-volume
+        source: media-data-volume
         target: /app/weights
       - type: volume
         source: raw-voices-volume
@@ -107,11 +107,8 @@ services:
         source: processed-voices-volume
         target: ${USER_VOICES_PROCESSED_VOLUME}
       - type: volume
-        source: covers-volume
-        target: /app/media/covers
-      - type: volume
-        source: dem-volume
-        target: ${DEM_VOLUME}
+        source: media-data-volume
+        target: ${MEDIA_DATA_VOLUME}
 
 
   django:
@@ -135,14 +132,8 @@ services:
       - .env
     volumes:
       - type: volume
-        source: models-volume
-        target: ${MODELS_VOLUME}
-      - type: volume
-        source: dem-volume
-        target: ${DEM_VOLUME}
-      - type: volume
-        source: covers-volume
-        target: /app/media/covers
+        source: media-data-volume
+        target: ${MEDIA_DATA_VOLUME}
 
 
 #  contentDistributer-nginx:
@@ -163,9 +154,10 @@ services:
 volumes:
   # todo create models-data-volume / subscriptions-data-volume instead models, cover, dem
   db-volume:
-  models-volume:
-  covers-volume:
-  dem-volume:
+  media-data-volume:
+#  models-volume:
+#  covers-volume:
+#  dem-volume:
   processed-voices-volume:
   raw-voices-volume:
 
