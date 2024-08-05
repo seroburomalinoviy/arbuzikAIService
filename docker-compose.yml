@@ -162,6 +162,7 @@ services:
 
 volumes:
   # todo create models-data-volume / subscriptions-data-volume instead models, cover, dem
+  db-volume:
   models-volume:
   covers-volume:
   dem-volume:
