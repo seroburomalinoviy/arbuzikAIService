@@ -102,7 +102,7 @@ async def reader(channel: aioredis.client.PubSub):
                     infer_parameters['model_name'] = payload.get('voice_model_pth')
                     infer_parameters['feature_index_path'] = payload.get('voice_model_index')
                     infer_parameters['source_audio_path'] = voice_raw_path
-                    infer_parameters['output_file_name'] = voice_processed_path
+                    infer_parameters['output_file_name'] = voice_name
                     infer_parameters['transposition'] = payload.get('pitch')
 
                     logger.info(f"infer parameters: {infer_parameters['model_name']=},\n"
