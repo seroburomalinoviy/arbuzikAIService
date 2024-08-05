@@ -113,9 +113,9 @@ async def reader(channel: aioredis.client.PubSub):
 
                     start = perf_counter()
 
-                    if not starter_infer(**infer_parameters):
-                        logger.warning('NN processing complete with error. Wait another query')
-                        continue
+                    starter_infer(**infer_parameters)
+                    # logger.warning('NN processing complete with error. Wait another query')
+
                     logger.info(f'NN finished for: {perf_counter() - start}')
 
                     convert_to_voice(voice_name, extension)
