@@ -89,9 +89,6 @@ async def reader(channel: aioredis.client.PubSub):
                 if message is not None:
 
                     message = message.get("data").decode()
-
-                    logger.debug(f'\nGET MESSAGE FROM REDIS\n{message}')
-
                     payload = json.loads(message)
 
                     user_id = payload.get('user_id')
@@ -117,7 +114,8 @@ async def reader(channel: aioredis.client.PubSub):
 
                     start = perf_counter()
 
-                    starter_infer(**infer_parameters)
+                    if not starter_infer(**infer_parameters):
+                        continue
 
                     logger.info(f'NN finished for: {perf_counter() - start}')
 
@@ -155,7 +153,7 @@ async def main():
 
 if __name__ == "__main__":
     logging.basicConfig(
-        level=logging.DEBUG,
+        level=logging.INFO,
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s >>> %(funcName)s(%(lineno)d)",
         datefmt="%Y-%m-%d %H:%M:%S"
     )
