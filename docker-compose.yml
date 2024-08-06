@@ -10,9 +10,10 @@ services:
       - '5432:5432'
     restart: always
     volumes:
-      - type: volume
-        source: db-data
-        target: /var/lib/postgresql/data
+      - /home/postgres/db_data:/var/lib/postgresql/data
+#      - type: volume
+#        source: db-data
+#        target: /var/lib/postgresql/data
 
   rabbitmq:
     image: rabbitmq:3.10.7-management
