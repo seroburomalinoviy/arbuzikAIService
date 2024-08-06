@@ -92,7 +92,7 @@ async def preview_paid_subscription(update: Update, context: ContextTypes.DEFAUL
     # await query.edit_message_text(
         chat_id=query.message.chat.id,
         text=subscription.description,
-        parse_mode=ParseMode.MARKDOWN_V2,
+        parse_mode=ParseMode.MARKDOWN,
         reply_markup=InlineKeyboardMarkup(
             [
                 [
