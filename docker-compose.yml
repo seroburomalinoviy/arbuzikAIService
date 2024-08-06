@@ -38,10 +38,8 @@ services:
     command: ["redis-server"]
     ports:
       - "6379:6379"
-    volumes:  # todo change path for example to another user
+    volumes:
       - ./redis.conf:/usr/local/etc/redis/redis.conf
-    # depends_on:
-    #   - bot
     restart:
       always
 
