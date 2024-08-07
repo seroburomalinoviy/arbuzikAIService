@@ -57,35 +57,37 @@ def voice_parser(filepath):
                 model_index=os.environ.get('MEDIA_DATA_VOLUME').strip('/').split('/')[-1] + "/" + row[FILE] + ".index",
                 demka=os.environ.get('MEDIA_DATA_VOLUME').strip('/').split('/')[-1] + "/" + row[FILE] + ".mp3",
             )
-            for sub in row[SUBSCRIPTIOS].split(', '):
-                subscription = Subscription.objects.get(title=sub)
+            # for sub in row[SUBSCRIPTIOS].split(', '):
+            # subscription = Subscription.objects.get(title=sub)
 
-                category, category_created = Category.objects.get_or_create(
-                    title=row[CATEGORY],
-                    subscription=subscription
-                )
-                if category_created:
-                    category_counter += 1
-                    category.save()
+            category, category_created = Category.objects.get_or_create(
+                title=row[CATEGORY],
+            )
+            if category_created:
+                category_counter += 1
+                category.save()
 
-                subcategory, subcategory_created = Subcategory.objects.get_or_create(
-                    title=row[SUBCATEGORY],
-                    category=category
-                )
-                if subcategory_created:
-                    subcategory_counter += 1
-                    subcategory.slug = row[SLUG_SUBCATEGORY]
-                    subcategory.save()
+            subcategory, subcategory_created = Subcategory.objects.get_or_create(
+                title=row[SUBCATEGORY],
+                category=category
+            )
+            if subcategory_created:
+                subcategory_counter += 1
+                subcategory.slug = row[SLUG_SUBCATEGORY]
+                subcategory.save()
 
-                Voice.objects.create(
-                    title=row[VOICE],
-                    slug_voice=row[SLUG_VOICE],
-                    description=row[DESCRIPTION],
-                    gender=row[GENDER],
-                    subcategory=subcategory,
-                    media_data=media_data
-                )
-                voice_counter += 1
+            voice = Voice.objects.create(
+                title=row[VOICE],
+                slug_voice=row[SLUG_VOICE],
+                description=row[DESCRIPTION],
+                gender=row[GENDER],
+                subcategory=subcategory,
+                media_data=media_data
+            )
+            for subscription in row[SUBSCRIPTIOS].split(', '):
+                voice.subscriptions.add(subscription)
+
+            voice_counter += 1
 
     return f'Голоса, категории и подкатегории созданы: {voice_counter} голосов, {category_counter} категорий, {subcategory_counter} подкатегорий'
 
