@@ -2,7 +2,7 @@ import os
 
 import pandas as pd
 import csv
-from bot.models import Subscription, Category, Subcategory, Voice, MediaData
+from bot.models import Subscription, Category, Subcategory, Voice
 
 
 def subscription_parser(filepath):
@@ -51,12 +51,12 @@ def voice_parser(filepath):
     with open(filepath, newline='') as f:
         reader = csv.DictReader(f)
         for row in reader:
-            media_data = MediaData.objects.create(
-                slug=row[SLUG_VOICE],
-                model_pth=os.environ.get('MEDIA_DATA_VOLUME').strip('/').split('/')[-1] + "/" + row[FILE] + ".pth",
-                model_index=os.environ.get('MEDIA_DATA_VOLUME').strip('/').split('/')[-1] + "/" + row[FILE] + ".index",
-                demka=os.environ.get('MEDIA_DATA_VOLUME').strip('/').split('/')[-1] + "/" + row[FILE] + ".mp3",
-            )
+            # media_data = MediaData.objects.create(
+            #     slug=row[SLUG_VOICE],
+            #     model_pth=os.environ.get('MEDIA_DATA_VOLUME').strip('/').split('/')[-1] + "/" + row[FILE] + ".pth",
+            #     model_index=os.environ.get('MEDIA_DATA_VOLUME').strip('/').split('/')[-1] + "/" + row[FILE] + ".index",
+            #     demka=os.environ.get('MEDIA_DATA_VOLUME').strip('/').split('/')[-1] + "/" + row[FILE] + ".mp3",
+            # )
             # for sub in row[SUBSCRIPTIOS].split(', '):
             # subscription = Subscription.objects.get(title=sub)
 
@@ -82,7 +82,9 @@ def voice_parser(filepath):
                 description=row[DESCRIPTION],
                 gender=row[GENDER],
                 subcategory=subcategory,
-                media_data=media_data
+                model_pth=os.environ.get('MEDIA_DATA_VOLUME').strip('/').split('/')[-1] + "/" + row[FILE] + ".pth",
+                model_index=os.environ.get('MEDIA_DATA_VOLUME').strip('/').split('/')[-1] + "/" + row[FILE] + ".index",
+                demka=os.environ.get('MEDIA_DATA_VOLUME').strip('/').split('/')[-1] + "/" + row[FILE] + ".mp3",
             )
             for sub in row[SUBSCRIPTIOS].split(', '):
                 subscription = Subscription.objects.get(title=sub)

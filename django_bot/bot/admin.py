@@ -1,16 +1,16 @@
 from django.contrib import admin
-from .models import Category, Voice, Subcategory, Subscription, MediaData
+from .models import Category, Voice, Subcategory, Subscription
 
 
 class SubcategoryInline(admin.TabularInline):
     model = Subcategory
 
 
-@admin.register(MediaData)
-class MediaDataAdmin(admin.ModelAdmin):
-    empty_value_display = "<пусто>"
-    list_display = ['slug']
-    search_fields = ['slug']
+# @admin.register(MediaData)
+# class MediaDataAdmin(admin.ModelAdmin):
+#     empty_value_display = "<пусто>"
+#     list_display = ['slug']
+#     search_fields = ['slug']
 
 
 @admin.register(Category)
