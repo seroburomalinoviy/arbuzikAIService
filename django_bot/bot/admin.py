@@ -16,38 +16,43 @@ class MediaDataAdmin(admin.ModelAdmin):
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     empty_value_display = "<пусто>"
-    list_display = ['title', 'subscription']
+    # list_display = ['title', 'subscription']
+    list_display = ['title']
     search_fields = ['title']
     inlines = [SubcategoryInline]
-    list_filter = ['subscription']
+    # list_filter = ['subscription']
 
 
 @admin.register(Voice)
 class VoiceAdmin(admin.ModelAdmin):
     empty_value_display = "<пусто>"
-    list_display = ['title', 'subcategory', 'category_display', 'subscription_display']
+    # list_display = ['title', 'subcategory', 'category_display', 'subscription_display']
+    list_display = ['title', 'subcategory']
     search_fields = ['title', 'description']
-    list_filter = ['subcategory', 'subcategory__category__title', 'subcategory__category__subscription__title']
+    # list_filter = ['subcategory', 'subcategory__category__title', 'subcategory__category__subscription__title']
+    list_filter = ['subcategory']
 
-    @admin.display(description='Category', ordering='subcategory__category__title')
-    def category_display(self, obj):
-        return str(obj.subcategory.category.title)
+    # @admin.display(description='Category', ordering='subcategory__category__title')
+    # def category_display(self, obj):
+    #     return str(obj.subcategory.category.title)
 
-    @admin.display(description='Subscription', ordering='subcategory__category__subscription__title')
-    def subscription_display(self, obj):
-        return str(obj.subcategory.category.subscription.title)
+    # @admin.display(description='Subscription', ordering='subcategory__category__subscription__title')
+    # def subscription_display(self, obj):
+    #     return str(obj.subcategory.category.subscription.title)
 
 
 @admin.register(Subcategory)
 class SubcategoryAdmin(admin.ModelAdmin):
     empty_value_display = "<пусто>"
-    list_display = ['title', 'category', 'subscription_display']
+    # list_display = ['title', 'category', 'subscription_display']
+    list_display = ['title', 'category']
     search_fields = ['title', 'slug']
-    list_filter = ['category', 'category__subscription__title']
+    # list_filter = ['category', 'category__subscription__title']
+    list_filter = ['category']
 
-    @admin.display(description='Subscription', ordering='category__subscription__title')
-    def subscription_display(self, obj):
-        return str(obj.category.subscription.title)
+    # @admin.display(description='Subscription', ordering='category__subscription__title')
+    # def subscription_display(self, obj):
+    #     return str(obj.category.subscription.title)
 
 
 @admin.register(Subscription)

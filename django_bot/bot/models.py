@@ -60,6 +60,12 @@ class Subscription(models.Model):
         blank=True,  # todo: change on Prod
         storage=OverwriteStorage()
     )
+    voice = models.ForeignKey(
+        'Voice',
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='subscriptions'
+    )
 
     def __str__(self):
         return self.title
@@ -169,11 +175,11 @@ class Category(models.Model):
         editable=True,
         null=True
     )
-    subscription = models.ForeignKey(
-        'Subscription',
-        on_delete=models.CASCADE,
-        related_name='categories'
-    )
+    # subscription = models.ForeignKey(
+    #     'Subscription',
+    #     on_delete=models.CASCADE,
+    #     related_name='categories'
+    # )
 
     def __str__(self):
         return self.title
