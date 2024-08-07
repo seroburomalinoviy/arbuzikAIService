@@ -60,13 +60,6 @@ class Subscription(models.Model):
         blank=True,  # todo: change on Prod
         storage=OverwriteStorage()
     )
-    voice = models.ForeignKey(
-        'Voice',
-        on_delete=models.SET_NULL,
-        null=True,
-        related_name='subscriptions',
-        blank=True
-    )
 
     def __str__(self):
         return self.title
@@ -149,6 +142,9 @@ class Voice(models.Model):
         'MediaData',
         on_delete=models.SET_NULL,
         null=True
+    )
+    subscriptions = models.ManyToManyField(
+        'Subscription'
     )
     subcategory = models.ForeignKey(
         'Subcategory',
