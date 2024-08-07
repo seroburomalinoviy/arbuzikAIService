@@ -66,7 +66,6 @@ def voice_parser(filepath):
                 )
                 if category_created:
                     category_counter += 1
-                    category.description = row[DESCRIPTION]
                     category.save()
 
                 subcategory, subcategory_created = Subcategory.objects.get_or_create(
