@@ -130,7 +130,7 @@ class Voice(models.Model):
         max_length=400,
         editable=True,
         blank=True,
-        default='Описание'
+        null=True
     )
     gender = models.CharField(
         'Пол',
