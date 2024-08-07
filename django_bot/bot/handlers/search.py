@@ -5,7 +5,7 @@ import django
 from telegram import Update, InlineQueryResultArticle, InputTextMessageContent
 from telegram.ext import ContextTypes, ConversationHandler
 
-from bot.logic.utils import log_journal, get_object
+from bot.logic.utils import log_journal
 from bot.logic.constants import *
 
 
@@ -23,16 +23,16 @@ async def inline_searching(update: Update, context: ContextTypes.DEFAULT_TYPE):
     :param context:
     :return:
     """
-    query = update.inline_query.query
+    query = update.inline_query
     if not query:
         return
 
-    user_subscription = await get_object(Subscription, users__telegram_id=update.inline_query.from_user.id)
+    user_subscription = await Subscription.objects.aget(users__telegram_id=query.from_user.id)
 
     default_image = "https://img.freepik.com/free-photo/3d-rendering-hydraulic-elements_23-2149333332.jpg?t=st=1714904107~exp=1714907707~hmac=98d51596c9ad15af1086b0d1916f5567c1191255c42d157c87c59bab266d6e84&w=2000"
     results = []
     async for voice in Voice.objects.filter(subcategory__category__subscription=user_subscription,
-                                            title=query):
+                                            title=query.query):
         # voice_media_data = await get_object(MediaData, slug=voice.slug_voice)
         results.append(
             InlineQueryResultArticle(
@@ -44,5 +44,6 @@ async def inline_searching(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 input_message_content=InputTextMessageContent(voice.slug_voice)
             )
         )
-    await update.inline_query.answer(results, cache_time=1, auto_pagination=True)
+    await query.answer(results, cache_time=1, auto_pagination=True)
     return ConversationHandler.END
+

@@ -6,20 +6,19 @@ on:
 jobs:
 
   deploy:
-    name: deployment_74
+    name: deployment
     runs-on: ubuntu-latest
-    timeout-minutes: 520
     steps:
-    - name: executing remote ssh commands using password
-      uses: appleboy/ssh-action@v1.0.3
+    - name: build project
+      uses: appleboy/ssh-action@master
       with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        password: ${{ secrets.PASSWORD }}
-        port: ${{ secrets.PORT }}
+        host: ${{ secrets.SSH_HOST_PROD }}
+        username: ${{ secrets.SSH_USER_PROD }}
+        key: ${{ secrets.SSH_KEY_PROD }}
         script: |
-          cd arbuzik-rvc-bot/
-          docker compose down
+          cd arbuzikAIService/
           git pull origin main
+          docker compose down
           docker compose build
           docker compose up -d
+          

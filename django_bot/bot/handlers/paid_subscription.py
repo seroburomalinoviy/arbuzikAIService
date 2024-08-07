@@ -11,7 +11,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 django.setup()
 
 from bot.models import Subscription
-from bot.logic.utils import log_journal, get_object
+from bot.logic.utils import log_journal
 from bot.logic import message_text
 from bot.logic.constants import *
 
@@ -22,7 +22,7 @@ async def show_paid_subscriptions(update: Update, context: ContextTypes.DEFAULT_
     await query.answer()
 
     keyboard = list()
-    async for sub in Subscription.objects.exclude(title=os.environ.get('DEFAULT_SUBSCRIPTION')).all():
+    async for sub in Subscription.objects.exclude(title=os.environ.get('DEFAULT_SUBSCRIPTION')).all().order_by('price'):
         keyboard.append(
             [
                 InlineKeyboardButton(sub.telegram_title, callback_data=f'paid_subscription_{sub.title}')
@@ -39,10 +39,11 @@ async def show_paid_subscriptions(update: Update, context: ContextTypes.DEFAULT_
     #     chat_id=query.message.chat.id,
     #     message_id=query.message.message_id
     # )
+    demo_sub = await Subscription.objects.aget(title=os.environ.get('DEFAULT_SUBSCRIPTION'))
 
     await context.bot.send_photo(
         chat_id=query.message.chat.id,
-        photo=open(str(settings.MEDIA_ROOT) + '/covers/all_paid_subs.png', 'rb'),
+        photo=open(str(settings.MEDIA_ROOT) + "/" + str(demo_sub.image_cover), 'rb'),  # в демо подписке лежит специальная картинка
         # caption=message_text.all_paid_subs,
         # reply_markup=InlineKeyboardMarkup(keyboard)
     )
@@ -50,7 +51,7 @@ async def show_paid_subscriptions(update: Update, context: ContextTypes.DEFAULT_
     await context.bot.send_message(
         chat_id=query.message.chat.id,
         text=message_text.all_paid_subs,
-        parse_mode=ParseMode.MARKDOWN_V2,
+        parse_mode=ParseMode.MARKDOWN,
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
 
@@ -63,7 +64,7 @@ async def preview_paid_subscription(update: Update, context: ContextTypes.DEFAUL
     await query.answer()
 
     subscription_title = query.data.split('paid_subscription_')[1]
-    subscription = await get_object(Subscription, title=subscription_title)
+    subscription = await Subscription.objects.aget(title=subscription_title)
     #
     # await context.bot.delete_message(
     #     chat_id=query.message.chat.id,
@@ -91,7 +92,7 @@ async def preview_paid_subscription(update: Update, context: ContextTypes.DEFAUL
     # await query.edit_message_text(
         chat_id=query.message.chat.id,
         text=subscription.description,
-        parse_mode=ParseMode.MARKDOWN_V2,
+        parse_mode=ParseMode.MARKDOWN,
         reply_markup=InlineKeyboardMarkup(
             [
                 [

@@ -1,8 +1,7 @@
 import logging
 import os
 import asyncio
-from pathlib import Path
-import aio_pika
+import sys
 import json
 import pika
 
@@ -12,8 +11,6 @@ from dotenv import load_dotenv
 from time import perf_counter
 
 from launch_rvc import starter_infer
-
-NO_OPUS = 'no_opus'
 
 load_dotenv()
 logger = logging.getLogger(__name__)
@@ -27,7 +24,7 @@ infer_parameters = {
     # Get parameters for inference
     "speaker_id": 0,
     "transposition": -2,
-    "f0_method": "rmvpe", #harvest
+    "f0_method": "rmvpe",  #harvest
     "crepe_hop_length": 160,
     "harvest_median_filter": 3,
     "resample": 0,
@@ -35,7 +32,7 @@ infer_parameters = {
     "feature_ratio": 0.95,
     "protection_amnt": 0.33,
     "protect1": 0.45,
-    "DoFormant": False, # was True
+    "DoFormant": False,  # was True
     "Timbre": 8.0,
     "Quefrency": 1.2,
 }
@@ -54,14 +51,16 @@ def _create_connection():
     return pika.BlockingConnection(param)
 
 
-def convert_to_voice(input_path: str, output_path: str) -> None:
+def convert_to_voice(voice_name, extension):
     """
     Creates a new file with `opus` format using `libopus` plugin. The new file can be recognized as a voice message by
     Telegram.
 
-    :param input_path: str: The path of the input file
-    :param output_path: str: The output path of the converted file
+    :param voice_name: str: The name of raw file
+    :param extension: str: The extension of resulted file
     """
+    input_path = os.environ['USER_VOICES_PROCESSED_VOLUME'] + '/' + voice_name
+    output_path = os.environ['USER_VOICES_PROCESSED_VOLUME'] + '/' + voice_name + extension
     os.system(
         f"ffmpeg -y -i {input_path} -c:a libopus -b:a 32k -vbr on "
         f"-compression_level 10 -frame_duration 60 -application voip"
@@ -69,7 +68,6 @@ def convert_to_voice(input_path: str, output_path: str) -> None:
 
 
 def push_amqp_message(payload):
-    queue_name = "rvc-to-bot" # ???
     routing_key = "rvc-to-bot"
 
     with _create_connection() as connection:
@@ -92,22 +90,21 @@ async def reader(channel: aioredis.client.PubSub):
                 if message is not None:
 
                     message = message.get("data").decode()
-
-                    logger.debug(f'\nGET MESSAGE FROM REDIS\n{message}')
-
                     payload = json.loads(message)
 
                     user_id = payload.get('user_id')
                     chat_id = payload.get('chat_id')
-                    voice_filename = payload.get('voice_filename')
+                    voice_name = payload.get('voice_name')
+                    extension = payload.get('extension')
+                    voice_raw_path = os.environ['USER_VOICES_RAW_VOLUME'] + '/' + voice_name + extension
 
                     infer_parameters['model_name'] = payload.get('voice_model_pth')
                     infer_parameters['feature_index_path'] = payload.get('voice_model_index')
-                    infer_parameters['source_audio_path'] = os.environ.get('USER_VOICES_RAW_VOLUME') + '/' + payload.get('voice_filename')
-                    infer_parameters['output_file_name'] = voice_filename + NO_OPUS
+                    infer_parameters['source_audio_path'] = voice_raw_path
+                    infer_parameters['output_file_name'] = voice_name
                     infer_parameters['transposition'] = payload.get('pitch')
 
-                    logger.info(f"infer parameters: {infer_parameters['model_name']=},\n"
+                    logger.debug(f"infer parameters: {infer_parameters['model_name']=},\n"
                                 f" {infer_parameters['source_audio_path']=},\n"
                                 f"{infer_parameters['output_file_name']=}\n"
                                 f"{infer_parameters['feature_index_path']=}\n"
@@ -115,19 +112,16 @@ async def reader(channel: aioredis.client.PubSub):
                                 )
 
                     start = perf_counter()
-                    try:
-                        starter_infer(**infer_parameters)
-                    except Exception as e:
-                        logger.info(f'ERROR: {e}')
+                    starter_infer(**infer_parameters)
                     logger.info(f'NN finished for: {perf_counter() - start}')
-                    voice_path = os.environ.get('USER_VOICES_PROCESSED_VOLUME') + '/' + infer_parameters['output_file_name']
-                    voice_outpath = os.environ.get('USER_VOICES_PROCESSED_VOLUME') + '/' + voice_filename
-                    convert_to_voice(voice_path, voice_outpath)
+
+                    convert_to_voice(voice_name, extension)
                     logger.info(f'NN + Formatting finished for: {perf_counter() - start}')
+
                     payload = {
                         "user_id": user_id,
                         "chat_id": chat_id,
-                        "voice_id": payload.get('voice_filename')
+                        "voice_filename": voice_name + extension
                     }
                     logger.debug(payload)
 
@@ -139,23 +133,22 @@ async def reader(channel: aioredis.client.PubSub):
 
 
 async def main():
-    logger.debug(f'\nSTART MAIN\n')
     try:
         redis = aioredis.from_url(
             url=f"redis://{os.environ.get('REDIS_HOST')}",
         )
     except Exception as e:
-        logger.info(f'[{type(e).__name__}] - {e}')
+        logger.error(e)
+        sys.exit(1)
 
     pubsub = redis.pubsub()
     await pubsub.subscribe("channel:raw-data")
-    logger.debug(f'GET REDIS SUBSCRIBE')
     await asyncio.create_task(reader(pubsub))
 
 if __name__ == "__main__":
     logging.basicConfig(
-        level=logging.DEBUG,
-        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s >>> %(funcName)s(%(lineno)d)",
+        level=logging.INFO,
+        format="%(asctime)s - %(levelname)s - %(name)s - %(message)s >>> %(funcName)s(%(lineno)d)",
         datefmt="%Y-%m-%d %H:%M:%S"
     )
     asyncio.run(main())

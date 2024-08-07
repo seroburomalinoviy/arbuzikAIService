@@ -9,7 +9,7 @@ from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton, InlineQ
 from telegram.constants import ParseMode
 from telegram.ext import ContextTypes, ConversationHandler
 
-from bot.logic.utils import get_object, filter_objects, log_journal, save_model
+from bot.logic.utils import log_journal
 from bot.logic.constants import *
 from bot.logic import message_text
 
@@ -35,11 +35,6 @@ def voice_remove_favorite(model, arg):
     return
 
 
-@sync_to_async
-def get_all_favorites(model):
-    return list(model.favorites.all())
-
-
 @log_journal
 async def add(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
@@ -47,9 +42,9 @@ async def add(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     slug_voice = query.data.split('favorite-add-')[1]
 
-    user_subscription = await get_object(Subscription, users__telegram_id=query.from_user.id)
-    voice = await get_object(Voice, slug_voice=slug_voice, subcategory__category__subscription=user_subscription)
-    user = await get_object(User, telegram_id=query.from_user.id)
+    user_subscription = await Subscription.objects.aget(users__telegram_id=query.from_user.id)
+    voice = await Voice.objects.aget(slug_voice=slug_voice, subcategory__category__subscription=user_subscription)
+    user = await User.objects.aget(telegram_id=query.from_user.id)
 
     await voice_add_favorite(user, voice)
 
@@ -76,9 +71,9 @@ async def remove(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     slug_voice = query.data.split('favorite-remove-')[1]
 
-    user_subscription = await get_object(Subscription, users__telegram_id=query.from_user.id)
-    voice = await get_object(Voice, slug_voice=slug_voice, subcategory__category__subscription=user_subscription)
-    user = await get_object(User, telegram_id=query.from_user.id)
+    user_subscription = await Subscription.objects.aget(users__telegram_id=query.from_user.id)
+    voice = await Voice.objects.aget(slug_voice=slug_voice, subcategory__category__subscription=user_subscription)
+    user = await User.objects.aget(telegram_id=query.from_user.id)
 
     await voice_remove_favorite(user, voice)
 
@@ -104,17 +99,12 @@ async def roll_out(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not query:
         return
 
-    user = await get_object(User, telegram_id=update.inline_query.from_user.id)
-
-    all_favorites = await get_all_favorites(user)
-
-    if len(all_favorites) == 0:
-        return ConversationHandler.END
+    user = await User.objects.aget(telegram_id=update.inline_query.from_user.id)
 
     default_image = "https://img.freepik.com/free-photo/3d-rendering-hydraulic-elements_23-2149333332.jpg?t=st=1714904107~exp=1714907707~hmac=98d51596c9ad15af1086b0d1916f5567c1191255c42d157c87c59bab266d6e84&w=2000"
     results = []
-    async for _, voice in a.enumerate(all_favorites):
-        # voice_media_data = await get_object(MediaData, slug=voice.slug_voice)
+    async for voice in user.favorites.all():
+        # voice_media_data = await MediaData.objects.aget(MediaData, slug=voice.slug_voice)
         results.append(
             InlineQueryResultArticle(
                 id=str(uuid4()),
@@ -125,5 +115,5 @@ async def roll_out(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 input_message_content=InputTextMessageContent(voice.slug_voice)
             )
         )
-    await update.inline_query.answer(results, cache_time=100, auto_pagination=True)
+    await update.inline_query.answer(results, cache_time=10, auto_pagination=True)
     return ConversationHandler.END
