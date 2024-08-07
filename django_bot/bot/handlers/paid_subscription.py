@@ -22,7 +22,7 @@ async def show_paid_subscriptions(update: Update, context: ContextTypes.DEFAULT_
     await query.answer()
 
     keyboard = list()
-    async for sub in Subscription.objects.exclude(title=os.environ.get('DEFAULT_SUBSCRIPTION')).all():
+    async for sub in Subscription.objects.exclude(title=os.environ.get('DEFAULT_SUBSCRIPTION')).all().order_by('price'):
         keyboard.append(
             [
                 InlineKeyboardButton(sub.telegram_title, callback_data=f'paid_subscription_{sub.title}')
