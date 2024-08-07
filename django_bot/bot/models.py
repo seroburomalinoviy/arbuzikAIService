@@ -167,7 +167,7 @@ class Category(models.Model):
         'Description',
         max_length=500,
         editable=True,
-        default='Описание'
+        null=True
     )
     subscription = models.ForeignKey(
         'Subscription',
