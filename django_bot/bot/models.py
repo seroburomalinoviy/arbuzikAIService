@@ -69,49 +69,6 @@ class Subscription(models.Model):
         verbose_name_plural = 'Подписки'
 
 
-# class MediaData(models.Model):
-#     slug = models.SlugField(
-#         'Voice slug',
-#         unique=True,
-#     )
-#     image = models.URLField('Адрес картинки')
-#     # image = models.ImageField(
-#     #     'Картинка',
-#     #     upload_to='data/',
-#     #     editable=True,
-#     #     null=True,
-#     #     blank=True,  # todo: change on Prod
-#     #     storage=OverwriteStorage()
-#     # )
-#     model_pth = models.FileField(
-#         'Файл pth',
-#         upload_to='data/',
-#         editable=True,
-#         null=True,
-#         blank=True,  # todo: change on Prod
-#         storage=OverwriteStorage()
-#     )
-#     model_index = models.FileField(
-#         'Файл index',
-#         upload_to='data/',
-#         editable=True,
-#         null=True,
-#         blank=True,  # todo: change on Prod
-#         storage=OverwriteStorage()
-#     )
-#     demka = models.FileField(
-#         'Демка',
-#         upload_to='data/',
-#         editable=True,
-#         null=True,
-#         blank=True,  # todo: change on Prod
-#         storage=OverwriteStorage()
-#     )
-#
-#     def __str__(self):
-#         return self.slug
-
-
 class Voice(models.Model):
     gender_choice = [
         ('male', 'Male'),
@@ -163,11 +120,6 @@ class Voice(models.Model):
         max_length=10,
         default='Male'
     )
-    # media_data = models.ForeignKey(
-    #     'MediaData',
-    #     on_delete=models.SET_NULL,
-    #     null=True
-    # )
     subscriptions = models.ManyToManyField(
         'Subscription'
     )
@@ -197,11 +149,6 @@ class Category(models.Model):
         editable=True,
         null=True
     )
-    # subscription = models.ForeignKey(
-    #     'Subscription',
-    #     on_delete=models.CASCADE,
-    #     related_name='categories'
-    # )
 
     def __str__(self):
         return self.title
