@@ -133,7 +133,7 @@ services:
     container_name: nginx
     image: nginx:latest
     ports:
-      - "1337:80"
+      - "80:80"
     env_file:
       - .env
     volumes:
