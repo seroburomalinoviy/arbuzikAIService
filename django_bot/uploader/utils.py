@@ -84,7 +84,8 @@ def voice_parser(filepath):
                 subcategory=subcategory,
                 media_data=media_data
             )
-            for subscription in row[SUBSCRIPTIOS].split(', '):
+            for sub in row[SUBSCRIPTIOS].split(', '):
+                subscription = Subscription.objects.get(title=sub)
                 voice.subscriptions.add(subscription)
 
             voice_counter += 1
