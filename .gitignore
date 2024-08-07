@@ -4,7 +4,6 @@ django_bot/.env.dev
 .ogg
 .DS_Store
 .zed
-django_bot/bot/migrations/
 reload.sh
 docker-overlay==docker_id.sh
 
