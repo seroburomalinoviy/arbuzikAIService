@@ -64,7 +64,8 @@ class Subscription(models.Model):
         'Voice',
         on_delete=models.SET_NULL,
         null=True,
-        related_name='subscriptions'
+        related_name='subscriptions',
+        blank=True
     )
 
     def __str__(self):
