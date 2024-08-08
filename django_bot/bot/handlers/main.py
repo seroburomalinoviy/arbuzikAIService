@@ -52,7 +52,7 @@ async def update_subscription(user: User):
         user.asave()
 
 
-async def valid_subscription(user: User) -> bool:
+def valid_subscription(user: User) -> bool:
     demo = os.environ.get('DEFAULT_SUBSCRIPTION')
     if not user.subscription_status:
         return False
@@ -323,10 +323,10 @@ async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.answer()
 
     slug_voice = context.user_data.get('slug_voice')
-    voice = Voice.objects.aget(slug=slug_voice)
-    user = User.objects.aget(query.from_user.id)
+    voice = await Voice.objects.aget(slug=slug_voice)
+    user = await User.objects.aget(query.from_user.id)
 
-    if not await valid_subscription(user):
+    if not valid_subscription(user):
         user.subscription_status = False
         user.asave()
         await query.answer(
