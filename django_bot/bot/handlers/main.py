@@ -323,7 +323,8 @@ async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.answer()
 
     slug_voice = context.user_data.get('slug_voice')
-    voice = await Voice.objects.select_related('subscriptions').aget(slug=slug_voice)
+    voice_allow_subs = await Voice.objects.aget(slug=slug_voice).value_list('subscriptions__title')
+
     user = await User.objects.select_related('subscription').aget(telegram_id=query.from_user.id)
 
     if not valid_subscription(user):
@@ -334,7 +335,7 @@ async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return BASE_STATE
 
-    if user.subscription.title not in list(voice.subscriptions):
+    if user.subscription.title not in voice_allow_subs:
         await query.answer(
             'Приобретите вип тогда голос будет доступен'
         )
