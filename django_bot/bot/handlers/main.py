@@ -11,7 +11,7 @@ from bot.logic import message_text, keyboards
 from bot.logic.amqp_driver import push_amqp_message
 from bot.logic.constants import *
 from bot.logic.utils import get_moscow_time, log_journal
-from bot.handlers.paid_subscription import offer_subscriptions
+from bot.handlers.paid_subscription import offer_subscriptions, offer_vip_subscription
 
 from telegram.constants import ParseMode
 from telegram.ext import ContextTypes, ConversationHandler, ApplicationHandlerStop
@@ -326,12 +326,11 @@ async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if not valid_subscription(user):
         await offer_subscriptions(update, context)
+        return BASE_STATES
 
     slug_voice = context.user_data.get('slug_voice')
     if not await Subscription.objects.filter(voice__slug=slug_voice, title=user.subscription.title).acount():
-        await query.answer(
-            'Приобретите вип тогда голос будет доступен'
-        )
+        await offer_vip_subscription(update, context)
         return BASE_STATES
 
     await update_subscription(user)

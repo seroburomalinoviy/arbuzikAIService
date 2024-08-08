@@ -17,6 +17,35 @@ from bot.logic.constants import *
 
 
 @log_journal
+async def offer_vip_subscription(update, context):
+    subscription_title = 'violetvip'
+    subscription = await Subscription.objects.aget(title=subscription_title)
+
+    await context.bot.send_photo(
+        chat_id=update.callback_query.message.chat.id,
+        photo=open(str(settings.MEDIA_ROOT) + "/" + str(subscription.image_cover), 'rb'),
+    )
+
+    await context.bot.send_message(
+        chat_id=update.callback_query.message.chat.id,
+        text=message_text.offer_vip_subscription_text,
+        parse_mode=ParseMode.MARKDOWN,
+        reply_markup=InlineKeyboardMarkup(
+            [
+                [
+                    InlineKeyboardButton(f" 💵 Разовый платёж - {subscription.price} руб",
+                                         callback_data=f"payment_{subscription.price}")
+                ],
+                [
+                    InlineKeyboardButton("▶️ Другие подписки", callback_data='paid_subscriptions'),
+                    InlineKeyboardButton("⏩ Вернуться в меню", callback_data='category_menu')
+                ]
+            ]
+        )
+    )
+
+
+@log_journal
 async def offer_subscriptions(update, context):
     keyboard = list()
     async for sub in Subscription.objects.exclude(title=os.environ.get('DEFAULT_SUBSCRIPTION')).all().order_by('price'):
@@ -45,8 +74,6 @@ async def offer_subscriptions(update, context):
         parse_mode=ParseMode.MARKDOWN,
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
-
-    return BASE_STATES
 
 
 @log_journal
