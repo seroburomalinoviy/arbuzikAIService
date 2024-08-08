@@ -49,7 +49,7 @@ async def update_subscription(user: User):
     demo = os.environ.get('DEFAULT_SUBSCRIPTION')
     if user.subscription.title == demo:
         user.subscription_attempts -= 1
-        user.asave()
+        await user.asave()
 
 
 def valid_subscription(user: User) -> bool:
@@ -326,7 +326,7 @@ async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if not valid_subscription(user):
         user.subscription_status = False
-        user.asave()
+        await user.asave()
         await query.answer(
             f'Ваша подписка {user.subscription.title} больше неактивна'
         )
