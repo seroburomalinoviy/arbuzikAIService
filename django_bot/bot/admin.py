@@ -24,7 +24,7 @@ class VoiceAdmin(admin.ModelAdmin):
 @admin.register(Subcategory)
 class SubcategoryAdmin(admin.ModelAdmin):
     empty_value_display = "<пусто>"
-    list_display = ['title', 'category__title']
+    list_display = ['title', 'category']
     search_fields = ['title', 'slug']
     list_filter = ['category__title']
 
