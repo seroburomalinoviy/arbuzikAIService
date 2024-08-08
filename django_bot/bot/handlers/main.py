@@ -291,8 +291,7 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
     button_favorite = ('⭐ В избранное', f'favorite-add-{slug_voice}')
     async for voice in Voice.objects.filter(
             user=user,
-            user__favorites__slug_voice=slug_voice,
-            subcategory__category__subscription__title=subscription_name
+            user__favorites__slug_voice=slug_voice
     ):
         if slug_voice in voice.slug_voice:
             button_favorite = ('Удалить из избранного', f'favorite-remove-{slug_voice}')
