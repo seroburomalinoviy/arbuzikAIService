@@ -330,14 +330,14 @@ async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await query.answer(
             f'Ваша подписка {user.subscription.title} больше неактивна'
         )
-        return BASE_STATE
+        return BASE_STATES
 
     slug_voice = context.user_data.get('slug_voice')
     if not await Subscription.objects.filter(voice__slug=slug_voice, title=user.subscription.title).acount():
         await query.answer(
             'Приобретите вип тогда голос будет доступен'
         )
-        return BASE_STATE
+        return BASE_STATES
 
     await update_subscription(user)
 
