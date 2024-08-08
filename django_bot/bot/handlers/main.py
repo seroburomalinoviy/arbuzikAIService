@@ -262,7 +262,7 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
     slug_voice = update.message.text
     context.user_data['slug_voice'] = slug_voice
 
-    if not await Voice.objects.filter(slug=slug_voice).acount():
+    if not await Voice.objects.filter(slug=slug_voice).aexist():
         await update.message.reply_text(
                 text='Такой модели не существует попробуйте еще раз',
                 reply_markup=InlineKeyboardMarkup(keyboards.is_subscribed)
@@ -322,11 +322,6 @@ async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
 
-    slug_voice = context.user_data.get('slug_voice')
-    # voice = await Voice.objects.aget(slug=slug_voice)
-    voice_allow_subs = await Subscription.objects.filter(voice__slug=slug_voice).value_list('title')
-
-
     user = await User.objects.select_related('subscription').aget(telegram_id=query.from_user.id)
 
     if not valid_subscription(user):
@@ -337,7 +332,8 @@ async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return BASE_STATE
 
-    if user.subscription.title not in voice_allow_subs:
+    slug_voice = context.user_data.get('slug_voice')
+    if not await Subscription.objects.filter(voice__slug=slug_voice, title=user.subscription.title).aexist():
         await query.answer(
             'Приобретите вип тогда голос будет доступен'
         )
