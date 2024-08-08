@@ -325,10 +325,13 @@ async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = await User.objects.select_related('subscription').aget(telegram_id=query.from_user.id)
 
     if not valid_subscription(user):
+        user.subscription_status = False
+        await user.asave()
         await offer_subscriptions(update, context)
         return BASE_STATES
 
     slug_voice = context.user_data.get('slug_voice')
+
     if not await Subscription.objects.filter(voice__slug=slug_voice, title=user.subscription.title).acount():
         await offer_vip_subscription(update, context)
         return BASE_STATES
@@ -391,16 +394,11 @@ async def pitch_setting(update: Update, context: ContextTypes.DEFAULT_TYPE):
     slug_voice = context.user_data.get('slug_voice')
     pitch = context.user_data.get(f'pitch_{slug_voice}')
 
-    logger.info(f'pitch = {pitch}')
-    logger.info(f'type of pitch = {type(pitch)}')
     if query.data == 'voice_set_sub':
         pitch_next = pitch - 1 if pitch > -TONE_LIMIT else pitch
-        logger.info(f'pitch_next voice_set_sub = {pitch_next}')
     elif query.data == 'voice_set_add':
         pitch_next = pitch + 1 if pitch < TONE_LIMIT else pitch
-        logger.info(f'pitch_next voice_set_sub = {pitch_next}')
 
-    logger.info(f'pitch_next  = {pitch_next}')
     context.user_data[f'pitch_{slug_voice}'] = pitch_next
 
     if not pitch_next == pitch:
