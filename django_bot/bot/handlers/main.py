@@ -139,7 +139,7 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = [keyboards.search_all_voices, keyboards.favorites]
     i = 0
     row = []
-    async for category in Category.objects.filter(subscription__title=subscription_name).values('title', 'id'):
+    async for category in Category.objects.all().values('title', 'id'):
         i += 1
         row.append(InlineKeyboardButton(category['title'], callback_data='category_' + str(category['id'])))
         if i % 2 == 0:
@@ -225,11 +225,9 @@ async def voice_inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE)
     default_image = "https://img.freepik.com/free-photo/3d-rendering-hydraulic-elements_23-2149333332.jpg?t=st=1714904107~exp=1714907707~hmac=98d51596c9ad15af1086b0d1916f5567c1191255c42d157c87c59bab266d6e84&w=2000"
     results = []
     async for voice in Voice.objects.filter(
-            subcategory__category__id=current_category_id,
+            # subcategory__category__id=current_category_id,
             subcategory__slug=slug_subcategory,
-            subcategory__category__subscription__title=subscription_name
     ):
-        voice_media_data = await MediaData.objects.aget(slug=voice.slug_voice)
         results.append(
             InlineQueryResultArticle(
                 id=str(uuid4()),
