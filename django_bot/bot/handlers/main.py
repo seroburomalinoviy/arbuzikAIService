@@ -129,13 +129,15 @@ async def subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Главное меню / Категории
-
-    1. Добавляем пользователя в бд и подписываем на демо
-    2. Отравляем категории
+    1. Обновляем права на отправку голосовых
+    2. Добавляем пользователя в бд и подписываем на демо
+    3. Отравляем категории
     :param update:
     :param context:
     :return:
     """
+    context.user_data['processing_permission'] = False
+
     tg_user_id = str(update.effective_user.id) if update.message else str(update.callback_query.from_user.id)
 
     user, user_created = await User.objects.aget_or_create(telegram_id=tg_user_id)
