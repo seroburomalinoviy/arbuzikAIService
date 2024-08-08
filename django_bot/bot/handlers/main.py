@@ -381,9 +381,7 @@ async def voice_set_0(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def pitch_setting(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Настройка тональности
-    1. Меняем значение тональности
-    2. Сохраняем обновленное значение в кеш
-    3. Возвращаем представление голоса с обновленным значением тональности
+    1. Меняем тональность
     :param update:
     :param context:
     :return:
@@ -427,11 +425,11 @@ async def pitch_setting(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Захват голосового сообщения
-    0. Проверяем, можно ли обрабатывать голосовое сообщение
-    1. Получаем голосовое сообщение, данные пользователя и тональность голоса
-    2. Сохраняем файл с голосовым сообщением
-    3. Отправляем пользователю статус
-    4. Отправляем данные в брокер сообщений
+    1. Проверяем, можно ли обрабатывать голосовое сообщение
+    2. Получаем голосовое сообщение, данные пользователя и тональность голоса
+    3. Сохраняем файл с голосовым сообщением
+    4. Отправляем пользователю статус
+    5. Отправляем данные в брокер сообщений
     :param update:
     :param context:
     :return:
@@ -443,20 +441,21 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return ConversationHandler.END
 
-    voice = await update.message.voice.get_file()  # get voice file from user
-    user_id = str(update.message.from_user.id)
-    chat_id = str(update.message.chat.id)
+    voice_file = await update.message.voice.get_file()  # get voice file from user
     slug_voice = context.user_data.get('slug_voice')
     voice_name = slug_voice + '_' + str(uuid4())  # raw voice file name
     extension = '.ogg'
     voice_path = Path(os.environ.get('USER_VOICES_RAW_VOLUME') + '/' + voice_name + extension)
+
+    await voice_file.download_to_drive(custom_path=voice_path)  # download voice file to host
+
+    voice = await Voice.objects.aget(slug=slug_voice)
+    voice_model_pth = str(voice.model_pth).split('/')[-1]
+    voice_model_index = str(voice.model_index).split('/')[-1]
+
     pitch = context.user_data.get(f'pitch_{slug_voice}')
-
-    await voice.download_to_drive(custom_path=voice_path)  # download voice file to host
-    logger.info(f'JOURNAL: Voice {slug_voice} downloaded to {voice_path} for user - {user_id} - tg_id')
-
-    # voice_model_pth = str(voice_media_data.model_pth).split('/')[-1]
-    # voice_model_index = str(voice_media_data.model_index).split('/')[-1]
+    user_id = str(update.message.from_user.id)
+    chat_id = str(update.message.chat.id)
 
     payload = {
         "user_id": user_id,
@@ -464,8 +463,8 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "voice_name": voice_name,
         "extension": extension,
         "pitch": pitch,
-        # "voice_model_pth": voice_model_pth,
-        # "voice_model_index": voice_model_index,
+        "voice_model_pth": voice_model_pth,
+        "voice_model_index": voice_model_index,
     }
 
     await push_amqp_message(json.dumps(payload))
@@ -493,10 +492,10 @@ async def check_status(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer('Еще в работе')
 
-    await query.edit_message_text(
-        text=message_text.check_status_text,
-        reply_markup=InlineKeyboardMarkup(keyboards.check_status)
-    )
+    # await query.edit_message_text(
+    #     text=message_text.check_status_text,
+    #     reply_markup=InlineKeyboardMarkup(keyboards.check_status)
+    # )
     return WAITING
 
 
