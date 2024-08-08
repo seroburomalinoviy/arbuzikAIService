@@ -212,20 +212,17 @@ async def voice_inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE)
     :param context:
     :return:
     """
-    subscription_name = context.user_data['subscription_name']
 
     slug_subcategory = update.inline_query.query.split('sub_')[1]
     if not slug_subcategory:
+        logger.error('Slug of subcategory is empty')
         return
     context.user_data['slug_subcategory'] = slug_subcategory
-
-    current_category_id = context.user_data['current_category_id']
 
     default_image = "https://img.icons8.com/2266EE/search"
     default_image = "https://img.freepik.com/free-photo/3d-rendering-hydraulic-elements_23-2149333332.jpg?t=st=1714904107~exp=1714907707~hmac=98d51596c9ad15af1086b0d1916f5567c1191255c42d157c87c59bab266d6e84&w=2000"
     results = []
     async for voice in Voice.objects.filter(
-            # subcategory__category__id=current_category_id,
             subcategory__slug=slug_subcategory,
     ):
         results.append(
@@ -258,7 +255,7 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
     slug_voice = update.message.text
     context.user_data['slug_voice'] = slug_voice
 
-    if not Voice.objects.filter(slug=slug_voice):
+    if not list(Voice.objects.filter(slug=slug_voice)):
         await update.message.reply_text(
                 text='Такой модели не существует попробуйте еще раз',
                 reply_markup=InlineKeyboardMarkup(keyboards.is_subscribed)
@@ -282,9 +279,7 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
         context.user_data[f'pitch_{update.message.text}'] = 0
 
     button_favorite = ('⭐ В избранное', f'favorite-add-{slug_voice}')
-    async for voice in Voice.objects.filter(
-            user__favorites__slug_voice=slug_voice
-    ):
+    async for voice in Voice.objects.filter(user__favorites__slug_voice=slug_voice):
         if slug_voice in voice.slug_voice:
             button_favorite = ('Удалить из избранного', f'favorite-remove-{slug_voice}')
 
