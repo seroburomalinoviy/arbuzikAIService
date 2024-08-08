@@ -262,7 +262,7 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
     slug_voice = update.message.text
     context.user_data['slug_voice'] = slug_voice
 
-    if not await Voice.objects.filter(slug=slug_voice).aexist():
+    if not await Voice.objects.filter(slug=slug_voice).acount():
         await update.message.reply_text(
                 text='Такой модели не существует попробуйте еще раз',
                 reply_markup=InlineKeyboardMarkup(keyboards.is_subscribed)
@@ -333,7 +333,7 @@ async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return BASE_STATE
 
     slug_voice = context.user_data.get('slug_voice')
-    if not await Subscription.objects.filter(voice__slug=slug_voice, title=user.subscription.title).aexist():
+    if not await Subscription.objects.filter(voice__slug=slug_voice, title=user.subscription.title).acount():
         await query.answer(
             'Приобретите вип тогда голос будет доступен'
         )
