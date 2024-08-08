@@ -11,7 +11,7 @@ from bot.logic import message_text, keyboards
 from bot.logic.amqp_driver import push_amqp_message
 from bot.logic.constants import *
 from bot.logic.utils import get_moscow_time, log_journal
-
+from bot.handlers.paid_subscription import offer_subscriptions
 
 from telegram.constants import ParseMode
 from telegram.ext import ContextTypes, ConversationHandler, ApplicationHandlerStop
@@ -325,12 +325,7 @@ async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = await User.objects.select_related('subscription').aget(telegram_id=query.from_user.id)
 
     if not valid_subscription(user):
-        user.subscription_status = False
-        await user.asave()
-        await query.answer(
-            f'Ваша подписка {user.subscription.title} больше неактивна'
-        )
-        return BASE_STATES
+        await offer_subscriptions(query, context)
 
     slug_voice = context.user_data.get('slug_voice')
     if not await Subscription.objects.filter(voice__slug=slug_voice, title=user.subscription.title).acount():
