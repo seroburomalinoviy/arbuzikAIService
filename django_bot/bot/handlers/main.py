@@ -427,7 +427,7 @@ async def pitch_setting(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Захват голосового сообщения
-    1. Проверяем, можно ли обрабатывать голосовое сообщение
+    1. Проверяем права на отправку голосового
     2. Получаем голосовое сообщение, данные пользователя и тональность голоса
     3. Сохраняем файл с голосовым сообщением
     4. Отправляем пользователю статус
@@ -437,11 +437,18 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     :return:
     """
     permission = context.user_data.get('processing_permission')
+    keyboard = []
+    keyboard.append(
+        [
+            InlineKeyboardButton("⏩ Вернуться в меню", callback_data='category_menu')
+        ]
+    )
     if not permission:
         await update.message.reply_text(
             message_text.audio_permission_denied,
+            reply_markup=InlineKeyboardMarkup(keyboard)
         )
-        return ConversationHandler.END
+        return BASE_STATES
 
     voice_file = await update.message.voice.get_file()  # get voice file from user
     slug_voice = context.user_data.get('slug_voice')
