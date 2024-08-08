@@ -91,7 +91,6 @@ def check_subscription(user_model: User) -> tuple[str, bool]:
     return user_model.subscription.title, user_model.subscription_status
 
 
-
 @log_journal
 async def subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """

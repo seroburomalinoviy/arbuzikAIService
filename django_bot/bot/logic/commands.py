@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 
 class StartHandler(BaseCommandHandler):
     async def __call__(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        context.user_data['processing_permission'] = False
         await update.message.reply_text(
             message_text.subscription_question,
             reply_markup=InlineKeyboardMarkup(keyboards.check_subscription)
