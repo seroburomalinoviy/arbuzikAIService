@@ -255,8 +255,7 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
     slug_voice = update.message.text
     context.user_data['slug_voice'] = slug_voice
 
-    voice_matched = [i async for i in Voice.objects.filter(slug=slug_voice)]
-    if not voice_matched:
+    if not await Voice.objects.filter(slug=slug_voice).acount():
         await update.message.reply_text(
                 text='Такой модели не существует попробуйте еще раз',
                 reply_markup=InlineKeyboardMarkup(keyboards.is_subscribed)
