@@ -247,76 +247,46 @@ async def voice_inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE)
 async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Превью голоса
-    1. Проверяем подписку (todo: вынести в отдельную функцию)
-    2. проверяем избранные голоса пользователя
-    3. Отправляем демку
+    1. Отправляем демку
+    2. Преднастраиваем pitch
+    3. Проверяем избранные голоса
+
     :param update:
     :param context:
     :return:
     """
-    user = await User.objects.aget(telegram_id=update.effective_user.id)
-    context.user_data['subscription_name'], context.user_data['subscription_status'] = await check_subscription(user)
-
-    if context.user_data.get('subscription_status'):
-        if context.user_data['subscription_name'] == os.environ.get('DEFAULT_SUBSCRIPTION'):
-            user.subscription_attempts -= 1
-            if user.subscription_attempts <= 0:
-                user.subscription_status = False
-                await user.asave()
-            await user.asave()
-
-        else:
-            if user.subscription_final_date < get_moscow_time():
-                user.subscription_status = False
-                await user.asave()
-
-    user = await User.objects.aget(telegram_id=update.effective_user.id)
-    if not user.subscription_status:
-        await update.message.reply_text(
-            message_text.subscription_finished,
-            reply_markup=InlineKeyboardMarkup(keyboards.is_subscribed)
-        )
-        return ConversationHandler.END
-
-    subscription_name = context.user_data['subscription_name']
-    # if update.message: # todo ест ли случаи когда нет update.message ?
-
-    # Ограничение на количество символов - безопасность
-    slug_voice = update.message.text[0:50]
+    slug_voice = update.message.text
     context.user_data['slug_voice'] = slug_voice
+
+    if not Voice.objects.filter(slug=slug_voice):
+        await update.message.reply_text(
+                text='Такой модели не существует попробуйте еще раз',
+                reply_markup=InlineKeyboardMarkup(keyboards.is_subscribed)
+            )
+        return BASE_STATES
+
+    voice = await Voice.objects.aget(slug=slug_voice)
+
+    demka_path = voice.demka.path
+
+    if not os.path.exists(demka_path):
+        await update.message.reply_text(
+            'Демонстрация голоса в работе'
+        )
+    else:
+        await update.message.reply_audio(
+            audio=open(demka_path, 'rb')
+        )
 
     if not context.user_data.get(f'pitch_{update.message.text}'):
         context.user_data[f'pitch_{update.message.text}'] = 0
 
     button_favorite = ('⭐ В избранное', f'favorite-add-{slug_voice}')
     async for voice in Voice.objects.filter(
-            user=user,
             user__favorites__slug_voice=slug_voice
     ):
         if slug_voice in voice.slug_voice:
             button_favorite = ('Удалить из избранного', f'favorite-remove-{slug_voice}')
-    #
-    # try:
-    #     voice_media_data = await MediaData.objects.aget(slug=slug_voice)
-    # except Exception as e:
-    #     logger.warning(f'Voice {slug_voice} DOES NOT EXIST: {e}')
-    #     await update.message.reply_text(
-    #         text='Такой модели не существует попробуйте еще раз',
-    #         reply_markup=InlineKeyboardMarkup(keyboards.is_subscribed)
-    #     )
-        return BASE_STATES
-
-    demka_path = voice_media_data.demka.path
-
-    try:
-        await update.message.reply_audio(
-            audio=open(demka_path, 'rb')
-        )
-    except Exception as e:
-        logger.warning(e)
-        await update.message.reply_text(
-            'Демонстрация голоса в работе'
-        )
 
     await update.message.reply_text(
         message_text.voice_preview,
@@ -334,6 +304,87 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
     )
     return BASE_STATES
+
+    # user = await User.objects.aget(telegram_id=update.effective_user.id)
+    # context.user_data['subscription_name'], context.user_data['subscription_status'] = await check_subscription(user)
+    #
+    # if context.user_data.get('subscription_status'):
+    #     if context.user_data['subscription_name'] == os.environ.get('DEFAULT_SUBSCRIPTION'):
+    #         user.subscription_attempts -= 1
+    #         if user.subscription_attempts <= 0:
+    #             user.subscription_status = False
+    #             await user.asave()
+    #         await user.asave()
+    #
+    #     else:
+    #         if user.subscription_final_date < get_moscow_time():
+    #             user.subscription_status = False
+    #             await user.asave()
+    #
+    # user = await User.objects.aget(telegram_id=update.effective_user.id)
+    # if not user.subscription_status:
+    #     await update.message.reply_text(
+    #         message_text.subscription_finished,
+    #         reply_markup=InlineKeyboardMarkup(keyboards.is_subscribed)
+    #     )
+    #     return ConversationHandler.END
+    #
+    # subscription_name = context.user_data['subscription_name']
+    # if update.message: # todo ест ли случаи когда нет update.message ?
+
+    # Ограничение на количество символов - безопасность
+    # slug_voice = update.message.text[0:50]
+    # context.user_data['slug_voice'] = slug_voice
+
+    # if not context.user_data.get(f'pitch_{update.message.text}'):
+    #     context.user_data[f'pitch_{update.message.text}'] = 0
+
+    # button_favorite = ('⭐ В избранное', f'favorite-add-{slug_voice}')
+    # async for voice in Voice.objects.filter(
+    #         user=user,
+    #         user__favorites__slug_voice=slug_voice
+    # ):
+    #     if slug_voice in voice.slug_voice:
+    #         button_favorite = ('Удалить из избранного', f'favorite-remove-{slug_voice}')
+    # #
+    # try:
+    #     voice_media_data = await MediaData.objects.aget(slug=slug_voice)
+    # except Exception as e:
+    #     logger.warning(f'Voice {slug_voice} DOES NOT EXIST: {e}')
+    #     await update.message.reply_text(
+    #         text='Такой модели не существует попробуйте еще раз',
+    #         reply_markup=InlineKeyboardMarkup(keyboards.is_subscribed)
+    #     )
+    #     return BASE_STATES
+
+    # demka_path = voice.demka.path
+    #
+    # try:
+    #     await update.message.reply_audio(
+    #         audio=open(demka_path, 'rb')
+    #     )
+    # except Exception as e:
+    #     logger.warning(e)
+    #     await update.message.reply_text(
+    #         'Демонстрация голоса в работе'
+    #     )
+
+    # await update.message.reply_text(
+    #     message_text.voice_preview,
+    #     reply_markup=InlineKeyboardMarkup(
+    #         [
+    #             [
+    #                 InlineKeyboardButton('⏪ Вернуться в меню', callback_data='category_menu'),
+    #                 InlineKeyboardButton('🔴Начать запись', callback_data='record'),
+    #
+    #             ],
+    #             [
+    #                 InlineKeyboardButton(button_favorite[0], callback_data=button_favorite[1]),
+    #             ]
+    #         ]
+    #     )
+    # )
+    # return BASE_STATES
 
 
 @log_journal
