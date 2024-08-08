@@ -33,20 +33,40 @@ allowed_user_statuses = ['member', 'creator', 'administrator']
 unresolved_user_statuses = ['kicked', 'restricted', 'left']
 
 
-async def set_demo_to_user(user_model: User, tg_user_name, tg_nick_name) -> None:
+async def set_demo_to_user(user: User, update: Update) -> None:
     demo_subscription: Subscription = await Subscription.objects.aget(title=os.environ.get('DEFAULT_SUBSCRIPTION'))
-    current_date = get_moscow_time()
 
-    user_model.subscription_status = True
-    user_model.subscription = demo_subscription
-    user_model.telegram_username = tg_user_name
-    user_model.telegram_nickname = tg_nick_name
-    user_model.subscription_attempts = demo_subscription.days_limit
-    user_model.subscription_final_date = current_date
+    user.subscription_status = True
+    user.subscription = demo_subscription
+    user.telegram_username = update.effective_user.username if update.message else update.callback_query.from_user.username
+    user.telegram_nickname = update.effective_user.first_name if update.message else update.callback_query.from_user.first_name
+    user.subscription_attempts = demo_subscription.days_limit
 
-    await user_model.asave()
-    
-    return user_model.subscription.title
+    await user.asave()
+
+
+async def update_subscription(user: User):
+    demo = os.environ.get('DEFAULT_SUBSCRIPTION')
+    if user.subscription.title == demo:
+        user.subscription_attempts -= 1
+        user.asave()
+
+
+def valid_subscription(user: User) -> bool:
+    demo = os.environ.get('DEFAULT_SUBSCRIPTION')
+    if not user.subscription_status:
+        return False
+    else:
+        if user.subscription.title == demo:
+            if user.subscription_attempts <= 0:
+                return False
+            else:
+                return True
+        else:
+            if user.subscription_final_date < get_moscow_time():
+                return False
+            else:
+                return True
 
 
 @sync_to_async
@@ -67,8 +87,9 @@ def check_subscription(user_model: User) -> tuple[str, bool]:
         user_model.subscription = Subscription.objects.get(title=os.environ.get('DEFAULT_SUBSCRIPTION'))
         user_model.subscription_status = False
         user_model.save()
-    
+
     return user_model.subscription.title, user_model.subscription_status
+
 
 
 @log_journal
@@ -109,31 +130,17 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Главное меню / Категории
 
-    1. Создаем или получаем пользователя в бд
-    2. Получаем параметры подписки пользователя
-    3. Отравляем пользователю категории в соответствии с его подпиской
+    1. Добавляем пользователя в бд и подписываем на демо
+    2. Отравляем категории
     :param update:
     :param context:
     :return:
     """
-    if not update.message:
-        tg_user_id = str(update.callback_query.from_user.id)
-        tg_user_name = update.callback_query.from_user.username
-        tg_nick_name = update.callback_query.from_user.first_name
-    else:
-        tg_user_id = str(update.effective_user.id)
-        tg_user_name = update.effective_user.username
-        tg_nick_name = update.effective_user.first_name
+    tg_user_id = str(update.effective_user.id) if update.message else str(update.callback_query.from_user.id)
 
     user, user_created = await User.objects.aget_or_create(telegram_id=tg_user_id)
     if user_created:
-        subscription_name = await set_demo_to_user(user, tg_user_name, tg_nick_name)
-        subscription_status = True
-    else:
-        subscription_name, subscription_status = await check_subscription(user)
-
-    context.user_data['subscription_name'] = subscription_name
-    context.user_data['subscription_status'] = subscription_status
+        await set_demo_to_user(user, update)
 
     # Кнопки Поиск по всем голосам и Избранное
     keyboard = [keyboards.search_all_voices, keyboards.favorites]
@@ -300,103 +307,44 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
     return BASE_STATES
 
-    # user = await User.objects.aget(telegram_id=update.effective_user.id)
-    # context.user_data['subscription_name'], context.user_data['subscription_status'] = await check_subscription(user)
-    #
-    # if context.user_data.get('subscription_status'):
-    #     if context.user_data['subscription_name'] == os.environ.get('DEFAULT_SUBSCRIPTION'):
-    #         user.subscription_attempts -= 1
-    #         if user.subscription_attempts <= 0:
-    #             user.subscription_status = False
-    #             await user.asave()
-    #         await user.asave()
-    #
-    #     else:
-    #         if user.subscription_final_date < get_moscow_time():
-    #             user.subscription_status = False
-    #             await user.asave()
-    #
-    # user = await User.objects.aget(telegram_id=update.effective_user.id)
-    # if not user.subscription_status:
-    #     await update.message.reply_text(
-    #         message_text.subscription_finished,
-    #         reply_markup=InlineKeyboardMarkup(keyboards.is_subscribed)
-    #     )
-    #     return ConversationHandler.END
-    #
-    # subscription_name = context.user_data['subscription_name']
-    # if update.message: # todo ест ли случаи когда нет update.message ?
-
-    # Ограничение на количество символов - безопасность
-    # slug_voice = update.message.text[0:50]
-    # context.user_data['slug_voice'] = slug_voice
-
-    # if not context.user_data.get(f'pitch_{update.message.text}'):
-    #     context.user_data[f'pitch_{update.message.text}'] = 0
-
-    # button_favorite = ('⭐ В избранное', f'favorite-add-{slug_voice}')
-    # async for voice in Voice.objects.filter(
-    #         user=user,
-    #         user__favorites__slug_voice=slug_voice
-    # ):
-    #     if slug_voice in voice.slug_voice:
-    #         button_favorite = ('Удалить из избранного', f'favorite-remove-{slug_voice}')
-    # #
-    # try:
-    # except Exception as e:
-    #     logger.warning(f'Voice {slug_voice} DOES NOT EXIST: {e}')
-    #     await update.message.reply_text(
-    #         text='Такой модели не существует попробуйте еще раз',
-    #         reply_markup=InlineKeyboardMarkup(keyboards.is_subscribed)
-    #     )
-    #     return BASE_STATES
-
-    # demka_path = voice.demka.path
-    #
-    # try:
-    #     await update.message.reply_audio(
-    #         audio=open(demka_path, 'rb')
-    #     )
-    # except Exception as e:
-    #     logger.warning(e)
-    #     await update.message.reply_text(
-    #         'Демонстрация голоса в работе'
-    #     )
-
-    # await update.message.reply_text(
-    #     message_text.voice_preview,
-    #     reply_markup=InlineKeyboardMarkup(
-    #         [
-    #             [
-    #                 InlineKeyboardButton('⏪ Вернуться в меню', callback_data='category_menu'),
-    #                 InlineKeyboardButton('🔴Начать запись', callback_data='record'),
-    #
-    #             ],
-    #             [
-    #                 InlineKeyboardButton(button_favorite[0], callback_data=button_favorite[1]),
-    #             ]
-    #         ]
-    #     )
-    # )
-    # return BASE_STATES
-
 
 @log_journal
 async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Представление голоса
 
-    1. Задаем processing_permission в True, разрешаем отправлять аудио
+    1. Проверка подписки
+    2. Разрешаем отправлять аудио
     :param update:
     :param context:
     :return:
     """
     query = update.callback_query
     await query.answer()
-    context.user_data['processing_permission'] = True 
-    slug_voice = context.user_data.get('slug_voice')
-    pitch = context.user_data.get(f'pitch_{slug_voice}') if context.user_data.get(f'pitch_{slug_voice}') else "0"
 
+    slug_voice = context.user_data.get('slug_voice')
+    voice = Voice.objects.aget(slug=slug_voice)
+    user = User.objects.aget(query.from_user.id)
+
+    if not valid_subscription(user):
+        user.subscription_status = False
+        user.asave()
+        await query.answer(
+            f'Ваша подписка {user.subscription.title} больше неактивна'
+        )
+        return BASE_STATE
+
+    if user.subscription.title not in list(voice.subscriptions):
+        await query.answer(
+            'Приобретите вип тогда голос будет доступен'
+        )
+        return BASE_STATE
+
+    await update_subscription(user)
+
+    context.user_data['processing_permission'] = True 
+
+    pitch = context.user_data.get(f'pitch_{slug_voice}') if context.user_data.get(f'pitch_{slug_voice}') else "0"
     await query.edit_message_text(
         message_text.voice_set.format(name=slug_voice),
         parse_mode=ParseMode.HTML,
