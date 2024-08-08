@@ -18,15 +18,15 @@ class CategoryAdmin(admin.ModelAdmin):
 class VoiceAdmin(admin.ModelAdmin):
     empty_value_display = "<пусто>"
     search_fields = ['title', 'description']
-    list_filter = ['subcategory', 'subcategory__category__title']
+    list_filter = ['subcategory__category__title', 'subcategory__title']
 
 
 @admin.register(Subcategory)
 class SubcategoryAdmin(admin.ModelAdmin):
     empty_value_display = "<пусто>"
-    list_display = ['title', 'category']
+    list_display = ['title', 'category__title']
     search_fields = ['title', 'slug']
-    list_filter = ['category']
+    list_filter = ['category__title']
 
 
 @admin.register(Subscription)

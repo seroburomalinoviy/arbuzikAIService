@@ -3,7 +3,6 @@ from uuid import uuid4
 import django
 import logging
 from asgiref.sync import sync_to_async
-import asyncstdlib as a
 
 from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton, InlineQueryResultArticle, InputTextMessageContent
 from telegram.constants import ParseMode
@@ -42,8 +41,7 @@ async def add(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     slug_voice = query.data.split('favorite-add-')[1]
 
-    user_subscription = await Subscription.objects.aget(users__telegram_id=query.from_user.id)
-    voice = await Voice.objects.aget(slug_voice=slug_voice, subcategory__category__subscription=user_subscription)
+    voice = await Voice.objects.aget(slug_voice=slug_voice)
     user = await User.objects.aget(telegram_id=query.from_user.id)
 
     await voice_add_favorite(user, voice)
@@ -71,8 +69,7 @@ async def remove(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     slug_voice = query.data.split('favorite-remove-')[1]
 
-    user_subscription = await Subscription.objects.aget(users__telegram_id=query.from_user.id)
-    voice = await Voice.objects.aget(slug_voice=slug_voice, subcategory__category__subscription=user_subscription)
+    voice = await Voice.objects.aget(slug_voice=slug_voice)
     user = await User.objects.aget(telegram_id=query.from_user.id)
 
     await voice_remove_favorite(user, voice)
@@ -104,7 +101,6 @@ async def roll_out(update: Update, context: ContextTypes.DEFAULT_TYPE):
     default_image = "https://img.freepik.com/free-photo/3d-rendering-hydraulic-elements_23-2149333332.jpg?t=st=1714904107~exp=1714907707~hmac=98d51596c9ad15af1086b0d1916f5567c1191255c42d157c87c59bab266d6e84&w=2000"
     results = []
     async for voice in user.favorites.all():
-        # voice_media_data = await MediaData.objects.aget(MediaData, slug=voice.slug_voice)
         results.append(
             InlineQueryResultArticle(
                 id=str(uuid4()),
