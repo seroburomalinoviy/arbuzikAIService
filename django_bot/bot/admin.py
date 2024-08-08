@@ -17,8 +17,13 @@ class CategoryAdmin(admin.ModelAdmin):
 @admin.register(Voice)
 class VoiceAdmin(admin.ModelAdmin):
     empty_value_display = "<пусто>"
+    list_display = ['title', 'subcategory', 'category_display']
     search_fields = ['title', 'description']
     list_filter = ['subcategory__category__title', 'subcategory__title']
+
+    @admin.display(description='Category', ordering='subcategory__category__title')
+    def category_display(self, obj):
+        return str(obj.subcategory.category.title)
 
 
 @admin.register(Subcategory)
