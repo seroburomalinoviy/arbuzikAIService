@@ -233,7 +233,7 @@ async def voice_inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE)
                 # todo установить ssl сертификат
                 # todo или хостить на гитхаб
                 thumbnail_url=default_image, #str(settings.MEDIA_URL) + str(voice_media_data.image),
-                input_message_content=InputTextMessageContent(voice.slug_voice)
+                input_message_content=InputTextMessageContent(voice.slug)
             )
         )
     await update.inline_query.answer(results, cache_time=1000, auto_pagination=True)
@@ -279,8 +279,8 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
         context.user_data[f'pitch_{update.message.text}'] = 0
 
     button_favorite = ('⭐ В избранное', f'favorite-add-{slug_voice}')
-    async for voice in Voice.objects.filter(user__favorites__slug_voice=slug_voice):
-        if slug_voice in voice.slug_voice:
+    async for voice in Voice.objects.filter(user__favorites__slug=slug_voice):
+        if slug_voice in voice.slug:
             button_favorite = ('Удалить из избранного', f'favorite-remove-{slug_voice}')
 
     await update.message.reply_text(
@@ -343,7 +343,6 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
     #         button_favorite = ('Удалить из избранного', f'favorite-remove-{slug_voice}')
     # #
     # try:
-    #     voice_media_data = await MediaData.objects.aget(slug=slug_voice)
     # except Exception as e:
     #     logger.warning(f'Voice {slug_voice} DOES NOT EXIST: {e}')
     #     await update.message.reply_text(
@@ -514,7 +513,6 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     voice_path = Path(os.environ.get('USER_VOICES_RAW_VOLUME') + '/' + voice_name + extension)
     pitch = context.user_data.get(f'pitch_{slug_voice}')
 
-    # voice_media_data: MediaData = await MediaData.objects.aget(slug=slug_voice)
     await voice.download_to_drive(custom_path=voice_path)  # download voice file to host
     logger.info(f'JOURNAL: Voice {slug_voice} downloaded to {voice_path} for user - {user_id} - tg_id')
 

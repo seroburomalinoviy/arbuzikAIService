@@ -41,7 +41,7 @@ async def add(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     slug_voice = query.data.split('favorite-add-')[1]
 
-    voice = await Voice.objects.aget(slug_voice=slug_voice)
+    voice = await Voice.objects.aget(slug=slug_voice)
     user = await User.objects.aget(telegram_id=query.from_user.id)
 
     await voice_add_favorite(user, voice)
@@ -69,7 +69,7 @@ async def remove(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     slug_voice = query.data.split('favorite-remove-')[1]
 
-    voice = await Voice.objects.aget(slug_voice=slug_voice)
+    voice = await Voice.objects.aget(slug=slug_voice)
     user = await User.objects.aget(telegram_id=query.from_user.id)
 
     await voice_remove_favorite(user, voice)
@@ -108,7 +108,7 @@ async def roll_out(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 description=voice.description,
                 # todo установить ssl сертификат
                 thumbnail_url=default_image,  # str(settings.MEDIA_URL) + str(voice_media_data.image),
-                input_message_content=InputTextMessageContent(voice.slug_voice)
+                input_message_content=InputTextMessageContent(voice.slug)
             )
         )
     await update.inline_query.answer(results, cache_time=10, auto_pagination=True)
