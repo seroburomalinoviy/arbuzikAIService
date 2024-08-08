@@ -338,8 +338,6 @@ async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await offer_vip_subscription(update, context)
         return BASE_STATES
 
-    await update_subscription(user)
-
     context.user_data['processing_permission'] = True 
 
     pitch = context.user_data.get(f'pitch_{slug_voice}') if context.user_data.get(f'pitch_{slug_voice}') else "0"
@@ -432,6 +430,7 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     3. Сохраняем файл с голосовым сообщением
     4. Отправляем пользователю статус
     5. Отправляем данные в брокер сообщений
+    6. Обновляем подписку
     :param update:
     :param context:
     :return:
@@ -479,9 +478,16 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await push_amqp_message(json.dumps(payload))
     # todo: write to db
 
-    # Задаем processing_permission в False, запрещаем отправлять аудио
-    # TODO: удалять ключ del context.user_data['processing_permission']
-    # context.user_data['processing_permission'] = False
+    user = await User.objects.select_related('subscription').aget(telegram_id=update.effective_user.id)
+
+    if not valid_subscription(user):
+        user.subscription_status = False
+        await user.asave()
+        await offer_subscriptions(update, context)
+        return BASE_STATES
+
+    await update_subscription(user)
+
     await update.message.reply_text(
         message_text.conversation_end,
         reply_markup=InlineKeyboardMarkup(keyboards.check_status)
@@ -500,11 +506,6 @@ async def check_status(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     query = update.callback_query
     await query.answer('Еще в работе')
-
-    # await query.edit_message_text(
-    #     text=message_text.check_status_text,
-    #     reply_markup=InlineKeyboardMarkup(keyboards.check_status)
-    # )
     return WAITING
 
 
