@@ -1,10 +1,12 @@
 import os
+from django.db import transaction
 
 import pandas as pd
 import csv
 from bot.models import Subscription, Category, Subcategory, Voice
 
 
+@transaction.atomic
 def subscription_parser(filepath):
     def get_reverse_dict(dictionary: dict[str, str]) -> dict[str, str]:
         return {value: key for key, value in dictionary.items()}
@@ -33,6 +35,7 @@ def subscription_parser(filepath):
     return 'Подписки созданы'
 
 
+@transaction.atomic
 def voice_parser(filepath):
     VOICE = 'voice_name'
     CATEGORY = 'category'
