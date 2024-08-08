@@ -324,7 +324,7 @@ async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     slug_voice = context.user_data.get('slug_voice')
     voice = await Voice.objects.aget(slug=slug_voice)
-    user = await User.objects.aget(telegram_id=query.from_user.id)
+    user = await User.objects.aget(telegram_id=query.from_user.id).select_related('subscription')
 
     if not valid_subscription(user):
         user.subscription_status = False
