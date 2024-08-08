@@ -21,7 +21,7 @@ from telegram import (Update, InlineKeyboardMarkup, InlineKeyboardButton, Inline
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 django.setup()
 
-from bot.models import Voice, Category, Subcategory, Subscription, MediaData
+from bot.models import Voice, Category, Subcategory, Subscription
 from user.models import User
 
 logger = logging.getLogger(__name__)
@@ -296,15 +296,15 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
     ):
         if slug_voice in voice.slug_voice:
             button_favorite = ('Удалить из избранного', f'favorite-remove-{slug_voice}')
-
-    try:
-        voice_media_data = await MediaData.objects.aget(slug=slug_voice)
-    except Exception as e:
-        logger.warning(f'Voice {slug_voice} DOES NOT EXIST: {e}')
-        await update.message.reply_text(
-            text='Такой модели не существует попробуйте еще раз',
-            reply_markup=InlineKeyboardMarkup(keyboards.is_subscribed)
-        )
+    #
+    # try:
+    #     voice_media_data = await MediaData.objects.aget(slug=slug_voice)
+    # except Exception as e:
+    #     logger.warning(f'Voice {slug_voice} DOES NOT EXIST: {e}')
+    #     await update.message.reply_text(
+    #         text='Такой модели не существует попробуйте еще раз',
+    #         reply_markup=InlineKeyboardMarkup(keyboards.is_subscribed)
+    #     )
         return BASE_STATES
 
     demka_path = voice_media_data.demka.path
@@ -469,12 +469,12 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     voice_path = Path(os.environ.get('USER_VOICES_RAW_VOLUME') + '/' + voice_name + extension)
     pitch = context.user_data.get(f'pitch_{slug_voice}')
 
-    voice_media_data: MediaData = await MediaData.objects.aget(slug=slug_voice)
+    # voice_media_data: MediaData = await MediaData.objects.aget(slug=slug_voice)
     await voice.download_to_drive(custom_path=voice_path)  # download voice file to host
     logger.info(f'JOURNAL: Voice {slug_voice} downloaded to {voice_path} for user - {user_id} - tg_id')
 
-    voice_model_pth = str(voice_media_data.model_pth).split('/')[-1]
-    voice_model_index = str(voice_media_data.model_index).split('/')[-1]
+    # voice_model_pth = str(voice_media_data.model_pth).split('/')[-1]
+    # voice_model_index = str(voice_media_data.model_index).split('/')[-1]
 
     payload = {
         "user_id": user_id,
@@ -482,8 +482,8 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "voice_name": voice_name,
         "extension": extension,
         "pitch": pitch,
-        "voice_model_pth": voice_model_pth,
-        "voice_model_index": voice_model_index,
+        # "voice_model_pth": voice_model_pth,
+        # "voice_model_index": voice_model_index,
     }
 
     await push_amqp_message(json.dumps(payload))

@@ -12,7 +12,7 @@ from bot.logic.constants import *
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 django.setup()
 
-from bot.models import Voice, Subscription, MediaData
+from bot.models import Voice, Subscription
 
 
 @log_journal
