@@ -74,7 +74,7 @@ class Voice(models.Model):
         ('male', 'Male'),
         ('female', 'Female')
     ]
-    slug_voice = models.SlugField(
+    slug = models.SlugField(
         'Voice slug',
     )
     image = models.URLField('Адрес картинки')
