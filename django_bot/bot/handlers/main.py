@@ -490,7 +490,7 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup=InlineKeyboardMarkup(keyboards.check_status)
     )
 
-    return WAITING
+    return BASE_STATES
 
 
 @log_journal
@@ -503,7 +503,7 @@ async def check_status(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     query = update.callback_query
     await query.answer('Еще в работе')
-    return WAITING
+    return BASE_STATES
 
 
 @log_journal
