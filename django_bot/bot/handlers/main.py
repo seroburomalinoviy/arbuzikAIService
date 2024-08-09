@@ -6,13 +6,16 @@ from uuid import uuid4
 from asgiref.sync import sync_to_async
 import django
 import json
+from pydub import AudioSegment
 
 from bot.logic import message_text, keyboards
 from bot.logic.amqp_driver import push_amqp_message
 from bot.logic.constants import *
 from bot.logic.utils import get_moscow_time, log_journal
+from bot.handlers.paid_subscription import offer_subscriptions, offer_vip_subscription
 
-
+from telegram import Voice as TelegramVoice
+from telegram import Audio as TelegramAudio
 from telegram.constants import ParseMode
 from telegram.ext import ContextTypes, ConversationHandler, ApplicationHandlerStop
 from telegram import (Update, InlineKeyboardMarkup, InlineKeyboardButton, InlineQueryResultArticle,
@@ -21,7 +24,7 @@ from telegram import (Update, InlineKeyboardMarkup, InlineKeyboardButton, Inline
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 django.setup()
 
-from bot.models import Voice, Category, Subcategory, Subscription, MediaData
+from bot.models import Voice, Category, Subcategory, Subscription
 from user.models import User
 
 logger = logging.getLogger(__name__)
@@ -33,20 +36,53 @@ allowed_user_statuses = ['member', 'creator', 'administrator']
 unresolved_user_statuses = ['kicked', 'restricted', 'left']
 
 
-async def set_demo_to_user(user_model: User, tg_user_name, tg_nick_name) -> None:
+@sync_to_async
+def cut_audio(path, time_limit):
+    logger.info(path)
+    obj = AudioSegment.from_file(path)
+    obj[:time_limit*1001].export(path)
+
+
+def is_valid_duration(duration, time_voice_limit) -> bool:
+    if duration > time_voice_limit:
+        return False
+    return True
+
+
+async def set_demo_to_user(user: User, update: Update) -> None:
     demo_subscription: Subscription = await Subscription.objects.aget(title=os.environ.get('DEFAULT_SUBSCRIPTION'))
-    current_date = get_moscow_time()
 
-    user_model.subscription_status = True
-    user_model.subscription = demo_subscription
-    user_model.telegram_username = tg_user_name
-    user_model.telegram_nickname = tg_nick_name
-    user_model.subscription_attempts = demo_subscription.days_limit
-    user_model.subscription_final_date = current_date
+    user.subscription_status = True
+    user.subscription = demo_subscription
+    user.telegram_username = update.effective_user.username if update.message else update.callback_query.from_user.username
+    user.telegram_nickname = update.effective_user.first_name if update.message else update.callback_query.from_user.first_name
+    user.subscription_attempts = demo_subscription.days_limit
 
-    await user_model.asave()
-    
-    return user_model.subscription.title
+    await user.asave()
+
+
+async def update_subscription(user: User):
+    demo = os.environ.get('DEFAULT_SUBSCRIPTION')
+    if user.subscription.title == demo:
+        user.subscription_attempts -= 1
+        await user.asave()
+
+
+def is_valid_subscription(user: User) -> bool:
+    demo = os.environ.get('DEFAULT_SUBSCRIPTION')
+    if not user.subscription_status:
+        return False
+    else:
+        if user.subscription.title == demo:
+            if user.subscription_attempts <= 0:
+                return False
+            else:
+                return True
+        else:
+            if user.subscription_final_date < get_moscow_time():
+                return False
+            else:
+                return True
 
 
 @sync_to_async
@@ -67,7 +103,7 @@ def check_subscription(user_model: User) -> tuple[str, bool]:
         user_model.subscription = Subscription.objects.get(title=os.environ.get('DEFAULT_SUBSCRIPTION'))
         user_model.subscription_status = False
         user_model.save()
-    
+
     return user_model.subscription.title, user_model.subscription_status
 
 
@@ -108,39 +144,26 @@ async def subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Главное меню / Категории
-
-    1. Создаем или получаем пользователя в бд
-    2. Получаем параметры подписки пользователя
-    3. Отравляем пользователю категории в соответствии с его подпиской
+    1. Обновляем права на отправку голосовых
+    2. Добавляем пользователя в бд и подписываем на демо
+    3. Отравляем категории
     :param update:
     :param context:
     :return:
     """
-    if not update.message:
-        tg_user_id = str(update.callback_query.from_user.id)
-        tg_user_name = update.callback_query.from_user.username
-        tg_nick_name = update.callback_query.from_user.first_name
-    else:
-        tg_user_id = str(update.effective_user.id)
-        tg_user_name = update.effective_user.username
-        tg_nick_name = update.effective_user.first_name
+    context.user_data['processing_permission'] = False
+
+    tg_user_id = str(update.effective_user.id) if update.message else str(update.callback_query.from_user.id)
 
     user, user_created = await User.objects.aget_or_create(telegram_id=tg_user_id)
     if user_created:
-        subscription_name = await set_demo_to_user(user, tg_user_name, tg_nick_name)
-        subscription_status = True
-    else:
-        subscription_name, subscription_status = await check_subscription(user)
-
-    context.user_data['subscription_name'] = subscription_name
-    context.user_data['subscription_status'] = subscription_status
-    context.user_data['processing_permission'] = False 
+        await set_demo_to_user(user, update)
 
     # Кнопки Поиск по всем голосам и Избранное
     keyboard = [keyboards.search_all_voices, keyboards.favorites]
     i = 0
     row = []
-    async for category in Category.objects.filter(subscription__title=subscription_name).values('title', 'id'):
+    async for category in Category.objects.all().values('title', 'id'):
         i += 1
         row.append(InlineKeyboardButton(category['title'], callback_data='category_' + str(category['id'])))
         if i % 2 == 0:
@@ -213,24 +236,19 @@ async def voice_inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE)
     :param context:
     :return:
     """
-    subscription_name = context.user_data['subscription_name']
 
     slug_subcategory = update.inline_query.query.split('sub_')[1]
     if not slug_subcategory:
+        logger.error('Slug of subcategory is empty')
         return
     context.user_data['slug_subcategory'] = slug_subcategory
-
-    current_category_id = context.user_data['current_category_id']
 
     default_image = "https://img.icons8.com/2266EE/search"
     default_image = "https://img.freepik.com/free-photo/3d-rendering-hydraulic-elements_23-2149333332.jpg?t=st=1714904107~exp=1714907707~hmac=98d51596c9ad15af1086b0d1916f5567c1191255c42d157c87c59bab266d6e84&w=2000"
     results = []
     async for voice in Voice.objects.filter(
-            subcategory__category__id=current_category_id,
             subcategory__slug=slug_subcategory,
-            subcategory__category__subscription__title=subscription_name
     ):
-        voice_media_data = await MediaData.objects.aget(slug=voice.slug_voice)
         results.append(
             InlineQueryResultArticle(
                 id=str(uuid4()),
@@ -239,7 +257,7 @@ async def voice_inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE)
                 # todo установить ssl сертификат
                 # todo или хостить на гитхаб
                 thumbnail_url=default_image, #str(settings.MEDIA_URL) + str(voice_media_data.image),
-                input_message_content=InputTextMessageContent(voice.slug_voice)
+                input_message_content=InputTextMessageContent(voice.slug)
             )
         )
     await update.inline_query.answer(results, cache_time=1000, auto_pagination=True)
@@ -250,77 +268,44 @@ async def voice_inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE)
 async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Превью голоса
-    1. Проверяем подписку (todo: вынести в отдельную функцию)
-    2. проверяем избранные голоса пользователя
-    3. Отправляем демку
+    1. Отправляем демку
+    2. Преднастраиваем pitch
+    3. Проверяем избранные голоса
+
     :param update:
     :param context:
     :return:
     """
-    user = await User.objects.aget(telegram_id=update.effective_user.id)
-    context.user_data['subscription_name'], context.user_data['subscription_status'] = await check_subscription(user)
-
-    if context.user_data.get('subscription_status'):
-        if context.user_data['subscription_name'] == os.environ.get('DEFAULT_SUBSCRIPTION'):
-            user.subscription_attempts -= 1
-            if user.subscription_attempts <= 0:
-                user.subscription_status = False
-                await user.asave()
-            await user.asave()
-
-        else:
-            if user.subscription_final_date < get_moscow_time():
-                user.subscription_status = False
-                await user.asave()
-
-    user = await User.objects.aget(telegram_id=update.effective_user.id)
-    if not user.subscription_status:
-        await update.message.reply_text(
-            message_text.subscription_finished,
-            reply_markup=InlineKeyboardMarkup(keyboards.is_subscribed)
-        )
-        return ConversationHandler.END
-
-    subscription_name = context.user_data['subscription_name']
-    # if update.message: # todo ест ли случаи когда нет update.message ?
-
-    # Ограничение на количество символов - безопасность
-    slug_voice = update.message.text[0:50]
+    slug_voice = update.message.text
     context.user_data['slug_voice'] = slug_voice
+
+    if not await Voice.objects.filter(slug=slug_voice).acount():
+        await update.message.reply_text(
+                text='Такой модели не существует попробуйте еще раз',
+                reply_markup=InlineKeyboardMarkup(keyboards.is_subscribed)
+            )
+        return BASE_STATES
+
+    voice = await Voice.objects.aget(slug=slug_voice)
+    context.user_data['voice_title'] = voice.title
+    demka_path = voice.demka.path
+
+    if not os.path.exists(demka_path):
+        await update.message.reply_text(
+            'Демонстрация голоса в работе'
+        )
+    else:
+        await update.message.reply_audio(
+            audio=open(demka_path, 'rb')
+        )
 
     if not context.user_data.get(f'pitch_{update.message.text}'):
         context.user_data[f'pitch_{update.message.text}'] = 0
 
     button_favorite = ('⭐ В избранное', f'favorite-add-{slug_voice}')
-    async for voice in Voice.objects.filter(
-            user=user,
-            user__favorites__slug_voice=slug_voice,
-            subcategory__category__subscription__title=subscription_name
-    ):
-        if slug_voice in voice.slug_voice:
+    async for voice in Voice.objects.filter(user__favorites__slug=slug_voice):
+        if slug_voice in voice.slug:
             button_favorite = ('Удалить из избранного', f'favorite-remove-{slug_voice}')
-
-    try:
-        voice_media_data = await MediaData.objects.aget(slug=slug_voice)
-    except Exception as e:
-        logger.warning(f'Voice {slug_voice} DOES NOT EXIST: {e}')
-        await update.message.reply_text(
-            text='Такой модели не существует попробуйте еще раз',
-            reply_markup=InlineKeyboardMarkup(keyboards.is_subscribed)
-        )
-        return BASE_STATES
-
-    demka_path = voice_media_data.demka.path
-
-    try:
-        await update.message.reply_audio(
-            audio=open(demka_path, 'rb')
-        )
-    except Exception as e:
-        logger.warning(e)
-        await update.message.reply_text(
-            'Демонстрация голоса в работе'
-        )
 
     await update.message.reply_text(
         message_text.voice_preview,
@@ -345,19 +330,35 @@ async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Представление голоса
 
-    1. Задаем processing_permission в True, разрешаем отправлять аудио
+    1. Проверка подписки
+    2. Разрешаем отправлять аудио
     :param update:
     :param context:
     :return:
     """
     query = update.callback_query
     await query.answer()
-    context.user_data['processing_permission'] = True 
-    slug_voice = context.user_data.get('slug_voice')
-    pitch = context.user_data.get(f'pitch_{slug_voice}') if context.user_data.get(f'pitch_{slug_voice}') else "0"
 
+    user = await User.objects.select_related('subscription').aget(telegram_id=query.from_user.id)
+
+    if not is_valid_subscription(user):
+        user.subscription_status = False
+        await user.asave()
+        await offer_subscriptions(update, context)
+        return BASE_STATES
+
+    slug_voice = context.user_data.get('slug_voice')
+
+    if not await Subscription.objects.filter(voice__slug=slug_voice, title=user.subscription.title).acount():
+        await offer_vip_subscription(update, context)
+        return BASE_STATES
+
+    context.user_data['processing_permission'] = True 
+
+    pitch = context.user_data.get(f'pitch_{slug_voice}') if context.user_data.get(f'pitch_{slug_voice}') else "0"
+    voice_title = context.user_data.get('voice_title')
     await query.edit_message_text(
-        message_text.voice_set.format(name=slug_voice),
+        message_text.voice_set.format(name=voice_title),
         parse_mode=ParseMode.HTML,
         reply_markup=InlineKeyboardMarkup(
             [
@@ -396,9 +397,7 @@ async def voice_set_0(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def pitch_setting(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Настройка тональности
-    1. Меняем значение тональности
-    2. Сохраняем обновленное значение в кеш
-    3. Возвращаем представление голоса с обновленным значением тональности
+    1. Меняем тональность
     :param update:
     :param context:
     :return:
@@ -407,31 +406,25 @@ async def pitch_setting(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.answer()
 
     slug_voice = context.user_data.get('slug_voice')
+    voice_title = context.user_data.get('voice_title')
     pitch = context.user_data.get(f'pitch_{slug_voice}')
 
-    logger.info(f'pitch = {pitch}')
-    logger.info(f'type of pitch = {type(pitch)}')
     if query.data == 'voice_set_sub':
         pitch_next = pitch - 1 if pitch > -TONE_LIMIT else pitch
-        logger.info(f'pitch_next voice_set_sub = {pitch_next}')
     elif query.data == 'voice_set_add':
         pitch_next = pitch + 1 if pitch < TONE_LIMIT else pitch
-        logger.info(f'pitch_next voice_set_sub = {pitch_next}')
 
-    logger.info(f'pitch_next  = {pitch_next}')
     context.user_data[f'pitch_{slug_voice}'] = pitch_next
 
     if not pitch_next == pitch:
-        context.user_data[f'pitch_{slug_voice}'] = pitch_next
-        pitch = str(context.user_data.get(f'pitch_{slug_voice}'))
         await query.edit_message_text(
-            message_text.voice_set.format(name=slug_voice),
+            message_text.voice_set.format(name=voice_title),
             parse_mode=ParseMode.HTML,
             reply_markup=InlineKeyboardMarkup(
                 [
                     [
                         InlineKeyboardButton('-1', callback_data='voice_set_sub'),
-                        InlineKeyboardButton(pitch, callback_data='voice_set_0'),
+                        InlineKeyboardButton(pitch_next, callback_data='voice_set_0'),
                         InlineKeyboardButton('+1', callback_data='voice_set_add'),
                     ],
                     [
@@ -444,14 +437,15 @@ async def pitch_setting(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 @log_journal
-async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def voice_audio_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Захват голосового сообщения
-    0. Проверяем, можно ли обрабатывать голосовое сообщение
-    1. Получаем голосовое сообщение, данные пользователя и тональность голоса
-    2. Сохраняем файл с голосовым сообщением
-    3. Отправляем пользователю статус
-    4. Отправляем данные в брокер сообщений
+    1. Проверяем права на отправку голосового
+    2. Получаем голосовое сообщение, данные пользователя и тональность голоса
+    3. Сохраняем файл с голосовым сообщением
+    4. Отправляем пользователю статус
+    5. Отправляем данные в брокер сообщений
+    6. Обновляем подписку
     :param update:
     :param context:
     :return:
@@ -460,26 +454,44 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not permission:
         await update.message.reply_text(
             message_text.audio_permission_denied,
+            reply_markup=InlineKeyboardMarkup(keyboards.is_subscribed)
         )
-        return ConversationHandler.END
+        return BASE_STATES
 
-    voice = await update.message.voice.get_file()  # get voice file from user
-    user_id = str(update.message.from_user.id)
-    chat_id = str(update.message.chat.id)
+    user = await User.objects.select_related('subscription').aget(telegram_id=update.effective_user.id)
+    if not is_valid_subscription(user):
+        user.subscription_status = False
+        await user.asave()
+        await offer_subscriptions(update, context)
+        return BASE_STATES
+
+    input_obj: TelegramVoice | TelegramAudio = update.message.voice if update.message.voice else update.message.audio
+
+    extension = '.' + input_obj.mime_type.split('/')[-1]  # .ogg .mp3 .wav etc
+    voice_file = await input_obj.get_file()  # get voice file from user
     slug_voice = context.user_data.get('slug_voice')
     voice_name = slug_voice + '_' + str(uuid4())  # raw voice file name
-    extension = '.ogg'
-    voice_path = Path(os.environ.get('USER_VOICES_RAW_VOLUME') + '/' + voice_name + extension)
+    voice_path = Path(os.environ.get('USER_VOICES') + '/' + voice_name + extension)
+
+    await voice_file.download_to_drive(custom_path=voice_path)  # download voice file to host
+
+    time_voice_limit = user.subscription.time_voice_limit
+    duration = input_obj.duration
+    if not is_valid_duration(duration, time_voice_limit):
+        await cut_audio(voice_path, time_voice_limit)
+        duration = time_voice_limit
+
+    voice = await Voice.objects.aget(slug=slug_voice)
+    voice_model_pth = str(voice.model_pth).split('/')[-1]
+    voice_model_index = str(voice.model_index).split('/')[-1]
+
     pitch = context.user_data.get(f'pitch_{slug_voice}')
-
-    voice_media_data: MediaData = await MediaData.objects.aget(slug=slug_voice)
-    await voice.download_to_drive(custom_path=voice_path)  # download voice file to host
-    logger.info(f'JOURNAL: Voice {slug_voice} downloaded to {voice_path} for user - {user_id} - tg_id')
-
-    voice_model_pth = str(voice_media_data.model_pth).split('/')[-1]
-    voice_model_index = str(voice_media_data.model_index).split('/')[-1]
+    user_id = str(update.message.from_user.id)
+    chat_id = str(update.message.chat.id)
 
     payload = {
+        "duration": duration,
+        "voice_title": voice.title,
         "user_id": user_id,
         "chat_id": chat_id,
         "voice_name": voice_name,
@@ -490,17 +502,15 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     }
 
     await push_amqp_message(json.dumps(payload))
-    # todo: write to db
 
-    # Задаем processing_permission в False, запрещаем отправлять аудио
-    # TODO: удалять ключ del context.user_data['processing_permission']
-    context.user_data['processing_permission'] = False
+    await update_subscription(user)
+
     await update.message.reply_text(
         message_text.conversation_end,
         reply_markup=InlineKeyboardMarkup(keyboards.check_status)
     )
 
-    return WAITING
+    return BASE_STATES
 
 
 @log_journal
@@ -513,12 +523,7 @@ async def check_status(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     query = update.callback_query
     await query.answer('Еще в работе')
-
-    await query.edit_message_text(
-        text=message_text.check_status_text,
-        reply_markup=InlineKeyboardMarkup(keyboards.check_status)
-    )
-    return WAITING
+    return BASE_STATES
 
 
 @log_journal

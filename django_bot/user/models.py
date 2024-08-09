@@ -38,6 +38,7 @@ class User(models.Model):
         'Дата окончания подписки',
         editable=True,
         default=timezone.now,
+        null=True
     )
     subscription_attempts = models.PositiveIntegerField(
         'Количество попыток',

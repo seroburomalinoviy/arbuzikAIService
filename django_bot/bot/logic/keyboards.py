@@ -30,3 +30,10 @@ is_subscribed = [
                         InlineKeyboardButton("⏩ Перейти к выбору голосов", callback_data='category_menu'),
                     ]
                 ]
+
+final_buttons = [
+    [
+        InlineKeyboardButton("⚙️ Настроить тональность", callback_data='record'),
+        InlineKeyboardButton("⏩ Перейти к выбору голосов", callback_data='category_menu'),
+    ]
+]

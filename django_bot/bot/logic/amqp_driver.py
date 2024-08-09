@@ -3,8 +3,12 @@ import os
 from dotenv import load_dotenv
 import aio_pika
 import json
-from telegram import Bot
+from telegram import Bot, InlineKeyboardMarkup, Update
+from telegram.constants import ParseMode
 import asyncio
+
+from bot.logic import message_text, keyboards
+from bot.logic.constants import *
 
 load_dotenv()
 
@@ -29,18 +33,35 @@ async def send_answer(message):
     """
     bot = Bot(token=os.environ.get('BOT_TOKEN'))
     payload = json.loads(message)
-    chat_id = payload.get('chat_id')
-    voice_filename = payload.get('voice_filename')
-    voice_path = os.environ.get('USER_VOICES_PROCESSED_VOLUME') + '/' + voice_filename
-    # $url = 'https://api.telegram.org/bot'.token.'/sendVideo?chat_id='.uid."&video=".$file."&caption="
-    logger.info(f'voice_path: {voice_path}')
-    # await bot.send_message(chat_id=chat_id, text='Получай сука')
 
-    await bot.send_voice(chat_id=chat_id, voice=open(voice_path, 'rb'))
-    # TODO: отправить сообщение о том, что закончилась обработка, дать кнопки вернуться в меню и выбор тональности
-    # того же голосового сообщения 
-    # TODO: отправить в определенную очередь данные о том, что голос успешно отправлен, и можно удалять голосовые связанные с ним
-    # await end_of_voce_processing() # вызывает функцию начала конверсейшена, которую нельзя вызвать снаружи
+    voice_title = payload.get('voice_title')
+    chat_id = payload.get('chat_id')
+
+    filename = payload.get('voice_filename')
+    file_path = os.environ.get('USER_VOICES') + '/' + filename
+
+    logger.debug(f'file_path: {file_path}')
+
+    if payload.get('extension') == '.ogg':
+        await bot.send_voice(chat_id=chat_id, voice=open(file_path, 'rb'))
+    else:
+        await bot.send_audio(chat_id=chat_id, audio=open(file_path, 'rb'),
+                             title=voice_title, duration=payload.get('duration'),
+                             filename=voice_title)
+
+    await bot.send_message(
+        chat_id=chat_id,
+        text=message_text.final_message.format(title=voice_title),
+        parse_mode=ParseMode.MARKDOWN,
+        reply_markup=InlineKeyboardMarkup(keyboards.final_buttons)
+    )
+
+    os.remove(file_path)
+    os.remove(file_path + '.tmp')
+
+    logger.info('Voice files removed')
+
+    return BASE_STATES
 
 
 async def push_amqp_message(payload):

@@ -4,5 +4,6 @@ RUN mkdir /app
 RUN mkdir -p /app/static
 WORKDIR /app
 COPY requirements.txt /app
+RUN apt-get update && apt-get -y install ffmpeg
 RUN pip install --upgrade pip && pip install -r requirements.txt
 COPY . /app

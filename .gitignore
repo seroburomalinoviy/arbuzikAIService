@@ -6,6 +6,8 @@ django_bot/.env.dev
 .zed
 reload.sh
 docker-overlay==docker_id.sh
+entrypoint_backup.sh
+
 
 
 

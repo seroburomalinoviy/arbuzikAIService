@@ -1,5 +1,5 @@
 from bot.structures.base_classes import BaseConversationHandler
-from bot.logic.commands import CancelHandler, StartHandler, MenuHandler
+from bot.logic.commands import CancelHandler, StartHandler, MenuHandler, HelpHandler
 
 from bot.handlers import main, search, paid_subscription, favorite
 from bot.logic.constants import *
@@ -12,9 +12,9 @@ class MainConversationHandler(BaseConversationHandler):
     def entrypoints(self):
         return [
                 CommandHandler("start", StartHandler()),
+                CommandHandler("help", HelpHandler()),
                 CommandHandler("menu", main.category_menu),
-                MessageHandler(filters.VOICE & ~filters.COMMAND, main.voice_process),
-                MessageHandler(filters.AUDIO & ~filters.COMMAND, main.audio_process),
+                MessageHandler((filters.AUDIO | filters.VOICE) & ~filters.COMMAND, main.voice_audio_process),
                 MessageHandler(filters.TEXT, main.voice_preview)
                 #MessageHandler(filters.TEXT[ldfkjvn/3234jdnlsvj./], main.end_of_voce_processing()) # функция начала разговора, которую нельзя вызвать снаружи
             ]
@@ -33,8 +33,6 @@ class MainConversationHandler(BaseConversationHandler):
                 CallbackQueryHandler(main.pitch_setting, pattern="^voice_set_add$"),
                 CallbackQueryHandler(favorite.add, pattern="^favorite-add-"),
                 CallbackQueryHandler(favorite.remove, pattern="^favorite-remove-"),
-            ],
-            WAITING: [
                 CallbackQueryHandler(main.check_status, pattern='^check_status$')
             ]
         }

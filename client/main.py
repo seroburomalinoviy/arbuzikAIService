@@ -51,20 +51,17 @@ def _create_connection():
     return pika.BlockingConnection(param)
 
 
-def convert_to_voice(voice_name, extension):
+def convert_to_voice(path):
     """
     Creates a new file with `opus` format using `libopus` plugin. The new file can be recognized as a voice message by
     Telegram.
 
-    :param voice_name: str: The name of raw file
-    :param extension: str: The extension of resulted file
+    :param path:
     """
-    input_path = os.environ['USER_VOICES_PROCESSED_VOLUME'] + '/' + voice_name
-    output_path = os.environ['USER_VOICES_PROCESSED_VOLUME'] + '/' + voice_name + extension
     os.system(
-        f"ffmpeg -y -i {input_path} -c:a libopus -b:a 32k -vbr on "
+        f"ffmpeg -y -i {path + '.tmp'} -c:a libopus -b:a 32k -vbr on "
         f"-compression_level 10 -frame_duration 60 -application voip"
-        f" {output_path}")
+        f" {path}")
 
 
 def push_amqp_message(payload):
@@ -92,16 +89,15 @@ async def reader(channel: aioredis.client.PubSub):
                     message = message.get("data").decode()
                     payload = json.loads(message)
 
-                    user_id = payload.get('user_id')
-                    chat_id = payload.get('chat_id')
                     voice_name = payload.get('voice_name')
                     extension = payload.get('extension')
-                    voice_raw_path = os.environ['USER_VOICES_RAW_VOLUME'] + '/' + voice_name + extension
+                    voice_filename = voice_name + extension
+                    voice_path = os.environ['USER_VOICES'] + '/' + voice_filename
 
                     infer_parameters['model_name'] = payload.get('voice_model_pth')
                     infer_parameters['feature_index_path'] = payload.get('voice_model_index')
-                    infer_parameters['source_audio_path'] = voice_raw_path
-                    infer_parameters['output_file_name'] = voice_name
+                    infer_parameters['source_audio_path'] = voice_path
+                    infer_parameters['output_file_name'] = voice_filename + '.tmp' if extension == '.ogg' else voice_filename
                     infer_parameters['transposition'] = payload.get('pitch')
 
                     logger.debug(f"infer parameters: {infer_parameters['model_name']=},\n"
@@ -115,14 +111,11 @@ async def reader(channel: aioredis.client.PubSub):
                     starter_infer(**infer_parameters)
                     logger.info(f'NN finished for: {perf_counter() - start}')
 
-                    convert_to_voice(voice_name, extension)
-                    logger.info(f'NN + Formatting finished for: {perf_counter() - start}')
+                    if extension == '.ogg':
+                        convert_to_voice(voice_path)
+                        logger.info(f'NN + Formatting finished for: {perf_counter() - start}')
 
-                    payload = {
-                        "user_id": user_id,
-                        "chat_id": chat_id,
-                        "voice_filename": voice_name + extension
-                    }
+                    payload['voice_filename'] = voice_filename
                     logger.debug(payload)
 
                     push_amqp_message(payload)

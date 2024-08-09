@@ -1,10 +1,12 @@
 import os
+from django.db import transaction
 
 import pandas as pd
 import csv
-from bot.models import Subscription, Category, Subcategory, Voice, MediaData
+from bot.models import Subscription, Category, Subcategory, Voice
 
 
+@transaction.atomic
 def subscription_parser(filepath):
     def get_reverse_dict(dictionary: dict[str, str]) -> dict[str, str]:
         return {value: key for key, value in dictionary.items()}
@@ -33,6 +35,7 @@ def subscription_parser(filepath):
     return 'Подписки созданы'
 
 
+@transaction.atomic
 def voice_parser(filepath):
     VOICE = 'voice_name'
     CATEGORY = 'category'
@@ -51,41 +54,37 @@ def voice_parser(filepath):
     with open(filepath, newline='') as f:
         reader = csv.DictReader(f)
         for row in reader:
-            media_data = MediaData.objects.create(
+            category, category_created = Category.objects.get_or_create(
+                title=row[CATEGORY],
+            )
+            if category_created:
+                category_counter += 1
+                category.save()
+
+            subcategory, subcategory_created = Subcategory.objects.get_or_create(
+                title=row[SUBCATEGORY],
+                category=category
+            )
+            if subcategory_created:
+                subcategory_counter += 1
+                subcategory.slug = row[SLUG_SUBCATEGORY]
+                subcategory.save()
+
+            voice = Voice.objects.create(
+                title=row[VOICE],
                 slug=row[SLUG_VOICE],
+                description=row[DESCRIPTION],
+                gender=row[GENDER],
+                subcategory=subcategory,
                 model_pth=os.environ.get('MEDIA_DATA_VOLUME').strip('/').split('/')[-1] + "/" + row[FILE] + ".pth",
                 model_index=os.environ.get('MEDIA_DATA_VOLUME').strip('/').split('/')[-1] + "/" + row[FILE] + ".index",
                 demka=os.environ.get('MEDIA_DATA_VOLUME').strip('/').split('/')[-1] + "/" + row[FILE] + ".mp3",
             )
             for sub in row[SUBSCRIPTIOS].split(', '):
                 subscription = Subscription.objects.get(title=sub)
+                voice.subscriptions.add(subscription)
 
-                category, category_created = Category.objects.get_or_create(
-                    title=row[CATEGORY],
-                    subscription=subscription
-                )
-                if category_created:
-                    category_counter += 1
-                    category.save()
-
-                subcategory, subcategory_created = Subcategory.objects.get_or_create(
-                    title=row[SUBCATEGORY],
-                    category=category
-                )
-                if subcategory_created:
-                    subcategory_counter += 1
-                    subcategory.slug = row[SLUG_SUBCATEGORY]
-                    subcategory.save()
-
-                Voice.objects.create(
-                    title=row[VOICE],
-                    slug_voice=row[SLUG_VOICE],
-                    description=row[DESCRIPTION],
-                    gender=row[GENDER],
-                    subcategory=subcategory,
-                    media_data=media_data
-                )
-                voice_counter += 1
+            voice_counter += 1
 
     return f'Голоса, категории и подкатегории созданы: {voice_counter} голосов, {category_counter} категорий, {subcategory_counter} подкатегорий'
 
