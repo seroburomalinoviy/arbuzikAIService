@@ -53,8 +53,8 @@ async def send_answer(message):
         reply_markup=InlineKeyboardMarkup(keyboards.final_buttons)
     )
 
-    # os.remove(audio_obj_path)
-    # os.remove(os.environ['USER_VOICES'] + '/' + payload.get('voice_name'))
+    os.remove(audio_obj_path)
+    os.remove(os.environ['USER_VOICES'] + '/' + payload.get('voice_name'))
 
     logger.info('Voice files removed')
 
