@@ -93,6 +93,6 @@ help_message = """
 [📗Количество голосов в нашей библиотеке](https://docs.google.com/document/d/1sp53dRMuemH3kqOG8CCH6rb5FtvJaT4IPmxy4-9t33Y/edit?pli=1)
 [📙Сотрудничество и приватные голоса](https://telegra.ph/Sotrudnichestvo-i-privatnye-golosa-02-26)
 [💜Поддержать проект](https://www.donationalerts.com/r/arbuzik_smiley)
-[🎧Наш Дискорд])(https://discord.gg/JqEHabmABF)
+[🎧Наш Дискорд](https://discord.gg/JqEHabmABF)
 [💎Наш телеграмм](https://t.me/arbuzik_smiley_group)
 [💬Наш чат в телеграмм](https://t.me/+mKxm-SgDd7UzZmRi)"""
