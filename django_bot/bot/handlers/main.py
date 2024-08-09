@@ -271,7 +271,7 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return BASE_STATES
 
     voice = await Voice.objects.aget(slug=slug_voice)
-
+    context.user_data['voice_title'] = voice.title
     demka_path = voice.demka.path
 
     if not os.path.exists(demka_path):
@@ -389,6 +389,7 @@ async def pitch_setting(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.answer()
 
     slug_voice = context.user_data.get('slug_voice')
+    voice_title = context.user_data.get('voice_title')
     pitch = context.user_data.get(f'pitch_{slug_voice}')
 
     if query.data == 'voice_set_sub':
@@ -402,7 +403,7 @@ async def pitch_setting(update: Update, context: ContextTypes.DEFAULT_TYPE):
         context.user_data[f'pitch_{slug_voice}'] = pitch_next
         pitch = str(context.user_data.get(f'pitch_{slug_voice}'))
         await query.edit_message_text(
-            message_text.voice_set.format(name=slug_voice),
+            message_text.voice_set.format(name=voice_title),
             parse_mode=ParseMode.HTML,
             reply_markup=InlineKeyboardMarkup(
                 [
@@ -478,6 +479,8 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await push_amqp_message(json.dumps(payload))
     # todo: write to db
+
+    logger.info(f'{update=}\n{context=}')
 
     await update_subscription(user)
 

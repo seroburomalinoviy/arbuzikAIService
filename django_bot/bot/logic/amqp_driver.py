@@ -4,10 +4,11 @@ from dotenv import load_dotenv
 import aio_pika
 import json
 from telegram import Bot, InlineKeyboardMarkup
+from telegram.constants import ParseMode
 import asyncio
 
 from bot.logic import message_text, keyboards
-from bot.logic.constants import BASE_STATES
+from bot.logic.constants import *
 
 load_dotenv()
 
@@ -43,6 +44,7 @@ async def send_answer(message):
     await bot.send_message(
         chat_id=chat_id,
         text=message_text.final_message.format(title=voice_title),
+        parse_mode=ParseMode.MARKDOWN,
         reply_markup=InlineKeyboardMarkup(keyboards.final_buttons)
     )
     return BASE_STATES
