@@ -37,8 +37,8 @@ unresolved_user_statuses = ['kicked', 'restricted', 'left']
 
 
 @sync_to_async
-def cut_audio(path, time_limit):
-    obj = AudioSegment.from_file(path)
+def cut_audio(path, extension, time_limit):
+    obj = AudioSegment.from_file(path, format=extension)
     obj[:time_limit*1000].export()
 
 
@@ -477,7 +477,7 @@ async def voice_audio_process(update: Update, context: ContextTypes.DEFAULT_TYPE
     time_voice_limit = user.subscription.time_voice_limit
     duration = input_obj.duration
     if not is_valid_duration(duration, time_voice_limit):
-        await cut_audio(voice_path, time_voice_limit)
+        await cut_audio(voice_path, time_voice_limit, extension)
         duration = time_voice_limit
 
     voice = await Voice.objects.aget(slug=slug_voice)
