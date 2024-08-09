@@ -17,14 +17,14 @@ services:
     container_name: postgres_backup
     depends_on:
       - postgres
-    entrypoint: [ "sh", "/usr/local/bin/entrypoint_backup.sh" ]
+    entrypoint: [ "sh", "/usr/local/bin/backup.sh" ]
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - /home/postgres/backups:/backups
-      - ./entrypoint_backup.sh:/usr/local/bin/entrypoint_backup.sh
+      - ./backup.sh:/usr/local/bin/backup.sh
     restart: always
 
   rabbitmq:
