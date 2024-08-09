@@ -52,7 +52,7 @@ async def update_subscription(user: User):
         await user.asave()
 
 
-def valid_subscription(user: User) -> bool:
+def is_valid_subscription(user: User) -> bool:
     demo = os.environ.get('DEFAULT_SUBSCRIPTION')
     if not user.subscription_status:
         return False
@@ -325,7 +325,7 @@ async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     user = await User.objects.select_related('subscription').aget(telegram_id=query.from_user.id)
 
-    if not valid_subscription(user):
+    if not is_valid_subscription(user):
         user.subscription_status = False
         await user.asave()
         await offer_subscriptions(update, context)
@@ -435,21 +435,15 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     :return:
     """
     permission = context.user_data.get('processing_permission')
-    keyboard = []
-    keyboard.append(
-        [
-            InlineKeyboardButton("⏩ Вернуться в меню", callback_data='category_menu')
-        ]
-    )
     if not permission:
         await update.message.reply_text(
             message_text.audio_permission_denied,
-            reply_markup=InlineKeyboardMarkup(keyboard)
+            reply_markup=InlineKeyboardMarkup(keyboards.is_subscribed)
         )
         return BASE_STATES
 
     user = await User.objects.select_related('subscription').aget(telegram_id=update.effective_user.id)
-    if not valid_subscription(user):
+    if not is_valid_subscription(user):
         user.subscription_status = False
         await user.asave()
         await offer_subscriptions(update, context)
@@ -472,6 +466,7 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = str(update.message.chat.id)
 
     payload = {
+        "voice_title": voice.title,
         "user_id": user_id,
         "chat_id": chat_id,
         "voice_name": voice_name,

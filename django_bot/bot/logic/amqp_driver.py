@@ -3,8 +3,10 @@ import os
 from dotenv import load_dotenv
 import aio_pika
 import json
-from telegram import Bot
+from telegram import Bot, InlineKeyboardMarkup
 import asyncio
+
+from bot.logic import message_text, keyboards
 
 load_dotenv()
 
@@ -29,14 +31,18 @@ async def send_answer(message):
     """
     bot = Bot(token=os.environ.get('BOT_TOKEN'))
     payload = json.loads(message)
+    voice_title = payload.get('voice_title')
     chat_id = payload.get('chat_id')
     voice_filename = payload.get('voice_filename')
     voice_path = os.environ.get('USER_VOICES_PROCESSED_VOLUME') + '/' + voice_filename
-    # $url = 'https://api.telegram.org/bot'.token.'/sendVideo?chat_id='.uid."&video=".$file."&caption="
     logger.info(f'voice_path: {voice_path}')
-    # await bot.send_message(chat_id=chat_id, text='Получай сука')
 
     await bot.send_voice(chat_id=chat_id, voice=open(voice_path, 'rb'))
+    await bot.send_message(
+        chat_id=chat_id,
+        text=message_text.final_message.format(title=voice_title),
+        reply_markup=keyboards.final_buttons
+    )
 
 
 async def push_amqp_message(payload):

@@ -97,17 +97,11 @@ async def show_paid_subscriptions(update: Update, context: ContextTypes.DEFAULT_
         ]
     )
 
-    # await context.bot.delete_message(
-    #     chat_id=query.message.chat.id,
-    #     message_id=query.message.message_id
-    # )
     demo_sub = await Subscription.objects.aget(title=os.environ.get('DEFAULT_SUBSCRIPTION'))
 
     await context.bot.send_photo(
         chat_id=query.message.chat.id,
         photo=open(str(settings.MEDIA_ROOT) + "/" + str(demo_sub.image_cover), 'rb'),  # в демо подписке лежит специальная картинка
-        # caption=message_text.all_paid_subs,
-        # reply_markup=InlineKeyboardMarkup(keyboard)
     )
 
     await context.bot.send_message(
@@ -127,31 +121,13 @@ async def preview_paid_subscription(update: Update, context: ContextTypes.DEFAUL
 
     subscription_title = query.data.split('paid_subscription_')[1]
     subscription = await Subscription.objects.aget(title=subscription_title)
-    #
-    # await context.bot.delete_message(
-    #     chat_id=query.message.chat.id,
-    #     message_id=query.message.message_id
-    # )
 
     await context.bot.send_photo(
         chat_id=query.message.chat.id,
         photo=open(str(settings.MEDIA_ROOT) + "/" + str(subscription.image_cover), 'rb'),
-        # caption=subscription.description,
-        # reply_markup=InlineKeyboardMarkup(
-        #     [
-        #         [
-        #             InlineKeyboardButton(f" 💵 Разовый платёж - {subscription.price} руб",
-        #                                  callback_data=f"payment_{subscription.price}")
-        #         ],
-        #         [
-        #             InlineKeyboardButton("▶️ Другие подписки", callback_data='paid_subscriptions')
-        #         ]
-        #     ]
-        # )
     )
 
     await context.bot.send_message(
-    # await query.edit_message_text(
         chat_id=query.message.chat.id,
         text=subscription.description,
         parse_mode=ParseMode.MARKDOWN,
