@@ -38,8 +38,7 @@ unresolved_user_statuses = ['kicked', 'restricted', 'left']
 
 @sync_to_async
 def cut_audio(path, time_limit):
-    logger.info(path)
-    obj = AudioSegment.from_file_using_temporary_files()
+    obj = AudioSegment.from_file(path)
     obj[:time_limit*1000].export()
 
 

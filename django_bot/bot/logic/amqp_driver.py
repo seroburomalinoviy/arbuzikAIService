@@ -33,20 +33,20 @@ async def send_answer(message):
     """
     bot = Bot(token=os.environ.get('BOT_TOKEN'))
     payload = json.loads(message)
-    duration = payload.get('duration')
+
     voice_title = payload.get('voice_title')
     chat_id = payload.get('chat_id')
-    audio_obj_filename = payload.get('voice_filename')
-    extension = payload.get('extension')
-    audio_obj_path = os.environ.get('USER_VOICES') + '/' + audio_obj_filename
 
-    logger.debug(f'audio_obj_path: {audio_obj_path}')
+    filename = payload.get('voice_filename')
+    file_path = os.environ.get('USER_VOICES') + '/' + filename
 
-    if extension == '.ogg':
-        await bot.send_voice(chat_id=chat_id, voice=open(audio_obj_path, 'rb'))
+    logger.debug(f'file_path: {file_path}')
+
+    if payload.get('extension') == '.ogg':
+        await bot.send_voice(chat_id=chat_id, voice=open(file_path, 'rb'))
     else:
-        await bot.send_audio(chat_id=chat_id, audio=open(audio_obj_path, 'rb'),
-                             title=voice_title, duration=duration,
+        await bot.send_audio(chat_id=chat_id, audio=open(file_path, 'rb'),
+                             title=voice_title, duration=payload.get('duration'),
                              filename=voice_title)
 
     await bot.send_message(
@@ -56,8 +56,7 @@ async def send_answer(message):
         reply_markup=InlineKeyboardMarkup(keyboards.final_buttons)
     )
 
-    os.remove(audio_obj_path)
-    os.remove(os.environ['USER_VOICES'] + '/' + payload.get('voice_name'))
+    os.remove(file_path)
 
     logger.info('Voice files removed')
 
