@@ -12,19 +12,20 @@ services:
     volumes:
       - /home/postgres/db_data:/var/lib/postgresql/data
 
-#  backup:
-#    image: postgres:13
-#    container_name: postgres_backup
-#    depends_on:
-#      - db
-#    entrypoint: [ "sh", "-c", "while true; do sleep 24h; pg_dump -h db -U $POSTGRES_USER $POSTGRES_DB > /backups/db_backup_$(date +%F_%H-%M-%S).sql; done" ]
-#    environment:
-#      POSTGRES_DB: ${DB_NAME}
-#      POSTGRES_USER: ${DB_USER}
-#      POSTGRES_PASSWORD: ${DB_PASSWORD}
-#    volumes:
-#      - /home/postgres/backups:/backups
-#    restart: always
+  backup:
+    image: postgres:13
+    container_name: postgres_backup
+    depends_on:
+      - db
+    entrypoint: [ "sh", "-c", "while true; do sleep 24h; pg_dump -h db -U $POSTGRES_USER $POSTGRES_DB > /backups/db_backup_$(date +%F_%H-%M-%S).sql; done" ]
+#    entrypoint: ./entrypoint-backup.sh
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - /home/postgres/backups:/backups
+    restart: always
 
   rabbitmq:
     image: rabbitmq:3.10.7-management
