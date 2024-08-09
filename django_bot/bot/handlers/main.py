@@ -448,6 +448,13 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return BASE_STATES
 
+    user = await User.objects.select_related('subscription').aget(telegram_id=update.effective_user.id)
+    if not valid_subscription(user):
+        user.subscription_status = False
+        await user.asave()
+        await offer_subscriptions(update, context)
+        return BASE_STATES
+
     voice_file = await update.message.voice.get_file()  # get voice file from user
     slug_voice = context.user_data.get('slug_voice')
     voice_name = slug_voice + '_' + str(uuid4())  # raw voice file name
@@ -476,14 +483,6 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await push_amqp_message(json.dumps(payload))
     # todo: write to db
-
-    user = await User.objects.select_related('subscription').aget(telegram_id=update.effective_user.id)
-
-    if not valid_subscription(user):
-        user.subscription_status = False
-        await user.asave()
-        await offer_subscriptions(update, context)
-        return BASE_STATES
 
     await update_subscription(user)
 
