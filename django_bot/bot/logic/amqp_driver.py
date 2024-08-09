@@ -47,6 +47,14 @@ async def send_answer(message):
         parse_mode=ParseMode.MARKDOWN,
         reply_markup=InlineKeyboardMarkup(keyboards.final_buttons)
     )
+    if payload.get('extension') == '.ogg':
+        os.remove(os.environ['USER_VOICES_PROCESSED_VOLUME'] + '/' + voice_filename)
+        os.remove(os.environ['USER_VOICES_PROCESSED_VOLUME'] + '/' + payload.get('voice_name'))
+    else:
+        os.remove(os.environ['USER_VOICES_PROCESSED_VOLUME'] + '/' + voice_filename)
+
+    logger.info('Voice files removed')
+
     return BASE_STATES
 
 
