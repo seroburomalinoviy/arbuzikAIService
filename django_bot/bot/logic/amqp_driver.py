@@ -46,8 +46,8 @@ async def send_answer(message):
         await bot.send_voice(chat_id=chat_id, voice=open(audio_obj_path, 'rb'))
     else:
         await bot.send_audio(chat_id=chat_id, audio=open(audio_obj_path, 'rb'),
-                             title=voice_title, duration=duration, caption=voice_title+'_caption',
-                             filename=voice_title+'_filename')
+                             title=voice_title, duration=duration,
+                             filename=voice_title)
 
     await bot.send_message(
         chat_id=chat_id,
