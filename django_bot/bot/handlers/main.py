@@ -466,8 +466,9 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = str(update.message.from_user.id)
     chat_id = str(update.message.chat.id)
 
+    logger.info(f'{update=}\n{context=}')
+
     payload = {
-        "update": update,
         "voice_title": voice.title,
         "user_id": user_id,
         "chat_id": chat_id,
@@ -480,8 +481,6 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await push_amqp_message(json.dumps(payload))
     # todo: write to db
-
-    logger.info(f'{update=}\n{context=}')
 
     await update_subscription(user)
 

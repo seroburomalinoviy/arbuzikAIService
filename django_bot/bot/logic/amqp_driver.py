@@ -31,11 +31,11 @@ async def send_answer(message):
     """
     Send voice to user from RVC-NN
     """
-    bot = Bot(token=os.environ.get('BOT_TOKEN'))
+    # bot = Bot(token=os.environ.get('BOT_TOKEN'))
     payload = json.loads(message)
     update: Update = payload.get('update')
     voice_title = payload.get('voice_title')
-    chat_id = payload.get('chat_id')
+    # chat_id = payload.get('chat_id')
     voice_filename = payload.get('voice_filename')
     voice_path = os.environ.get('USER_VOICES_PROCESSED_VOLUME') + '/' + voice_filename
 
