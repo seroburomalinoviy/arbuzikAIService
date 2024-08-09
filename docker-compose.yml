@@ -17,7 +17,7 @@ services:
     container_name: postgres_backup
     depends_on:
       - db
-    entrypoint: [ "sh", "-c", "while true; do sleep 24h; pg_dump -h db -U $POSTGRES_USER $POSTGRES_DB > /backups/db_backup_$(date +%F_%H-%M-%S).sql; done" ]
+    entrypoint: [ "sh", "-c", "while true; do sleep 24h; pg_dump -h db -U ${POSTGRES_USER} ${POSTGRES_DB} > /backups/db_backup_$(date +%F_%H-%M-%S).sql; done" ]
 #    entrypoint: ./entrypoint-backup.sh
     environment:
       POSTGRES_DB: ${DB_NAME}
