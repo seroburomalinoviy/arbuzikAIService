@@ -18,16 +18,17 @@ from bot.logic.constants import *
 
 @log_journal
 async def offer_vip_subscription(update, context):
+    chat_id = update.effective_chat.id if update.message else update.callback_query.message.chat.id
     subscription_title = 'violetvip'
     subscription = await Subscription.objects.aget(title=subscription_title)
 
     await context.bot.send_photo(
-        chat_id=update.callback_query.message.chat.id,
+        chat_id=chat_id,
         photo=open(str(settings.MEDIA_ROOT) + "/" + str(subscription.image_cover), 'rb'),
     )
 
     await context.bot.send_message(
-        chat_id=update.callback_query.message.chat.id,
+        chat_id=chat_id,
         text=message_text.offer_vip_subscription_text,
         parse_mode=ParseMode.MARKDOWN,
         reply_markup=InlineKeyboardMarkup(
@@ -46,7 +47,8 @@ async def offer_vip_subscription(update, context):
 
 
 @log_journal
-async def offer_subscriptions(update, context):
+async def offer_subscriptions(update: Update, context):
+    chat_id = update.effective_chat.id if update.message else update.callback_query.message.chat.id
     keyboard = list()
     async for sub in Subscription.objects.exclude(title=os.environ.get('DEFAULT_SUBSCRIPTION')).all().order_by('price'):
         keyboard.append(
@@ -64,12 +66,12 @@ async def offer_subscriptions(update, context):
     demo_sub = await Subscription.objects.aget(title=os.environ.get('DEFAULT_SUBSCRIPTION'))
 
     await context.bot.send_photo(
-        chat_id=update.callback_query.message.chat.id,
+        chat_id=chat_id,
         photo=open(str(settings.MEDIA_ROOT) + "/" + str(demo_sub.image_cover), 'rb'),  # в демо подписке лежит специальная картинка
     )
 
     await context.bot.send_message(
-        chat_id=update.callback_query.message.chat.id,
+        chat_id=chat_id,
         text=message_text.offer_subscription_text,
         parse_mode=ParseMode.MARKDOWN,
         reply_markup=InlineKeyboardMarkup(keyboard)
