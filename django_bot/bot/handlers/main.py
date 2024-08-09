@@ -340,8 +340,9 @@ async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data['processing_permission'] = True 
 
     pitch = context.user_data.get(f'pitch_{slug_voice}') if context.user_data.get(f'pitch_{slug_voice}') else "0"
+    voice_title = context.user_data.get('voice_title')
     await query.edit_message_text(
-        message_text.voice_set.format(name=slug_voice),
+        message_text.voice_set.format(name=voice_title),
         parse_mode=ParseMode.HTML,
         reply_markup=InlineKeyboardMarkup(
             [
