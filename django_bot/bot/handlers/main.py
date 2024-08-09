@@ -409,8 +409,6 @@ async def pitch_setting(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data[f'pitch_{slug_voice}'] = pitch_next
 
     if not pitch_next == pitch:
-        context.user_data[f'pitch_{slug_voice}'] = pitch_next
-        pitch = str(context.user_data.get(f'pitch_{slug_voice}'))
         await query.edit_message_text(
             message_text.voice_set.format(name=voice_title),
             parse_mode=ParseMode.HTML,
@@ -418,7 +416,7 @@ async def pitch_setting(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 [
                     [
                         InlineKeyboardButton('-1', callback_data='voice_set_sub'),
-                        InlineKeyboardButton(pitch, callback_data='voice_set_0'),
+                        InlineKeyboardButton(pitch_next, callback_data='voice_set_0'),
                         InlineKeyboardButton('+1', callback_data='voice_set_add'),
                     ],
                     [
@@ -461,8 +459,6 @@ async def voice_audio_process(update: Update, context: ContextTypes.DEFAULT_TYPE
 
     input_obj: TelegramVoice | TelegramAudio = update.message.voice if update.message.voice else update.message.audio
     time_voice_limit = user.subscription.time_voice_limit
-
-    logger.info(f'{user.subscription.time_voice_limit=}, {input_obj.duration=}' )
 
     if not is_valid_duration(input_obj.duration, time_voice_limit):
         await update.message.reply_text(
