@@ -6,6 +6,7 @@ from uuid import uuid4
 from asgiref.sync import sync_to_async
 import django
 import json
+from pydub import AudioSegment
 
 from bot.logic import message_text, keyboards
 from bot.logic.amqp_driver import push_amqp_message
@@ -33,6 +34,12 @@ load_dotenv()
 
 allowed_user_statuses = ['member', 'creator', 'administrator']
 unresolved_user_statuses = ['kicked', 'restricted', 'left']
+
+
+@sync_to_async
+def cut_audio(path, time_limit):
+    obj = AudioSegment.from_file(path)
+    obj[:time_limit*1000].export()
 
 
 def is_valid_duration(duration, time_voice_limit) -> bool:
@@ -458,15 +465,6 @@ async def voice_audio_process(update: Update, context: ContextTypes.DEFAULT_TYPE
         return BASE_STATES
 
     input_obj: TelegramVoice | TelegramAudio = update.message.voice if update.message.voice else update.message.audio
-    time_voice_limit = user.subscription.time_voice_limit
-    duration = input_obj.duration
-
-    if not is_valid_duration(duration, time_voice_limit):
-        await update.message.reply_text(
-            text=f'Длина аудиофайла не должна превышать {time_voice_limit} c',
-            reply_markup=InlineKeyboardMarkup(keyboards.is_subscribed)
-        )
-        return BASE_STATES
 
     extension = '.' + input_obj.mime_type.split('/')[-1]  # .ogg .mp3 .wav etc
     voice_file = await input_obj.get_file()  # get voice file from user
@@ -475,6 +473,12 @@ async def voice_audio_process(update: Update, context: ContextTypes.DEFAULT_TYPE
     voice_path = Path(os.environ.get('USER_VOICES') + '/' + voice_name)
 
     await voice_file.download_to_drive(custom_path=voice_path)  # download voice file to host
+
+    time_voice_limit = user.subscription.time_voice_limit
+    duration = input_obj.duration
+    if not is_valid_duration(duration, time_voice_limit):
+        await cut_audio(voice_path, time_voice_limit)
+        duration = time_voice_limit
 
     voice = await Voice.objects.aget(slug=slug_voice)
     voice_model_pth = str(voice.model_pth).split('/')[-1]
