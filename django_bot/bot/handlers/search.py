@@ -29,7 +29,7 @@ async def inline_searching(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     default_image = "https://img.freepik.com/free-photo/3d-rendering-hydraulic-elements_23-2149333332.jpg?t=st=1714904107~exp=1714907707~hmac=98d51596c9ad15af1086b0d1916f5567c1191255c42d157c87c59bab266d6e84&w=2000"
     results = []
-    async for voice in Voice.objects.filter(title=query.query):
+    async for voice in Voice.objects.filter(title__icontains=query.query):
         results.append(
             InlineQueryResultArticle(
                 id=str(uuid4()),
