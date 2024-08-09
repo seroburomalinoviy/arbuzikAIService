@@ -17,7 +17,6 @@ services:
     container_name: postgres_backup
     depends_on:
       - postgres
-      - ./entrypoint_backup.sh:/usr/local/bin/entrypoint_backup.sh  # Монтируем скрипт внутрь контейнера
     entrypoint: [ "sh", "/usr/local/bin/entrypoint_backup.sh" ]
 #    entrypoint: [ "sh", "-c", "while true; do sleep 24h; pg_dump -h db -U ${POSTGRES_USER} ${POSTGRES_DB} > /backups/db_backup_$(date +%F_%H-%M-%S).sql; done" ]
     environment:
@@ -26,6 +25,7 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - /home/postgres/backups:/backups
+      - ./entrypoint_backup.sh:/usr/local/bin/entrypoint_backup.sh  # Монтируем скрипт внутрь контейнера
     restart: always
 
   rabbitmq:
