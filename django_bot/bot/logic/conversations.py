@@ -13,8 +13,7 @@ class MainConversationHandler(BaseConversationHandler):
         return [
                 CommandHandler("start", StartHandler()),
                 CommandHandler("menu", main.category_menu),
-                MessageHandler(filters.VOICE & ~filters.COMMAND, main.voice_process),
-                MessageHandler(filters.AUDIO & ~filters.COMMAND, main.audio_process),
+                MessageHandler((filters.AUDIO | filters.VOICE) & ~filters.COMMAND, main.voice_audio_process),
                 MessageHandler(filters.TEXT, main.voice_preview)
             ]
 

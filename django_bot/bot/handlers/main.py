@@ -13,6 +13,7 @@ from bot.logic.constants import *
 from bot.logic.utils import get_moscow_time, log_journal
 from bot.handlers.paid_subscription import offer_subscriptions, offer_vip_subscription
 
+from telegram import Voice as TelegramVoice
 from telegram.constants import ParseMode
 from telegram.ext import ContextTypes, ConversationHandler, ApplicationHandlerStop
 from telegram import (Update, InlineKeyboardMarkup, InlineKeyboardButton, InlineQueryResultArticle,
@@ -31,6 +32,12 @@ load_dotenv()
 
 allowed_user_statuses = ['member', 'creator', 'administrator']
 unresolved_user_statuses = ['kicked', 'restricted', 'left']
+
+
+def is_valid_duration(duration, time_voice_limit) -> bool:
+    if duration > time_voice_limit:
+        return True
+    return False
 
 
 async def set_demo_to_user(user: User, update: Update) -> None:
@@ -423,7 +430,7 @@ async def pitch_setting(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 @log_journal
-async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def voice_audio_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Захват голосового сообщения
     1. Проверяем права на отправку голосового
@@ -451,10 +458,20 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await offer_subscriptions(update, context)
         return BASE_STATES
 
-    voice_file = await update.message.voice.get_file()  # get voice file from user
+    voice_obj: TelegramVoice = update.message.voice
+    time_voice_limit = user.subscription.time_voice_limit
+
+    if not is_valid_duration(voice_obj.duration, time_voice_limit):
+        await update.message.reply_text(
+            text=f'Длина аудиофайла не должна превышать {time_voice_limit} c',
+            reply_markup=InlineKeyboardMarkup(keyboards.is_subscribed)
+        )
+        return BASE_STATES
+
+    extension = '.' + voice_obj.mime_type.split('/')[-1]  # .ogg .mp3 .wav etc
+    voice_file = await voice_obj.get_file()  # get voice file from user
     slug_voice = context.user_data.get('slug_voice')
     voice_name = slug_voice + '_' + str(uuid4())  # raw voice file name
-    extension = '.ogg'
     voice_path = Path(os.environ.get('USER_VOICES_RAW_VOLUME') + '/' + voice_name + extension)
 
     await voice_file.download_to_drive(custom_path=voice_path)  # download voice file to host
@@ -479,7 +496,6 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     }
 
     await push_amqp_message(json.dumps(payload))
-    # todo: write to db
 
     await update_subscription(user)
 

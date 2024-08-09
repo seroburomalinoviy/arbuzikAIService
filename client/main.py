@@ -99,7 +99,7 @@ async def reader(channel: aioredis.client.PubSub):
                     infer_parameters['model_name'] = payload.get('voice_model_pth')
                     infer_parameters['feature_index_path'] = payload.get('voice_model_index')
                     infer_parameters['source_audio_path'] = voice_raw_path
-                    infer_parameters['output_file_name'] = voice_name
+                    infer_parameters['output_file_name'] = voice_name if extension == '.ogg' else voice_name + extension
                     infer_parameters['transposition'] = payload.get('pitch')
 
                     logger.debug(f"infer parameters: {infer_parameters['model_name']=},\n"
@@ -113,8 +113,9 @@ async def reader(channel: aioredis.client.PubSub):
                     starter_infer(**infer_parameters)
                     logger.info(f'NN finished for: {perf_counter() - start}')
 
-                    convert_to_voice(voice_name, extension)
-                    logger.info(f'NN + Formatting finished for: {perf_counter() - start}')
+                    if extension == '.ogg':
+                        convert_to_voice(voice_name, extension)
+                        logger.info(f'NN + Formatting finished for: {perf_counter() - start}')
 
                     payload['voice_filename'] = voice_name + extension
                     logger.debug(payload)
