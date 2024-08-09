@@ -92,8 +92,6 @@ async def reader(channel: aioredis.client.PubSub):
                     message = message.get("data").decode()
                     payload = json.loads(message)
 
-                    user_id = payload.get('user_id')
-                    chat_id = payload.get('chat_id')
                     voice_name = payload.get('voice_name')
                     extension = payload.get('extension')
                     voice_raw_path = os.environ['USER_VOICES_RAW_VOLUME'] + '/' + voice_name + extension

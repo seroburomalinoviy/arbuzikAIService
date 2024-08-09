@@ -7,6 +7,7 @@ from telegram import Bot, InlineKeyboardMarkup
 import asyncio
 
 from bot.logic import message_text, keyboards
+from bot.logic.constants import BASE_STATES
 
 load_dotenv()
 
@@ -44,6 +45,7 @@ async def send_answer(message):
         text=message_text.final_message.format(title=voice_title),
         reply_markup=InlineKeyboardMarkup(keyboards.final_buttons)
     )
+    return BASE_STATES
 
 
 async def push_amqp_message(payload):
