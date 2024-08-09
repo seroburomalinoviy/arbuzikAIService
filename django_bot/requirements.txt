@@ -41,4 +41,3 @@ uvicorn
 gunicorn
 uvicorn-worker
 pydub
-ffmpeg
