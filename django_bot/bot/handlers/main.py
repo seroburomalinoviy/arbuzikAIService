@@ -39,7 +39,7 @@ unresolved_user_statuses = ['kicked', 'restricted', 'left']
 @sync_to_async
 def cut_audio(path, time_limit):
     logger.info(path)
-    obj = AudioSegment.from_file(path)
+    obj = AudioSegment.from_file_using_temporary_files()
     obj[:time_limit*1000].export()
 
 
@@ -471,7 +471,7 @@ async def voice_audio_process(update: Update, context: ContextTypes.DEFAULT_TYPE
     voice_file = await input_obj.get_file()  # get voice file from user
     slug_voice = context.user_data.get('slug_voice')
     voice_name = slug_voice + '_' + str(uuid4())  # raw voice file name
-    voice_path = Path(os.environ.get('USER_VOICES') + '/' + voice_name)
+    voice_path = Path(os.environ.get('USER_VOICES') + '/' + voice_name + extension)
 
     await voice_file.download_to_drive(custom_path=voice_path)  # download voice file to host
 
