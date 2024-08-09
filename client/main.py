@@ -116,9 +116,7 @@ async def reader(channel: aioredis.client.PubSub):
                     convert_to_voice(voice_name, extension)
                     logger.info(f'NN + Formatting finished for: {perf_counter() - start}')
 
-                    payload += {
-                        "voice_filename": voice_name + extension
-                    }
+                    payload['voice_filename'] = voice_name + extension
                     logger.debug(payload)
 
                     push_amqp_message(payload)
