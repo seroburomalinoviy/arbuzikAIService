@@ -41,7 +41,7 @@ async def send_answer(message):
     await bot.send_message(
         chat_id=chat_id,
         text=message_text.final_message.format(title=voice_title),
-        reply_markup=keyboards.final_buttons
+        reply_markup=InlineKeyboardMarkup(keyboards.final_buttons)
     )
 
 
