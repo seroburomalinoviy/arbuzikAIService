@@ -40,7 +40,7 @@ unresolved_user_statuses = ['kicked', 'restricted', 'left']
 def cut_audio(path, extension, time_limit):
     logger.info(path)
     obj = AudioSegment.from_file(path)
-    obj[:time_limit*1000].export()
+    obj[:time_limit*1000].export(path)
 
 
 def is_valid_duration(duration, time_voice_limit) -> bool:
