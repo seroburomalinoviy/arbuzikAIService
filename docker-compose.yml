@@ -26,7 +26,6 @@ services:
       - /home/postgres/backups:/backups
     restart: always
 
-
   rabbitmq:
     image: rabbitmq:3.10.7-management
     hostname: rabbitmq
@@ -40,7 +39,6 @@ services:
       - "15672:15672"
       - "5672:5672"
     healthcheck:
-      # test: ["CMD", "curl", "-f", "http://localhost:15672"]
       test: rabbitmq-diagnostics check_port_connectivity
       interval: 10s
       timeout: 30s
