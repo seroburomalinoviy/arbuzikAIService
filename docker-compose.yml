@@ -12,20 +12,20 @@ services:
     volumes:
       - /home/postgres/db_data:/var/lib/postgresql/data
 
-  backup:
-    image: postgres:13
-    container_name: postgres_backup
-    depends_on:
-      - postgres
-    entrypoint: [ "sh", "/usr/local/bin/backup.sh" ]
-    environment:
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-    volumes:
-      - /home/postgres/backups:/backups
-      - ./backup.sh:/usr/local/bin/backup.sh
-    restart: always
+#  backup:
+#    image: postgres:13
+#    container_name: postgres_backup
+#    depends_on:
+#      - postgres
+#    entrypoint: [ "sh", "/usr/local/bin/backup.sh" ]
+#    environment:
+#      POSTGRES_DB: ${DB_NAME}
+#      POSTGRES_USER: ${DB_USER}
+#      POSTGRES_PASSWORD: ${DB_PASSWORD}
+#    volumes:
+#      - /home/postgres/backups:/backups
+#      - ./backup.sh:/usr/local/bin/backup.sh
+#    restart: always
 
   rabbitmq:
     image: rabbitmq:3.10.7-management
