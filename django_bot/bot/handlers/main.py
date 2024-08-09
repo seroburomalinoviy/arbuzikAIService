@@ -459,8 +459,9 @@ async def voice_audio_process(update: Update, context: ContextTypes.DEFAULT_TYPE
 
     input_obj: TelegramVoice | TelegramAudio = update.message.voice if update.message.voice else update.message.audio
     time_voice_limit = user.subscription.time_voice_limit
+    duration = input_obj.duration
 
-    if not is_valid_duration(input_obj.duration, time_voice_limit):
+    if not is_valid_duration(duration, time_voice_limit):
         await update.message.reply_text(
             text=f'Длина аудиофайла не должна превышать {time_voice_limit} c',
             reply_markup=InlineKeyboardMarkup(keyboards.is_subscribed)
@@ -484,6 +485,7 @@ async def voice_audio_process(update: Update, context: ContextTypes.DEFAULT_TYPE
     chat_id = str(update.message.chat.id)
 
     payload = {
+        "duration": duration,
         "voice_title": voice.title,
         "user_id": user_id,
         "chat_id": chat_id,
