@@ -74,7 +74,7 @@ def starter_infer(
             % ("audio-outputs", output_file_name)
         )
         try:
-            result_path = os.environ.get("USER_VOICES_PROCESSED_VOLUME")
+            result_path = os.environ.get("USER_VOICES")
             wavfile.write(
                 "%s/%s" % (result_path, output_file_name),
                 conversion_data[1][0],

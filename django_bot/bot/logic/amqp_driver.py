@@ -36,7 +36,7 @@ async def send_answer(message):
     voice_title = payload.get('voice_title')
     chat_id = payload.get('chat_id')
     voice_filename = payload.get('voice_filename')
-    voice_path = os.environ.get('USER_VOICES_PROCESSED_VOLUME') + '/' + voice_filename
+    voice_path = os.environ.get('USER_VOICES') + '/' + voice_filename
 
     logger.debug(f'voice_path: {voice_path}')
 
@@ -47,11 +47,9 @@ async def send_answer(message):
         parse_mode=ParseMode.MARKDOWN,
         reply_markup=InlineKeyboardMarkup(keyboards.final_buttons)
     )
-    if payload.get('extension') == '.ogg':
-        os.remove(os.environ['USER_VOICES_PROCESSED_VOLUME'] + '/' + voice_filename)
-        os.remove(os.environ['USER_VOICES_PROCESSED_VOLUME'] + '/' + payload.get('voice_name'))
-    else:
-        os.remove(os.environ['USER_VOICES_PROCESSED_VOLUME'] + '/' + voice_filename)
+
+    os.remove(os.environ['USER_VOICES'] + '/' + voice_filename)
+    os.remove(os.environ['USER_VOICES'] + '/' + payload.get('voice_name'))
 
     logger.info('Voice files removed')
 

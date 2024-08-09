@@ -59,8 +59,8 @@ def convert_to_voice(voice_name, extension):
     :param voice_name: str: The name of raw file
     :param extension: str: The extension of resulted file
     """
-    input_path = os.environ['USER_VOICES_PROCESSED_VOLUME'] + '/' + voice_name
-    output_path = os.environ['USER_VOICES_PROCESSED_VOLUME'] + '/' + voice_name + extension
+    input_path = os.environ['USER_VOICES'] + '/' + voice_name
+    output_path = os.environ['USER_VOICES'] + '/' + voice_name + extension
     os.system(
         f"ffmpeg -y -i {input_path} -c:a libopus -b:a 32k -vbr on "
         f"-compression_level 10 -frame_duration 60 -application voip"
@@ -94,7 +94,7 @@ async def reader(channel: aioredis.client.PubSub):
 
                     voice_name = payload.get('voice_name')
                     extension = payload.get('extension')
-                    voice_raw_path = os.environ['USER_VOICES_RAW_VOLUME'] + '/' + voice_name + extension
+                    voice_raw_path = os.environ['USER_VOICES'] + '/' + voice_name
 
                     infer_parameters['model_name'] = payload.get('voice_model_pth')
                     infer_parameters['feature_index_path'] = payload.get('voice_model_index')

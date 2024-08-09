@@ -75,11 +75,8 @@ services:
         source: media-data-volume
         target: /app/weights
       - type: volume
-        source: raw-voices-volume
-        target: ${USER_VOICES_RAW_VOLUME}
-      - type: volume
-        source: processed-voices-volume
-        target: ${USER_VOICES_PROCESSED_VOLUME}
+        source: voices-volume
+        target: ${USER_VOICES}
 
   bot:
     build: ./django_bot
@@ -96,11 +93,8 @@ services:
       - .env
     volumes:
       - type: volume
-        source: raw-voices-volume
-        target: ${USER_VOICES_RAW_VOLUME}
-      - type: volume
-        source: processed-voices-volume
-        target: ${USER_VOICES_PROCESSED_VOLUME}
+        source: voices-volume
+        target: ${USER_VOICES}
       - type: volume
         source: media-data-volume
         target: ${MEDIA_DATA_VOLUME}
@@ -150,6 +144,5 @@ services:
 volumes:
   static_volume:
   media-data-volume:
-  processed-voices-volume:
-  raw-voices-volume:
+  voices-volume:
 
