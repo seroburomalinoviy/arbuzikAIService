@@ -1,5 +1,5 @@
 from bot.structures.base_classes import BaseConversationHandler
-from bot.logic.commands import CancelHandler, StartHandler, MenuHandler
+from bot.logic.commands import CancelHandler, StartHandler, MenuHandler, HelpHandler
 
 from bot.handlers import main, search, paid_subscription, favorite
 from bot.logic.constants import *
@@ -12,6 +12,7 @@ class MainConversationHandler(BaseConversationHandler):
     def entrypoints(self):
         return [
                 CommandHandler("start", StartHandler()),
+                CommandHandler("help", HelpHandler()),
                 CommandHandler("menu", main.category_menu),
                 MessageHandler((filters.AUDIO | filters.VOICE) & ~filters.COMMAND, main.voice_audio_process),
                 MessageHandler(filters.TEXT, main.voice_preview)
