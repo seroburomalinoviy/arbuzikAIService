@@ -57,6 +57,7 @@ async def send_answer(message):
     )
 
     os.remove(file_path)
+    os.remove(file_path + '.tmp')
 
     logger.info('Voice files removed')
 

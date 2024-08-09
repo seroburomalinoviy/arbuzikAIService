@@ -59,7 +59,7 @@ def convert_to_voice(path):
     :param path:
     """
     os.system(
-        f"ffmpeg -y -i {path} -c:a libopus -b:a 32k -vbr on "
+        f"ffmpeg -y -i {path + '.tmp'} -c:a libopus -b:a 32k -vbr on "
         f"-compression_level 10 -frame_duration 60 -application voip"
         f" {path}")
 
@@ -97,7 +97,7 @@ async def reader(channel: aioredis.client.PubSub):
                     infer_parameters['model_name'] = payload.get('voice_model_pth')
                     infer_parameters['feature_index_path'] = payload.get('voice_model_index')
                     infer_parameters['source_audio_path'] = voice_path
-                    infer_parameters['output_file_name'] = voice_filename
+                    infer_parameters['output_file_name'] = voice_filename + '.tmp' if extension == '.ogg' else voice_filename
                     infer_parameters['transposition'] = payload.get('pitch')
 
                     logger.debug(f"infer parameters: {infer_parameters['model_name']=},\n"
