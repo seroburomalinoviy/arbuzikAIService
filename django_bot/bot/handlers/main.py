@@ -14,6 +14,7 @@ from bot.logic.utils import get_moscow_time, log_journal
 from bot.handlers.paid_subscription import offer_subscriptions, offer_vip_subscription
 
 from telegram import Voice as TelegramVoice
+from telegram import Audio as TelegramAudio
 from telegram.constants import ParseMode
 from telegram.ext import ContextTypes, ConversationHandler, ApplicationHandlerStop
 from telegram import (Update, InlineKeyboardMarkup, InlineKeyboardButton, InlineQueryResultArticle,
@@ -458,20 +459,20 @@ async def voice_audio_process(update: Update, context: ContextTypes.DEFAULT_TYPE
         await offer_subscriptions(update, context)
         return BASE_STATES
 
-    voice_obj: TelegramVoice = update.message.voice
+    input_obj: TelegramVoice | TelegramAudio = update.message.voice if update.message.voice else update.message.audio
     time_voice_limit = user.subscription.time_voice_limit
 
-    logger.info(f'{user.subscription.time_voice_limit=}, {voice_obj.duration=}' )
+    logger.info(f'{user.subscription.time_voice_limit=}, {input_obj.duration=}' )
 
-    if not is_valid_duration(voice_obj.duration, time_voice_limit):
+    if not is_valid_duration(input_obj.duration, time_voice_limit):
         await update.message.reply_text(
             text=f'Длина аудиофайла не должна превышать {time_voice_limit} c',
             reply_markup=InlineKeyboardMarkup(keyboards.is_subscribed)
         )
         return BASE_STATES
 
-    extension = '.' + voice_obj.mime_type.split('/')[-1]  # .ogg .mp3 .wav etc
-    voice_file = await voice_obj.get_file()  # get voice file from user
+    extension = '.' + input_obj.mime_type.split('/')[-1]  # .ogg .mp3 .wav etc
+    voice_file = await input_obj.get_file()  # get voice file from user
     slug_voice = context.user_data.get('slug_voice')
     voice_name = slug_voice + '_' + str(uuid4())  # raw voice file name
     voice_path = Path(os.environ.get('USER_VOICES_RAW_VOLUME') + '/' + voice_name + extension)
