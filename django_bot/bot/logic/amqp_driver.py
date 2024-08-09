@@ -35,12 +35,17 @@ async def send_answer(message):
     payload = json.loads(message)
     voice_title = payload.get('voice_title')
     chat_id = payload.get('chat_id')
-    voice_filename = payload.get('voice_filename')
-    voice_path = os.environ.get('USER_VOICES') + '/' + voice_filename
+    audio_obj_filename = payload.get('voice_filename')
+    extension = payload.get('extension')
+    audio_obj_path = os.environ.get('USER_VOICES') + '/' + audio_obj_filename
 
-    logger.debug(f'voice_path: {voice_path}')
+    logger.debug(f'audio_obj_path: {audio_obj_path}')
 
-    await bot.send_voice(chat_id=chat_id, voice=open(voice_path, 'rb'))
+    if extension == '.ogg':
+        await bot.send_voice(chat_id=chat_id, voice=open(audio_obj_path, 'rb'))
+    else:
+        await bot.send_audio(chat_id=chat_id, audio=open(audio_obj_path, 'rb'))
+
     await bot.send_message(
         chat_id=chat_id,
         text=message_text.final_message.format(title=voice_title),
@@ -48,7 +53,7 @@ async def send_answer(message):
         reply_markup=InlineKeyboardMarkup(keyboards.final_buttons)
     )
 
-    os.remove(os.environ['USER_VOICES'] + '/' + voice_filename)
+    os.remove(os.environ['USER_VOICES'] + '/' + audio_obj_filename)
     os.remove(os.environ['USER_VOICES'] + '/' + payload.get('voice_name'))
 
     logger.info('Voice files removed')
