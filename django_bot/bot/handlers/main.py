@@ -36,8 +36,8 @@ unresolved_user_statuses = ['kicked', 'restricted', 'left']
 
 def is_valid_duration(duration, time_voice_limit) -> bool:
     if duration > time_voice_limit:
-        return True
-    return False
+        return False
+    return True
 
 
 async def set_demo_to_user(user: User, update: Update) -> None:
