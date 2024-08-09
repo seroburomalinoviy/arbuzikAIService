@@ -118,9 +118,7 @@ async def reader(channel: aioredis.client.PubSub):
                     convert_to_voice(voice_name, extension)
                     logger.info(f'NN + Formatting finished for: {perf_counter() - start}')
 
-                    payload = {
-                        "user_id": user_id,
-                        "chat_id": chat_id,
+                    payload += {
                         "voice_filename": voice_name + extension
                     }
                     logger.debug(payload)

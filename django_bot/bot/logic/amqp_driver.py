@@ -35,7 +35,8 @@ async def send_answer(message):
     chat_id = payload.get('chat_id')
     voice_filename = payload.get('voice_filename')
     voice_path = os.environ.get('USER_VOICES_PROCESSED_VOLUME') + '/' + voice_filename
-    logger.info(f'voice_path: {voice_path}')
+
+    logger.debug(f'voice_path: {voice_path}')
 
     await bot.send_voice(chat_id=chat_id, voice=open(voice_path, 'rb'))
     await bot.send_message(
