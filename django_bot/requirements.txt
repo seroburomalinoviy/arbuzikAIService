@@ -41,3 +41,4 @@ uvicorn
 gunicorn
 uvicorn-worker
 pydub
+ffprobe
