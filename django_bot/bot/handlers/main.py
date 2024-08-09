@@ -467,8 +467,6 @@ async def voice_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = str(update.message.from_user.id)
     chat_id = str(update.message.chat.id)
 
-    logger.info(f'{update=}\n{context=}')
-
     payload = {
         "voice_title": voice.title,
         "user_id": user_id,

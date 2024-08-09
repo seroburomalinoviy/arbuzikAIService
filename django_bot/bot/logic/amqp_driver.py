@@ -33,7 +33,6 @@ async def send_answer(message):
     """
     bot = Bot(token=os.environ.get('BOT_TOKEN'))
     payload = json.loads(message)
-    # update: Update = payload.get('update')
     voice_title = payload.get('voice_title')
     chat_id = payload.get('chat_id')
     voice_filename = payload.get('voice_filename')
@@ -41,15 +40,7 @@ async def send_answer(message):
 
     logger.debug(f'voice_path: {voice_path}')
 
-    # await update.message.reply_voice(
-    #     voice=open(voice_path, 'rb')
-    # )
     await bot.send_voice(chat_id=chat_id, voice=open(voice_path, 'rb'))
-    # await update.message.reply_text(
-    #     text=message_text.final_message.format(title=voice_title),
-    #     parse_mode=ParseMode.MARKDOWN,
-    #     reply_markup=InlineKeyboardMarkup(keyboards.final_buttons)
-    # )
     await bot.send_message(
         chat_id=chat_id,
         text=message_text.final_message.format(title=voice_title),

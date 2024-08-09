@@ -32,8 +32,6 @@ class MainConversationHandler(BaseConversationHandler):
                 CallbackQueryHandler(main.pitch_setting, pattern="^voice_set_add$"),
                 CallbackQueryHandler(favorite.add, pattern="^favorite-add-"),
                 CallbackQueryHandler(favorite.remove, pattern="^favorite-remove-"),
-            ],
-            WAITING: [
                 CallbackQueryHandler(main.check_status, pattern='^check_status$')
             ]
         }
