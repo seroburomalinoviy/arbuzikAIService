@@ -461,6 +461,8 @@ async def voice_audio_process(update: Update, context: ContextTypes.DEFAULT_TYPE
     voice_obj: TelegramVoice = update.message.voice
     time_voice_limit = user.subscription.time_voice_limit
 
+    logger.info(f'{user.subscription.time_voice_limit=}, {voice_obj.duration=}' )
+
     if not is_valid_duration(voice_obj.duration, time_voice_limit):
         await update.message.reply_text(
             text=f'Длина аудиофайла не должна превышать {time_voice_limit} c',
