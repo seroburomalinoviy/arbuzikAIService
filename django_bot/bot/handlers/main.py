@@ -478,7 +478,7 @@ async def voice_audio_process(update: Update, context: ContextTypes.DEFAULT_TYPE
     time_voice_limit = user.subscription.time_voice_limit
     duration = input_obj.duration
     if not is_valid_duration(duration, time_voice_limit):
-        await cut_audio(voice_path, time_voice_limit, extension)
+        await cut_audio(voice_path, extension, time_voice_limit)
         duration = time_voice_limit
 
     voice = await Voice.objects.aget(slug=slug_voice)
