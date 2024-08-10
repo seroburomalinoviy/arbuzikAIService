@@ -21,7 +21,7 @@ def subscription_parser(filepath):
             continue
         raw_dict = raw.to_dict()    
         raw_dict.pop('index')
-        subscription = Subscription.objects.create(
+        Subscription.objects.create(
             description=raw_dict[reverse_fisrt_raw['description']],
             image_cover="covers/" + str(raw_dict[reverse_fisrt_raw['image_cover']]),
             days_limit=raw_dict[reverse_fisrt_raw['days_limit']],
@@ -30,7 +30,6 @@ def subscription_parser(filepath):
             title=raw_dict[reverse_fisrt_raw['title']],
             telegram_title=raw_dict[reverse_fisrt_raw['telegram_title']]
         )
-        subscription.save()
 
     return 'Подписки созданы'
 
@@ -46,6 +45,7 @@ def voice_parser(filepath):
     GENDER = 'gender'
     SUBSCRIPTIOS = 'subscriptions'
     FILE = 'file_name'
+    SEARCH_WORDS = 'search_alternatives'
 
     voice_counter = 0
     category_counter = 0
@@ -75,6 +75,7 @@ def voice_parser(filepath):
                 slug=row[SLUG_VOICE],
                 description=row[DESCRIPTION],
                 gender=row[GENDER],
+                search_words=row[SEARCH_WORDS],
                 subcategory=subcategory,
                 model_pth=os.environ.get('MEDIA_DATA_VOLUME').strip('/').split('/')[-1] + "/" + row[FILE] + ".pth",
                 model_index=os.environ.get('MEDIA_DATA_VOLUME').strip('/').split('/')[-1] + "/" + row[FILE] + ".index",
