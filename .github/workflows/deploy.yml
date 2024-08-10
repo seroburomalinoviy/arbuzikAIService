@@ -20,6 +20,7 @@ jobs:
         port: ${{ secrets.SSH_PORT_PROD }}
         script: |
           cd arbuzikAIService/
+          it checkout main
           git pull origin main
           docker compose down
           docker compose build
@@ -36,6 +37,7 @@ jobs:
         port: ${{ secrets.SSH_PORT_PROD }}
         script: |
           cd arbuzikAIService/
+          git checkout dev
           git pull origin dev
           docker compose down
           docker compose build
