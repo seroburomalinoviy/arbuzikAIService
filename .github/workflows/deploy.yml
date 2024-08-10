@@ -17,6 +17,7 @@ jobs:
         host: ${{ secrets.SSH_HOST_PROD }}
         username: ${{ secrets.SSH_USER_PROD }}
         key: ${{ secrets.SSH_KEY_PROD }}
+        port: ${{ secrets.SSH_PORT_PROD }}
         script: |
           cd arbuzikAIService/
           git pull origin main
@@ -32,6 +33,7 @@ jobs:
         host: ${{ secrets.SSH_HOST_PROD }}
         username: ${{ secrets.SSH_USER_PROD }}
         key: ${{ secrets.SSH_KEY_PROD }}
+        port: ${{ secrets.SSH_PORT_PROD }}
         script: |
           cd arbuzikAIService/
           git pull origin dev
