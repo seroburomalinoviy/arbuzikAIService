@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Deploy main branch
-      if: github.ref == 'refs/head/main'
+      if: github.ref == 'refs/heads/main'
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.SSH_HOST_PROD }}
@@ -26,7 +26,7 @@ jobs:
           docker system prune --volumes --force
 
     - name: Deploy dev branch
-      if: github.ref == 'refs/head/dev'
+      if: github.ref == 'refs/heads/dev'
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.SSH_HOST_PROD }}
