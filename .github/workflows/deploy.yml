@@ -3,13 +3,15 @@ on:
   push:
     branches:
       - main
+      - dev
 jobs:
 
   deploy:
     name: deployment
     runs-on: ubuntu-latest
     steps:
-    - name: build project
+    - name: Deploy main branch
+      if: github.ref == 'refs/head/main'
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.SSH_HOST_PROD }}
@@ -18,6 +20,21 @@ jobs:
         script: |
           cd arbuzikAIService/
           git pull origin main
+          docker compose down
+          docker compose build
+          docker compose up -d
+          docker system prune --volumes --force
+
+    - name: Deploy dev branch
+      if: github.ref == 'refs/head/dev'
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SSH_HOST_PROD }}
+        username: ${{ secrets.SSH_USER_PROD }}
+        key: ${{ secrets.SSH_KEY_PROD }}
+        script: |
+          cd arbuzikAIService/
+          git pull origin dev
           docker compose down
           docker compose build
           docker compose up -d
