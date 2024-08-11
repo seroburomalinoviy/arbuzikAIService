@@ -16,6 +16,7 @@ class MainConversationHandler(BaseConversationHandler):
                 CommandHandler("menu", main.category_menu),
                 MessageHandler((filters.AUDIO | filters.VOICE) & ~filters.COMMAND, main.voice_audio_process),
                 MessageHandler(filters.TEXT, main.voice_preview)
+                #MessageHandler(filters.TEXT[ldfkjvn/3234jdnlsvj./], main.end_of_voce_processing()) # функция начала разговора, которую нельзя вызвать снаружи
             ]
 
     def states(self):
