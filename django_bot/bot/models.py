@@ -120,6 +120,14 @@ class Voice(models.Model):
         max_length=10,
         default='Male'
     )
+
+    search_words = models.TextField(
+        'Поисковые слова',
+        editable=True,
+        blank=True,
+        null=True
+    )
+    
     subscriptions = models.ManyToManyField(
         'Subscription'
     )
