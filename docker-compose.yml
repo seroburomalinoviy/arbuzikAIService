@@ -85,7 +85,7 @@ services:
     depends_on:
       rabbitmq:
         condition: service_healthy
-      postgres:
+      db:
         condition: service_started
     restart:
       always
@@ -109,7 +109,7 @@ services:
     expose:
       - 8000
     depends_on:
-      postgres:
+      db:
         condition: service_started
     restart:
       always
