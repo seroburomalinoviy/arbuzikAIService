@@ -554,7 +554,7 @@ async def voice_audio_process(update: Update, context: ContextTypes.DEFAULT_TYPE
         "voice_model_index": voice_model_index,
     }
 
-    await push_amqp_message(json.dumps(payload))
+    await push_amqp_message(json.dumps(payload), routing_key="bot-to-rvc")
 
     await update_subscription(user)
 

@@ -56,7 +56,7 @@ async def send_rvc_answer(message):
     # return BASE_STATES
 
 
-async def push_amqp_message(payload):
+async def push_amqp_message(payload, routing_key):
     connection = await aio_pika.connect_robust(
         host=os.environ.get("RABBIT_HOST"),
         port=int(os.environ.get("RABBIT_PORT")),
@@ -64,9 +64,6 @@ async def push_amqp_message(payload):
         password=os.environ.get("RABBIT_PASSWORD"),
     )
     logger.info("Connected to rabbit")
-    queue_name = "bot-to-rvc"
-    routing_key = "bot-to-rvc"
-    exchange_name = ""
 
     async with connection:
         channel = await connection.channel()
