@@ -21,7 +21,7 @@ def main() -> None:
         datefmt="%Y-%m-%d %H:%M:%S",
     )
 
-    TOKEN = os.environ.get('BOT_TOKEN')
+    TOKEN = os.environ.get("BOT_TOKEN")
     application = ApplicationBuilder().token(TOKEN).build()
 
     application = init_handlers(application)

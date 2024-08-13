@@ -9,7 +9,7 @@ from bot.logic.utils import log_journal
 from bot.logic.constants import *
 
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 django.setup()
 
 from bot.models import Voice, Subscription
@@ -37,9 +37,8 @@ async def inline_searching(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 description=voice.description,
                 # todo установить ssl сертификат
                 thumbnail_url=default_image,  # str(settings.MEDIA_URL) + str(voice_media_data.image),
-                input_message_content=InputTextMessageContent(voice.slug)
+                input_message_content=InputTextMessageContent(voice.slug),
             )
         )
     await query.answer(results, cache_time=1, auto_pagination=True)
     return ConversationHandler.END
-

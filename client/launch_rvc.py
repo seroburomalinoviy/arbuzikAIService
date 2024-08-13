@@ -92,5 +92,3 @@ def starter_infer(
             "[Mangio-RVC] starter_infer: Inference failed. Here's the traceback: "
         )
         logger.debug(conversion_data[0])
-
-

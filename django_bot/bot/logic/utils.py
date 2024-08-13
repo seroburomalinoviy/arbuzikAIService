@@ -23,9 +23,11 @@ def log_journal(func):
         elif update.inline_query:
             _id = str(update.inline_query.from_user.id)
         else:
-            _id = 'Not found'
+            _id = "Not found"
 
-        logger_journal.info(f'JOURNAL: {func.__name__} - was called for user - {_id} - tg_id')
+        logger_journal.info(
+            f"JOURNAL: {func.__name__} - was called for user - {_id} - tg_id"
+        )
         return await func(*args, **kwargs)
-    return wrapper
 
+    return wrapper

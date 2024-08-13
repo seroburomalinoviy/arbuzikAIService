@@ -31,50 +31,54 @@ async def send_answer(message):
     """
     Send voice to user from RVC-NN
     """
-    bot = Bot(token=os.environ.get('BOT_TOKEN'))
+    bot = Bot(token=os.environ.get("BOT_TOKEN"))
     payload = json.loads(message)
 
-    voice_title = payload.get('voice_title')
-    chat_id = payload.get('chat_id')
+    voice_title = payload.get("voice_title")
+    chat_id = payload.get("chat_id")
 
-    filename = payload.get('voice_filename')
-    file_path = os.environ.get('USER_VOICES') + '/' + filename
+    filename = payload.get("voice_filename")
+    file_path = os.environ.get("USER_VOICES") + "/" + filename
 
-    logger.debug(f'file_path: {file_path}')
+    logger.debug(f"file_path: {file_path}")
 
-    if payload.get('extension') == '.ogg':
-        await bot.send_voice(chat_id=chat_id, voice=open(file_path, 'rb'))
+    if payload.get("extension") == ".ogg":
+        await bot.send_voice(chat_id=chat_id, voice=open(file_path, "rb"))
     else:
-        await bot.send_audio(chat_id=chat_id, audio=open(file_path, 'rb'),
-                             title=voice_title, duration=payload.get('duration'),
-                             filename=voice_title)
+        await bot.send_audio(
+            chat_id=chat_id,
+            audio=open(file_path, "rb"),
+            title=voice_title,
+            duration=payload.get("duration"),
+            filename=voice_title,
+        )
 
     await bot.send_message(
         chat_id=chat_id,
         text=message_text.final_message.format(title=voice_title),
         parse_mode=ParseMode.MARKDOWN,
-        reply_markup=InlineKeyboardMarkup(keyboards.final_buttons)
+        reply_markup=InlineKeyboardMarkup(keyboards.final_buttons),
     )
 
     os.remove(file_path)
-    os.remove(file_path + '.tmp')
+    os.remove(file_path + ".tmp")
 
-    logger.info('Voice files removed')
+    logger.info("Voice files removed")
 
     return BASE_STATES
 
 
 async def push_amqp_message(payload):
     connection = await aio_pika.connect_robust(
-        host=os.environ.get('RABBIT_HOST'),
-        port=int(os.environ.get('RABBIT_PORT')),
-        login=os.environ.get('RABBIT_USER'),
-        password=os.environ.get('RABBIT_PASSWORD'),
+        host=os.environ.get("RABBIT_HOST"),
+        port=int(os.environ.get("RABBIT_PORT")),
+        login=os.environ.get("RABBIT_USER"),
+        password=os.environ.get("RABBIT_PASSWORD"),
     )
-    logger.info('Connected to rabbit')
+    logger.info("Connected to rabbit")
     queue_name = "bot-to-rvc"
     routing_key = "bot-to-rvc"
-    exchange_name = ''
+    exchange_name = ""
 
     async with connection:
         channel = await connection.channel()
@@ -82,22 +86,22 @@ async def push_amqp_message(payload):
             aio_pika.Message(body=payload.encode()),
             routing_key=routing_key,
         )
-    logger.info(f'message {payload} sent to rabbit')
+    logger.info(f"message {payload} sent to rabbit")
 
 
 async def amqp_listener():
     try:
         connection = await aio_pika.connect_robust(
-            host=os.environ.get('RABBIT_HOST'),
-            port=int(os.environ.get('RABBIT_PORT')),
-            login=os.environ.get('RABBIT_USER'),
-            password=os.environ.get('RABBIT_PASSWORD'),
+            host=os.environ.get("RABBIT_HOST"),
+            port=int(os.environ.get("RABBIT_PORT")),
+            login=os.environ.get("RABBIT_USER"),
+            password=os.environ.get("RABBIT_PASSWORD"),
         )
     except aio_pika.exceptions.CONNECTION_EXCEPTIONS as e:
         logger.error(e.args[0])
         await asyncio.sleep(3)
         return await amqp_listener()
-    logger.info(f'Connected to rabbit')
+    logger.info(f"Connected to rabbit")
 
     queue_name = "rvc-to-bot"
 
@@ -114,10 +118,9 @@ async def amqp_listener():
         async with queue.iterator() as queue_iter:
             async for message in queue_iter:
                 async with message.process():
-                    logger.info(f'bot got msg from rabbit: {message.body}')
+                    logger.info(f"bot got msg from rabbit: {message.body}")
 
                     await send_answer(message.body)
 
                     if queue.name in message.body.decode():
                         break
-

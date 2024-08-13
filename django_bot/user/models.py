@@ -8,69 +8,57 @@ import os
 
 
 def get_default_sub():
-    return os.environ.get('DEFAULT_SUBSCRIPTION')
+    return os.environ.get("DEFAULT_SUBSCRIPTION")
 
 
 class User(models.Model):
     telegram_id = models.CharField(
-        'telegram id',
+        "telegram id",
         max_length=250,
         primary_key=True,
     )
     telegram_nickname = models.CharField(
-        'telegram nick name',
+        "telegram nick name",
         max_length=100,
         blank=True,
         null=True,
     )
     telegram_username = models.CharField(
-        'telegram username',
+        "telegram username",
         max_length=100,
         blank=True,
         null=True,
     )
     subscription_status = models.BooleanField(
-        'Статус подписки',
-        editable=True,
-        default=False
+        "Статус подписки", editable=True, default=False
     )
     subscription_final_date = models.DateTimeField(
-        'Дата окончания подписки',
-        editable=True,
-        default=timezone.now,
-        null=True
+        "Дата окончания подписки", editable=True, default=timezone.now, null=True
     )
     subscription_attempts = models.PositiveIntegerField(
-        'Количество попыток',
+        "Количество попыток",
         validators=[MinValueValidator(0)],
         editable=True,
-        null=True
+        null=True,
     )
     pitch = models.IntegerField(
-        'Pitch',
+        "Pitch",
         default=0,
         validators=[MinValueValidator(-150), MaxValueValidator(150)],  # todo check NN
         blank=True,
         editable=True,
-        null=True
+        null=True,
     )
     subscription = models.ForeignKey(
-        Subscription,
-        on_delete=models.SET_NULL,
-        related_name='users',
-        null=True
+        Subscription, on_delete=models.SET_NULL, related_name="users", null=True
     )
     favorites = models.ManyToManyField(
-        verbose_name='Избранные голоса',
-        to=Voice,
-        blank=True
+        verbose_name="Избранные голоса", to=Voice, blank=True
     )
 
     def __str__(self):
         return str(self.telegram_id)
 
     class Meta:
-        verbose_name = 'Пользователь'
-        verbose_name_plural = 'Пользователи'
-
-
+        verbose_name = "Пользователь"
+        verbose_name_plural = "Пользователи"
