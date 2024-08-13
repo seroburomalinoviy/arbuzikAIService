@@ -55,6 +55,7 @@ async def send_rvc_answer(data):
         reply_markup=InlineKeyboardMarkup(keyboards.final_buttons),
     )
 
+    # todo: не удалять а перемещать в директорию /tmp
     os.remove(file_path)
     os.remove(file_path + ".tmp")
 
