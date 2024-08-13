@@ -98,3 +98,5 @@ help_message = """
 [🎧Наш Дискорд](https://discord.gg/JqEHabmABF)
 [💎Наш телеграмм](https://t.me/arbuzik_smiley_group)
 [💬Наш чат в телеграмм](https://t.me/+mKxm-SgDd7UzZmRi)"""
+
+payment_url = "Ваша ссылка для оплаты подписки"

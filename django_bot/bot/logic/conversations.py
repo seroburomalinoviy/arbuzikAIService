@@ -48,6 +48,7 @@ class MainConversationHandler(BaseConversationHandler):
                 CallbackQueryHandler(favorite.add, pattern="^favorite-add-"),
                 CallbackQueryHandler(favorite.remove, pattern="^favorite-remove-"),
                 CallbackQueryHandler(main.check_status, pattern="^check_status$"),
+                CallbackQueryHandler(paid_subscription.buy_subscription, pattern="^payment_"),
             ]
         }
 

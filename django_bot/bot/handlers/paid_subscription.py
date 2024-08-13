@@ -11,9 +11,11 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 django.setup()
 
 from bot.models import Subscription
+from user.models import User, Order
 from bot.logic.utils import log_journal
 from bot.logic import message_text
 from bot.logic.constants import *
+from bot.logic.amqp_driver import push_amqp_message
 
 
 @log_journal
@@ -42,7 +44,7 @@ async def offer_vip_subscription(update, context):
                 [
                     InlineKeyboardButton(
                         f" 💵 Разовый платёж - {subscription.price} руб",
-                        callback_data=f"payment_{subscription.price}",
+                        callback_data=f"payment_{subscription.price}_{subscription.title}",
                     )
                 ],
                 [
@@ -66,13 +68,12 @@ async def offer_subscriptions(update: Update, context):
         else update.callback_query.message.chat.id
     )
     keyboard = list()
-    async for sub in Subscription.objects.exclude(
-        title=os.environ.get("DEFAULT_SUBSCRIPTION")
-    ).all().order_by("price"):
+    async for sub in Subscription.objects.exclude(title=os.environ.get("DEFAULT_SUBSCRIPTION")).all().order_by("price"):
+        sub_title = sub.title
         keyboard.append(
             [
                 InlineKeyboardButton(
-                    sub.telegram_title, callback_data=f"paid_subscription_{sub.title}"
+                    sub.telegram_title, callback_data=f"paid_subscription_{sub_title}"
                 )
             ]
         )
@@ -109,10 +110,11 @@ async def show_paid_subscriptions(update: Update, context: ContextTypes.DEFAULT_
     async for sub in Subscription.objects.exclude(
         title=os.environ.get("DEFAULT_SUBSCRIPTION")
     ).all().order_by("price"):
+        sub_title = sub.title
         keyboard.append(
             [
                 InlineKeyboardButton(
-                    sub.telegram_title, callback_data=f"paid_subscription_{sub.title}"
+                    sub.telegram_title, callback_data=f"paid_subscription_{sub_title}"
                 )
             ]
         )
@@ -170,7 +172,7 @@ async def preview_paid_subscription(update: Update, context: ContextTypes.DEFAUL
                 [
                     InlineKeyboardButton(
                         f" 💵 Разовый платёж - {subscription.price} руб",
-                        callback_data=f"payment_{subscription.price}",
+                        callback_data=f"payment_{subscription.price}_{subscription_title}",
                     )
                 ],
                 [
@@ -183,3 +185,34 @@ async def preview_paid_subscription(update: Update, context: ContextTypes.DEFAUL
     )
 
     return BASE_STATES
+
+
+async def buy_subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+
+    chat_id = context.chat_data.id
+    amount = query.data.split("_")[1]
+    sub_title = query.data.split("_")[2]
+
+    user = await User.objects.aget(telegram_id=update.callback_query.from_user.id)
+    subscription = await Subscription.objects.aget(title=sub_title)
+
+    order = await Order.objects.acreate(
+        status='waiting',
+        user=user,
+        subscription=subscription
+    )
+
+    data = {
+        'subscription_title': subscription.telegram_title,
+        'order_id': order.id,
+        'amount': amount,
+        'chat_id': chat_id
+    }
+
+    await push_amqp_message(data, routing_key='bot-to-payment')
+
+    return BASE_STATES
+
+

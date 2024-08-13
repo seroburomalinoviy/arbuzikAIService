@@ -3,7 +3,7 @@ import os
 from dotenv import load_dotenv
 import aio_pika
 import json
-from telegram import Bot, InlineKeyboardMarkup, Update
+from telegram import Bot, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.constants import ParseMode
 import asyncio
 
@@ -25,6 +25,21 @@ class AnswerInterface:
 
 async def send_payment_answer(data):
     answer = AnswerInterface(json=data)
+
+
+async def send_payment_url(data):
+    answer = AnswerInterface(json=data)
+
+    await answer.bot.send_message(
+        chat_id=answer.chat_id,
+        text=message_text.payment_url,
+        parse_mode=ParseMode.MARKDOWN,
+        reply_markup=InlineKeyboardMarkup(
+            [
+                [InlineKeyboardButton("Оплатить подписку", url=answer.url)]
+            ]
+        )
+    )
 
 
 async def send_rvc_answer(data):
@@ -64,7 +79,8 @@ async def send_rvc_answer(data):
     # return BASE_STATES
 
 
-async def push_amqp_message(payload, routing_key):
+async def push_amqp_message(data: dict, routing_key):
+    payload = json.dumps(data)
     connection = await aio_pika.connect_robust(
         host=os.environ.get("RABBIT_HOST"),
         port=int(os.environ.get("RABBIT_PORT")),
@@ -125,6 +141,19 @@ async def amqp_listener():
                     logger.info(f"bot got msg from rabbit: {message.body}")
 
                     await send_payment_answer(message.body)
+
+                    if queue.name in message.body.decode():
+                        break
+
+        # Declaring queue payment-url
+        queue = await channel.declare_queue(name="payment-url", durable=True, auto_delete=True)
+
+        async with queue.iterator() as queue_iter:
+            async for message in queue_iter:
+                async with message.process():
+                    logger.info(f"bot got msg from rabbit: {message.body}")
+
+                    await send_payment_url(message.body)
 
                     if queue.name in message.body.decode():
                         break

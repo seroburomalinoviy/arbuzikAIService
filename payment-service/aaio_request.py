@@ -1,33 +1,38 @@
 import httpx
-import asyncio
 import hashlib
 import uuid
 from urllib.parse import urlencode
+import logging
+from dotenv import load_dotenv
+import os
+import json
 
-secret_key_1 = "02d6bb4e05d6475740f74d8677c1554f"
+load_dotenv()
+logger = logging.getLogger(__name__)
 
 
-async def create_hash(data):
+async def create_hash(data: dict):
+    secret_key_1 = os.environ.get("SECRET_KEY_1")
     sign = hashlib.sha256()
     key = f'{data["merchant_id"]}:{data["amount"]}:{data["currency"]}:{secret_key_1}:{data["order_id"]}'
     sign.update(key.encode())
     return sign.hexdigest()
 
 
-async def make_payment():
+async def get_payment_url(data: str) -> dict:
+    data = json.loads(data)
     headers = {
         "Accept": "application/json",
         "Content-Type": "application/x-www-form-urlencoded",
     }
     body = {
-        "merchant_id": uuid.UUID("202a19e7-bc3d-4746-899c-d1787c300a56"),
-        "amount": 10,
-        "order_id": "order-test",
+        "merchant_id": uuid.UUID(os.environ.get("MERCHANT_ID")),
+        "amount": data.get("amount"),
+        "order_id": data.get("order_id"),
         "currency": "RUB",
-        "desc": "Название подписки",
+        "desc": data.get("subscription_title"),
         "lang": "ru",
     }
-
     body["sign"] = await create_hash(body)
 
     client = httpx.AsyncClient()
@@ -38,12 +43,12 @@ async def make_payment():
             headers=headers,
         )
     except Exception as e:
-        print(f"Some errors: {e}")
-
-    print(response.text)
+        logger.error(f'Error during request to  aaio {e}')
 
     await client.aclose()
 
+    if response.status_code != 200:
+        logger.warning(f'Error during request to  aaio status_code: {response.status_code}')
 
-if __name__ == "__main__":
-    asyncio.run(make_payment())
+    return response.json()
+

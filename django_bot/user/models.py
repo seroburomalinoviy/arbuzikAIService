@@ -62,3 +62,40 @@ class User(models.Model):
     class Meta:
         verbose_name = "Пользователь"
         verbose_name_plural = "Пользователи"
+
+
+class Order(models.Model):
+    choices = [
+        ('waiting', 'Ожидается'),
+        ('paid', 'Оплачено'),
+        ('failure', 'Не оплачено'),
+    ]
+
+    status = models.CharField(
+        'Статус оплаты',
+        null=True,
+        blank=True,
+        choices=choices
+    )
+
+    user = models.ForeignKey(
+        to=User,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='orders'
+    )
+
+    subscription = models.ForeignKey(
+        to=Subscription,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="orders"
+    )
+
+    def __str__(self):
+        return self.id
+
+    class Meta:
+        verbose_name = "Оплата подписок"
+        verbose_name_plural = "Оплата подписок"
+
