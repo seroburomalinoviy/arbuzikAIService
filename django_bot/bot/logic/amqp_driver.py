@@ -13,21 +13,9 @@ from bot.logic.constants import *
 load_dotenv()
 
 logger = logging.getLogger(__name__)
-import sentry_sdk
-
-sentry_sdk.init(
-    dsn="https://674f9f3c6530ddb20607dd9a42413fa4@o4506896610885632.ingest.us.sentry.io/4506896620978176",
-    # Set traces_sample_rate to 1.0 to capture 100%
-    # of transactions for performance monitoring.
-    traces_sample_rate=1.0,
-    # Set profiles_sample_rate to 1.0 to profile 100%
-    # of sampled transactions.
-    # We recommend adjusting this value in production.
-    profiles_sample_rate=1.0,
-)
 
 
-async def send_answer(message):
+async def send_rvc_answer(message):
     """
     Send voice to user from RVC-NN
     """
@@ -65,7 +53,7 @@ async def send_answer(message):
 
     logger.info("Voice files removed")
 
-    return BASE_STATES
+    # return BASE_STATES
 
 
 async def push_amqp_message(payload):
@@ -120,7 +108,7 @@ async def amqp_listener():
                 async with message.process():
                     logger.info(f"bot got msg from rabbit: {message.body}")
 
-                    await send_answer(message.body)
+                    await send_rvc_answer(message.body)
 
                     if queue.name in message.body.decode():
                         break
