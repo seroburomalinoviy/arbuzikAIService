@@ -15,35 +15,42 @@ load_dotenv()
 logger = logging.getLogger(__name__)
 
 
-async def send_rvc_answer(message):
+class AnswerInterface:
+    def __init__(self, json: json):
+        self.bot = Bot(token=os.environ.get("BOT_TOKEN"))
+        data = json.loads(json)
+        for key, value in data.items():
+            setattr(self, key, value)
+
+
+async def send_payment_answer(data):
+    answer = AnswerInterface(json=data)
+
+
+async def send_rvc_answer(data):
     """
     Send voice to user from RVC-NN
     """
-    bot = Bot(token=os.environ.get("BOT_TOKEN"))
-    payload = json.loads(message)
+    answer = AnswerInterface(json=data)
 
-    voice_title = payload.get("voice_title")
-    chat_id = payload.get("chat_id")
-
-    filename = payload.get("voice_filename")
-    file_path = os.environ.get("USER_VOICES") + "/" + filename
+    file_path = os.environ.get("USER_VOICES") + "/" + answer.filename
 
     logger.debug(f"file_path: {file_path}")
 
-    if payload.get("extension") == ".ogg":
-        await bot.send_voice(chat_id=chat_id, voice=open(file_path, "rb"))
+    if answer.extension == ".ogg":
+        await answer.bot.send_voice(chat_id=answer.chat_id, voice=open(file_path, "rb"))
     else:
-        await bot.send_audio(
-            chat_id=chat_id,
+        await answer.bot.send_audio(
+            chat_id=answer.chat_id,
             audio=open(file_path, "rb"),
-            title=voice_title,
-            duration=payload.get("duration"),
-            filename=voice_title,
+            title=answer.voice_title,
+            duration=answer.duration,
+            filename=answer.voice_title,
         )
 
-    await bot.send_message(
-        chat_id=chat_id,
-        text=message_text.final_message.format(title=voice_title),
+    await answer.bot.send_message(
+        chat_id=answer.chat_id,
+        text=message_text.final_message.format(title=answer.voice_title),
         parse_mode=ParseMode.MARKDOWN,
         reply_markup=InlineKeyboardMarkup(keyboards.final_buttons),
     )
@@ -88,8 +95,6 @@ async def amqp_listener():
         return await amqp_listener()
     logger.info(f"Connected to rabbit")
 
-    queue_name = "rvc-to-bot"
-
     async with connection:
         # Creating channel
         channel = await connection.channel()
@@ -97,8 +102,8 @@ async def amqp_listener():
         # Will take no more than 10 messages in advance
         await channel.set_qos(prefetch_count=10)
 
-        # Declaring queue
-        queue = await channel.declare_queue(queue_name, durable=True, auto_delete=True)
+        # Declaring queue rvc-to-bot
+        queue = await channel.declare_queue(name="rvc-to-bot", durable=True, auto_delete=True)
 
         async with queue.iterator() as queue_iter:
             async for message in queue_iter:
@@ -106,6 +111,19 @@ async def amqp_listener():
                     logger.info(f"bot got msg from rabbit: {message.body}")
 
                     await send_rvc_answer(message.body)
+
+                    if queue.name in message.body.decode():
+                        break
+
+        # Declaring queue payment-to-bot
+        queue = await channel.declare_queue(name="payment-to-bot", durable=True, auto_delete=True)
+
+        async with queue.iterator() as queue_iter:
+            async for message in queue_iter:
+                async with message.process():
+                    logger.info(f"bot got msg from rabbit: {message.body}")
+
+                    await send_payment_answer(message.body)
 
                     if queue.name in message.body.decode():
                         break
