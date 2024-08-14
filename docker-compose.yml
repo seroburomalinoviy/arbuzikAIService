@@ -140,6 +140,32 @@ services:
     depends_on:
       - django
 
+  payment-api:
+    container_name: payment-api
+    build: ./payment-service
+    command: sh -c 'uvicorn api:app --host 0.0.0.0 --port 8001'
+    expose:
+      - 8001
+    env_file:
+      - .env
+    restart:
+      always
+    depends_on:
+      bot:
+        condition: service_healthy
+
+  payment-listener:
+    container_name: payment-listener
+    build: ./payment-service
+    command: ["python", "main.py"]
+    env_file:
+      - .env
+    restart:
+      always
+    depends_on:
+      payment-api:
+        condition: service_started
+
 
 volumes:
   static_volume:

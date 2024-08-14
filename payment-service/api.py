@@ -3,7 +3,7 @@ from ampq_driver import push_amqp_message
 from typing import Union
 from fastapi import FastAPI
 
-app = FastAPI()
+app = FastAPI(redoc_url=None)
 
 
 @app.get('/payment/success')
