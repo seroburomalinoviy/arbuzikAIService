@@ -3,6 +3,8 @@ from telegram.ext import ContextTypes
 from telegram.constants import ParseMode
 
 import os
+import logging
+logger = logging.getLogger(__name__)
 
 from django.conf import settings
 import django
@@ -186,16 +188,19 @@ async def preview_paid_subscription(update: Update, context: ContextTypes.DEFAUL
 
     return BASE_STATES
 
-
+@log_journal
 async def buy_subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
 
-    chat_id = update.callback_query.chat_instance
+    chat_id = query.chat_instance
+    logger.info(f'{chat_id=}')
+    logger.info(f'{query.message.chat.id}')
+
     amount = query.data.split("_")[1]
     sub_title = query.data.split("_")[2]
 
-    user = await User.objects.aget(telegram_id=update.callback_query.from_user.id)
+    user = await User.objects.aget(telegram_id=query.from_user.id)
     subscription = await Subscription.objects.aget(title=sub_title)
 
     order = await Order.objects.acreate(
