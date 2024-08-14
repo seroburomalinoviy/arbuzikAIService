@@ -1,0 +1,15 @@
+services:
+
+  registry:
+    image: registry:2
+    container_name: registry
+    hostname: registry
+    restart: always
+    environment:
+      TZ: "Europe/Moscow"
+    ports:
+      - 5000:5000
+    env_file:
+      - .env
+    volumes:
+      - /home/swarm/docker_repo/data:/var/lib/registry

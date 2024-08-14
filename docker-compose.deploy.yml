@@ -103,6 +103,7 @@ services:
         order: start-first
         monitor: 10s
         failure_action: pause
+      rollback_update:
 
   bot:
     build: ./django_bot
