@@ -155,7 +155,7 @@ services:
       always
     depends_on:
       bot:
-        condition: service_healthy
+        condition: service_started
 
   payment-listener:
     container_name: payment-listener
