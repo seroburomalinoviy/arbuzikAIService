@@ -539,6 +539,7 @@ async def voice_audio_process(update: Update, context: ContextTypes.DEFAULT_TYPE
     pitch = context.user_data.get(f"pitch_{slug_voice}")
     user_id = str(update.message.from_user.id)
     chat_id = str(update.message.chat.id)
+    logger.info(f'{chat_id=}')
 
     payload = {
         "duration": duration,

@@ -188,6 +188,7 @@ async def preview_paid_subscription(update: Update, context: ContextTypes.DEFAUL
 
     return BASE_STATES
 
+
 @log_journal
 async def buy_subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
@@ -195,7 +196,7 @@ async def buy_subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     chat_id = query.chat_instance
     logger.info(f'{chat_id=}')
-    logger.info(f'{query.message.chat.id}')
+    logger.info(f'{query.message.chat.id=}')
 
     amount = query.data.split("_")[1]
     sub_title = query.data.split("_")[2]
