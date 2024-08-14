@@ -2,10 +2,6 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils import timezone
 import os
-import django
-
-# os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
-# django.setup()
 
 from bot.models import Subscription, Voice
 
