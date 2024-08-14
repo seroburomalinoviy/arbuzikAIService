@@ -194,14 +194,12 @@ async def buy_subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
 
-    chat_id = query.chat_instance
-    logger.info(f'{chat_id=}')
-    logger.info(f'{query.message.chat.id=}')
+    chat_id = query.from_user.id
 
     amount = query.data.split("_")[1]
     sub_title = query.data.split("_")[2]
 
-    user = await User.objects.aget(telegram_id=query.from_user.id)
+    user = await User.objects.aget(telegram_id=chat_id)
     subscription = await Subscription.objects.aget(title=sub_title)
 
     order = await Order.objects.acreate(

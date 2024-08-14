@@ -24,15 +24,15 @@ logger = logging.getLogger(__name__)
 
 class AnswerSerializer:
     """Serialize json answer to an object with attributes and extra attribute bot"""
-    def __init__(self, json):
+    def __init__(self, _json):
         self.bot = Bot(token=os.environ.get("BOT_TOKEN"))
-        data = json.loads(json)
+        data = json.loads(_json)
         for key, value in data.items():
             setattr(self, key, value)
 
 
 async def send_payment_answer(data):
-    payment = AnswerSerializer(json=data)
+    payment = AnswerSerializer(_json=data)
     order = await Order.objects.select_related("user", "subscription").aget(id=payment.order_id)
     order.status = 'paid' if payment.success else 'failure'
     order.currency = payment.currency
@@ -75,7 +75,7 @@ async def send_rvc_answer(data):
     """
     Send voice to user from RVC-NN
     """
-    audio = AnswerSerializer(json=data)
+    audio = AnswerSerializer(_json=data)
 
     file_path = os.environ.get("USER_VOICES") + "/" + audio.filename
 
