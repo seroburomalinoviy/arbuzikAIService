@@ -4,10 +4,10 @@ from django.utils import timezone
 import os
 import django
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
-django.setup()
+# os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
+# django.setup()
 
-from django_bot.bot.models import Subscription, Voice
+from bot.models import Subscription, Voice
 
 
 def get_default_sub():
