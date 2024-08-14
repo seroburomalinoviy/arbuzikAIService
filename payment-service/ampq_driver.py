@@ -1,4 +1,3 @@
-import asyncio
 import logging
 import os
 from dotenv import load_dotenv
@@ -9,11 +8,6 @@ from aaio_request import get_payment_url
 
 load_dotenv()
 
-logging.basicConfig(
-    level=logging.DEBUG,
-    format="%(asctime)s - %(levelname)s - %(name)s - %(message)s >>> %(funcName)s(%(lineno)d)",
-    datefmt="%Y-%m-%d %H:%M:%S",
-)
 logger = logging.getLogger(__name__)
 
 
