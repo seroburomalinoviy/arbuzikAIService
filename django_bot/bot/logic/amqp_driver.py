@@ -12,7 +12,7 @@ from bot.logic import message_text, keyboards
 from bot.logic.constants import *
 from bot.logic.utils import get_moscow_time
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'my_crazy_service.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 django.setup()
 
 from user.models import Order
