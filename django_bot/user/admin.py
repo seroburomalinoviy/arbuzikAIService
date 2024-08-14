@@ -22,7 +22,7 @@ class OrderAdmin(admin.ModelAdmin):
         "telegram_username",
         "status",
         "amount",
-        "currency"
+        "currency",
         "subscription_title"
     ]
 
