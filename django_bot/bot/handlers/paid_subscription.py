@@ -191,7 +191,7 @@ async def buy_subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
 
-    chat_id = context.chat_data['id']
+    chat_id = update.callback_query.chat_instance
     amount = query.data.split("_")[1]
     sub_title = query.data.split("_")[2]
 
