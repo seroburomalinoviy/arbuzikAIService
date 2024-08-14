@@ -138,7 +138,10 @@ services:
     restart:
       always
     depends_on:
-      - django
+      django:
+        condition: service_started
+      payment-api:
+        condition: service_started
 
   payment-api:
     container_name: payment-api
@@ -165,7 +168,6 @@ services:
     depends_on:
       payment-api:
         condition: service_started
-
 
 volumes:
   static_volume:
