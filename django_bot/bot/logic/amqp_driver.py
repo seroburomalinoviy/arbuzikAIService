@@ -163,27 +163,27 @@ async def amqp_listener():
                         break
 
         # Declaring queue payment-to-bot
-        queue = await channel.declare_queue(name="payment-to-bot", durable=True, auto_delete=True)
+        queue2 = await channel.declare_queue(name="payment-to-bot", durable=True, auto_delete=True)
 
-        async with queue.iterator() as queue_iter:
+        async with queue2.iterator() as queue_iter:
             async for message in queue_iter:
                 async with message.process():
                     logger.info(f"bot got msg from rabbit: {message.body}")
 
                     await send_payment_answer(message.body)
 
-                    if queue.name in message.body.decode():
+                    if queue2.name in message.body.decode():
                         break
 
         # Declaring queue payment-url
-        queue = await channel.declare_queue(name="payment-url", durable=True, auto_delete=True)
+        queue3 = await channel.declare_queue(name="payment-url", durable=True, auto_delete=True)
 
-        async with queue.iterator() as queue_iter:
+        async with queue3.iterator() as queue_iter:
             async for message in queue_iter:
                 async with message.process():
                     logger.info(f"bot got msg from rabbit: {message.body}")
 
                     await send_payment_url(message.body)
 
-                    if queue.name in message.body.decode():
+                    if queue3.name in message.body.decode():
                         break
