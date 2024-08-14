@@ -5,7 +5,6 @@ import os
 from uuid import uuid4
 from asgiref.sync import sync_to_async
 import django
-import json
 from pydub import AudioSegment
 
 from bot.logic import message_text, keyboards
@@ -24,7 +23,6 @@ from telegram import (
     InlineKeyboardButton,
     InlineQueryResultArticle,
     InputTextMessageContent,
-    InlineQueryResultsButton,
 )
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
