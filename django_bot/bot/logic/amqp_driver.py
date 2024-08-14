@@ -78,7 +78,7 @@ async def send_rvc_answer(data):
     """
     audio = AnswerSerializer(_json=data)
 
-    file_path = os.environ.get("USER_VOICES") + "/" + audio.filename
+    file_path = os.environ.get("USER_VOICES") + "/" + audio.voice_filename
 
     logger.debug(f"file_path: {file_path}")
 
