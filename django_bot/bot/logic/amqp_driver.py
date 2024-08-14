@@ -6,17 +6,21 @@ import json
 from telegram import Bot, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.constants import ParseMode
 import asyncio
+from datetime import datetime
 
 from bot.logic import message_text, keyboards
 from bot.logic.constants import *
+from bot.logic.utils import get_moscow_time
+from user.models import Order
 
 load_dotenv()
 
 logger = logging.getLogger(__name__)
 
 
-class AnswerInterface:
-    def __init__(self, json: json):
+class AnswerSerializer:
+    """Serialize json answer to an object with attributes and extra attribute bot"""
+    def __init__(self, json):
         self.bot = Bot(token=os.environ.get("BOT_TOKEN"))
         data = json.loads(json)
         for key, value in data.items():
@@ -24,19 +28,40 @@ class AnswerInterface:
 
 
 async def send_payment_answer(data):
-    answer = AnswerInterface(json=data)
+    payment = AnswerSerializer(json=data)
+    order = await Order.objects.select_related("user", "subscription").aget(id=payment.order_id)
+    order.status = 'paid' if payment.success else 'failure'
+    order.currency = payment.currency
+    order.amount = payment.amount
+
+    if not payment.success:
+        await order.asave()
+        await payment.bot.send_message(
+            chat_id=payment.chat_id,
+            text='Оплата не прошла'
+        )
+    else:
+        order.user.subscription = order.subscription
+        order.user.subscription_status = True
+        order.user.subscription_final_date = get_moscow_time() + order.subscription.days_limit
+        await order.asave()
+        await payment.bot.send_message(
+            chat_id=payment.chat_id,
+            text='Оплата прошла успешно'
+        )
+
 
 
 async def send_payment_url(data):
-    answer = AnswerInterface(json=data)
+    payment_page = AnswerSerializer(json=data)
 
-    await answer.bot.send_message(
-        chat_id=answer.chat_id,
+    await payment_page.bot.send_message(
+        chat_id=payment_page.chat_id,
         text=message_text.payment_url,
         parse_mode=ParseMode.MARKDOWN,
         reply_markup=InlineKeyboardMarkup(
             [
-                [InlineKeyboardButton("Оплатить подписку", url=answer.url)]
+                [InlineKeyboardButton("Оплатить подписку", url=payment_page.url)]
             ]
         )
     )
@@ -46,26 +71,26 @@ async def send_rvc_answer(data):
     """
     Send voice to user from RVC-NN
     """
-    answer = AnswerInterface(json=data)
+    audio = AnswerSerializer(json=data)
 
-    file_path = os.environ.get("USER_VOICES") + "/" + answer.filename
+    file_path = os.environ.get("USER_VOICES") + "/" + audio.filename
 
     logger.debug(f"file_path: {file_path}")
 
-    if answer.extension == ".ogg":
-        await answer.bot.send_voice(chat_id=answer.chat_id, voice=open(file_path, "rb"))
+    if audio.extension == ".ogg":
+        await audio.bot.send_voice(chat_id=audio.chat_id, voice=open(file_path, "rb"))
     else:
-        await answer.bot.send_audio(
-            chat_id=answer.chat_id,
+        await audio.bot.send_audio(
+            chat_id=audio.chat_id,
             audio=open(file_path, "rb"),
-            title=answer.voice_title,
-            duration=answer.duration,
-            filename=answer.voice_title,
+            title=audio.voice_title,
+            duration=audio.duration,
+            filename=audio.voice_title,
         )
 
-    await answer.bot.send_message(
-        chat_id=answer.chat_id,
-        text=message_text.final_message.format(title=answer.voice_title),
+    await audio.bot.send_message(
+        chat_id=audio.chat_id,
+        text=message_text.final_message.format(title=audio.voice_title),
         parse_mode=ParseMode.MARKDOWN,
         reply_markup=InlineKeyboardMarkup(keyboards.final_buttons),
     )

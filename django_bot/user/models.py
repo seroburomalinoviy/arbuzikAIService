@@ -78,6 +78,19 @@ class Order(models.Model):
         choices=choices
     )
 
+    amount = models.FloatField(
+        'Сумма',
+        blank=True,
+        null=True
+    )
+
+    currency = models.CharField(
+        'Валюта',
+        max_length=20,
+        null=True,
+        blank=True
+    )
+
     user = models.ForeignKey(
         to=User,
         on_delete=models.SET_NULL,

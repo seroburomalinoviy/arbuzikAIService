@@ -19,10 +19,11 @@ class UserAdmin(admin.ModelAdmin):
 class OrderAdmin(admin.ModelAdmin):
     empty_value_display = "<пусто>"
     list_display = [
-        "id",
+        "telegram_username",
         "status",
-        'telegram_username',
-        'subscription_title'
+        "amount",
+        "currency"
+        "subscription_title"
     ]
 
     @admin.display(description='Пользователь')
