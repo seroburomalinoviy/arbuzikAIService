@@ -6,6 +6,11 @@ from fastapi import FastAPI, responses
 app = FastAPI(redoc_url=None)
 
 
+@app.get('/')
+async def start():
+    return responses.HTMLResponse(content="Success", status_code=200)
+
+
 @app.get('/payment/success')
 async def get_payment(order_id: Union[str, None] = None, amount: Union[str, None] = None, currency: Union[str, None] = None):
     await push_amqp_message({'order_id': order_id, 'amount': amount, 'currency': currency, 'success': True},
