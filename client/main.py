@@ -128,6 +128,7 @@ async def reader(channel: aioredis.client.PubSub):
                     logger.debug(payload)
 
                     push_amqp_message(payload)
+                    push_amqp_message('rvc-to-bot')
 
                 await asyncio.sleep(0.01)
         except asyncio.TimeoutError:

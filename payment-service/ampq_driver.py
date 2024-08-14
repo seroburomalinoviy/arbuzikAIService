@@ -59,7 +59,7 @@ async def push_amqp_message(data: dict, routing_key):
             aio_pika.Message(body=payload.encode()),
             routing_key=routing_key,
         )
-    logger.info(f"message {payload} sent to rabbit")
+    logger.info(f"message {payload} sent to rabbit {routing_key=}")
 
 
 

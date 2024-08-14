@@ -158,6 +158,7 @@ async def amqp_listener():
                     logger.info(f"bot got msg from rabbit: {message.body}")
 
                     await send_rvc_answer(message.body)
+                    logger.info(f'{message.body.decode()=}')
 
                     if queue.name in message.body.decode():
                         break
@@ -171,6 +172,7 @@ async def amqp_listener():
                     logger.info(f"bot got msg from rabbit: {message.body}")
 
                     await send_payment_answer(message.body)
+                    logger.info(f'{message.body.decode()=}')
 
                     if queue2.name in message.body.decode():
                         break
