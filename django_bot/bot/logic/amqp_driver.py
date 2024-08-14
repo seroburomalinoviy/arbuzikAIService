@@ -6,11 +6,15 @@ import json
 from telegram import Bot, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.constants import ParseMode
 import asyncio
-from datetime import datetime
+import django
 
 from bot.logic import message_text, keyboards
 from bot.logic.constants import *
 from bot.logic.utils import get_moscow_time
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'my_crazy_service.settings')
+django.setup()
+
 from user.models import Order
 
 load_dotenv()
