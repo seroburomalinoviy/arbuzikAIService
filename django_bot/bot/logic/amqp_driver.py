@@ -7,6 +7,7 @@ from telegram import Bot, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.constants import ParseMode
 import asyncio
 import django
+from datetime import timedelta
 
 from bot.logic import message_text, keyboards
 from bot.logic.constants import *
@@ -65,7 +66,7 @@ async def send_payment_answer(data):
     else:
         order.user.subscription = order.subscription
         order.user.subscription_status = True
-        order.user.subscription_final_date = get_moscow_time() + order.subscription.days_limit
+        order.user.subscription_final_date = get_moscow_time() + timedelta(days=order.subscription.days_limit)
         await order.asave()
         await payment.bot.send_message(
             chat_id=payment.chat_id,
