@@ -104,21 +104,22 @@ from bot.logic.amqp_driver import push_amqp_message
 
 
 @log_journal
-async def show_paid_subscriptions(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def show_paid_subscriptions(update: Update, context: ContextTypes.DEFAULT_TYPE, offer=None):
     """
     Если есть апдейт значит функция вызвана ботом, чтобы сообщить, что его подписка закончилась
     Иначе функция вызвана юзером нажатием кнопки
     :param update:
+    :param offer:
     :param context:
     :return:
     """
-    if update.message:
-        chat_id = update.effective_chat.id
+    if offer:
         button_text = "⏩ Вернуться в меню"
+        message = message_text.offer_subscription_text
     else:
         query = update.callback_query
         await query.answer()
-        chat_id = query.from_user.id
+        message = message_text.all_paid_subs
         button_text = "⏩ Перейти к выбору голосов"
 
     keyboard = list()
@@ -155,7 +156,7 @@ async def show_paid_subscriptions(update: Update, context: ContextTypes.DEFAULT_
 
     await context.bot.send_message(
         chat_id=update.effective_chat.id if update.message else query.from_user.id,
-        text=message_text.offer_subscription_text if update.message else message_text.all_paid_subs,
+        text=message,
         parse_mode=ParseMode.MARKDOWN,
         reply_markup=InlineKeyboardMarkup(keyboard),
     )
