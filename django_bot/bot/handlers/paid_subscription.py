@@ -114,6 +114,7 @@ async def show_paid_subscriptions(update: Update, context: ContextTypes.DEFAULT_
     :return:
     """
     if offer:
+        query = None
         button_text = "⏩ Вернуться в меню"
         message = message_text.offer_subscription_text
     else:
@@ -165,22 +166,26 @@ async def show_paid_subscriptions(update: Update, context: ContextTypes.DEFAULT_
 
 
 @log_journal
-async def preview_paid_subscription(update: Update, context: ContextTypes.DEFAULT_TYPE, subscription_title=None):
+async def preview_paid_subscription(update: Update, context: ContextTypes.DEFAULT_TYPE, subscription_title=None, offer=None):
     """
     Если в сообщении есть апдейт значит функция вызвана ботом при попытке пользователя записать вип
     голос без вип подписки
     Иначе эта функция вызвана юзером нажатием кнопки
     :param update:
+    :param offer:
     :param context:
     :param subscription_title:
     :return:
     """
-    if update.message:
+    if offer:
+        query = None
         title = subscription_title
+        message = message_text.offer_vip_subscription_text
     else:
         query = update.callback_query
         await query.answer()
         title = query.data.split("paid_subscription_")[1]
+        message = None
 
     subscription = await Subscription.objects.aget(title=title)
 
@@ -193,7 +198,7 @@ async def preview_paid_subscription(update: Update, context: ContextTypes.DEFAUL
 
     await context.bot.send_message(
         chat_id=update.effective_chat.id if update.message else query.from_user.id,
-        text=message_text.offer_vip_subscription_text if update.message else subscription.description,
+        text=message if message else subscription.description,
         parse_mode=ParseMode.MARKDOWN,
         reply_markup=InlineKeyboardMarkup(
             [
