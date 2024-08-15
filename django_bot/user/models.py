@@ -104,9 +104,6 @@ class Order(models.Model):
         related_name="orders"
     )
 
-    def __str__(self):
-        return self.id
-
     class Meta:
         verbose_name = "Оплата подписок"
         verbose_name_plural = "Оплата подписок"
