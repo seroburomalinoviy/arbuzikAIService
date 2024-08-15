@@ -201,7 +201,7 @@ async def preview_paid_subscription(update: Update, context: ContextTypes.DEFAUL
                 [
                     InlineKeyboardButton(
                         f" 💵 Разовый платёж - {subscription.price} руб",
-                        callback_data=f"payment_{subscription.price}_{subscription_title}",
+                        callback_data=f"payment_{subscription.price}_{title}",
                     )
                 ],
                 [
