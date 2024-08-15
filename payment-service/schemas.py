@@ -7,10 +7,10 @@ import uuid
 class Order:
     def __init__(self, arg: str):
         data = json.loads(arg)
-        self.subscription_title = data['subscription_title']
-        self.order_id = data['order_id']
-        self.amount = data['amount']
-        self.chat_id = data['chat_id']
+        self.subscription_title: str = data['subscription_title']
+        self.order_id: str = data['order_id']
+        self.amount: str = data['amount']
+        self.chat_id: str = data['chat_id']
 
 
 class ApiPayment(BaseModel):
@@ -18,7 +18,7 @@ class ApiPayment(BaseModel):
     merchant_id: str
     invoice_id: str
     order_id: str
-    amount: float
+    amount: str
     currency: str
     sign: str
 
