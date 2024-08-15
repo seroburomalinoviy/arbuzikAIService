@@ -25,17 +25,21 @@ async def get_payment_url(data: str) -> dict:
         "Accept": "application/json",
         "Content-Type": "application/x-www-form-urlencoded",
     }
+
+    merchant_id = uuid.UUID(os.environ.get("MERCHANT_ID"))
+    currency = "RUB"
+
     body = {
-        "merchant_id": uuid.UUID(os.environ.get("MERCHANT_ID")),
+        "merchant_id": merchant_id,
         "amount": order.amount,
         "order_id": order.order_id,
-        "currency": "RUB",
+        "currency": currency,
         "desc": order.subscription_title,
         "lang": "ru",
     }
 
     secret_key_1 = os.environ.get("SECRET_KEY_1")
-    key = f'{str(data["merchant_id"])}:{data["amount"]}:{data["currency"]}:{secret_key_1}:{data["order_id"]}'
+    key = f'{str(merchant_id)}:{order.amount}:{currency}:{secret_key_1}:{order.order_id}'
     body["sign"] = await create_hash(key)
 
     client = httpx.AsyncClient()
