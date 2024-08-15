@@ -56,10 +56,10 @@ async def send_payment_answer(data):
     order.status = 'paid' if payment.success else 'failure'
     order.currency = payment.currency
     order.amount = payment.amount
+    await order.asave()
     chat_id = order.user.telegram_id
 
     if not payment.success:
-        await order.asave()
         await payment.bot.send_message(
             chat_id=chat_id,
             text='Оплата не прошла'
@@ -184,7 +184,6 @@ async def amqp_payment_listener():
                     logger.info(f"bot got msg from rabbit: {message.body}")
 
                     await send_payment_answer(message.body)
-                    logger.info(f'{message.body.decode()=}')
 
                     if queue.name in message.body.decode():
                         break
