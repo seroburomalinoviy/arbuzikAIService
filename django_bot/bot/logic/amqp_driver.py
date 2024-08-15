@@ -41,25 +41,57 @@ class PikaConnector:
             return await cls.connector()
 
 
-class AnswerSerializer:
-    """Serialize json answer to an object with attributes and extra attribute bot"""
-    def __init__(self, _json):
+class RVCData:
+    def __init__(self, arg):
+        data = json.loads(arg)
+        self.voice_model_index = data['voice_model_index']
+        self.voice_model_pth = data['voice_model_pth']
+        self.pitch = data['pitch']
+        self.extension = data['extension']
+        self.voice_name = data['voice_name']
+        self.chat_id = data['chat_id']
+        self.user_id = data['user_id']
+        self.voice_title = data['voice_title']
+        self.duration = data['duration']
+        self.voice_filename = data['voice_filename']
         self.bot = Bot(token=os.environ.get("BOT_TOKEN"))
-        data = json.loads(_json)
-        for key, value in data.items():
-            setattr(self, key, value)
+
+
+class Payment:
+    def __init__(self, arg):
+        data = json.loads(arg)
+        self.order_id = data['order_id']
+        self.amount = data['amount']
+        self.currency = data['currency']
+        self.merchant_id = data['merchant_id']
+        self.order_id = data['order_id']
+        self.status = data['status']
+        self.bot = Bot(token=os.environ.get("BOT_TOKEN"))
+
+
+class PayUrl:
+    def __init__(self, arg):
+        data = json.loads(arg)
+        self.type = data['type']
+        self.url = data['url']
+        self.subscription_title = data['subscription_title']
+        self.order_id = data['order_id']
+        self.amount = data['amount']
+        self.chat_id = data['chat_id']
+        self.bot = Bot(token=os.environ.get("BOT_TOKEN"))
 
 
 async def send_payment_answer(data):
-    payment = AnswerSerializer(data)
+    payment = Payment(data)
     order = await Order.objects.select_related("user", "subscription").aget(id=payment.order_id)
-    order.status = 'paid' if payment.success else 'failure'
+
+    order.status = payment.status
     order.currency = payment.currency
     order.amount = payment.amount
     await order.asave()
     chat_id = order.user.telegram_id
 
-    if not payment.success:
+    if not payment.status:
         await payment.bot.send_message(
             chat_id=chat_id,
             text='Оплата не прошла'
@@ -76,7 +108,7 @@ async def send_payment_answer(data):
 
 
 async def send_payment_url(data):
-    payment_page = AnswerSerializer(data)
+    payment_page = PayUrl(data)
 
     logger.info(f'Sent payment url to {payment_page.chat_id}')
 
@@ -96,7 +128,7 @@ async def send_rvc_answer(data):
     """
     Send voice to user from RVC-NN
     """
-    audio = AnswerSerializer(data)
+    audio = RVCData(data)
 
     file_path = os.environ.get("USER_VOICES") + "/" + audio.voice_filename
 
@@ -156,10 +188,9 @@ async def amqp_rvc_listener():
         async with queue.iterator() as queue_iter:
             async for message in queue_iter:
                 async with message.process():
-                    logger.info(f"bot got msg from rabbit: {message.body}")
+                    logger.info(f"bot got msg from rabbit: {message.body.decode()}")
 
-                    await send_rvc_answer(message.body)
-                    logger.info(f'{message.body.decode()=}')
+                    await send_rvc_answer(message.body.decode())
 
                     if queue.name in message.body.decode():
                         break
@@ -181,9 +212,9 @@ async def amqp_payment_listener():
         async with queue.iterator() as queue_iter:
             async for message in queue_iter:
                 async with message.process():
-                    logger.info(f"bot got msg from rabbit: {message.body}")
+                    logger.info(f"bot got msg from rabbit: {message.body.decode()}")
 
-                    await send_payment_answer(message.body)
+                    await send_payment_answer(message.body.decode())
 
                     if queue.name in message.body.decode():
                         break
@@ -205,9 +236,9 @@ async def amqp_payment_url_listener():
         async with queue.iterator() as queue_iter:
             async for message in queue_iter:
                 async with message.process():
-                    logger.info(f"bot got msg from rabbit: {message.body}")
+                    logger.info(f"bot got msg from rabbit: {message.body.decode()}")
 
-                    await send_payment_url(message.body)
+                    await send_payment_url(message.body.decode())
 
                     if queue.name in message.body.decode():
                         break

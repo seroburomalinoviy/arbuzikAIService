@@ -1,25 +1,47 @@
 from ampq_driver import push_amqp_message
+from aaio_request import get_actual_ips, create_hash
 
-from typing import Union
-from fastapi import FastAPI, responses
+import os
+import logging
+from schemas import Payment
+from fastapi import FastAPI, Request
+from fastapi.responses import Response, HTMLResponse
+
+logger = logging.getLogger(__name__)
 
 app = FastAPI(redoc_url=None)
 
 
 @app.get('/')
-async def start():
-    return responses.HTMLResponse(content="Success", status_code=200)
+async def check():
+    return HTMLResponse(content="Success", status_code=200)
 
 
-@app.get('/payment/success')
-async def get_payment(order_id: Union[str, None] = None, amount: Union[str, None] = None, currency: Union[str, None] = None):
-    await push_amqp_message({'order_id': order_id, 'amount': amount, 'currency': currency, 'success': True},
-                            routing_key='payment-to-bot')
-    return responses.Response(status_code=200)
+@app.post('/payment')
+async def get_payment(payment: Payment, request: Request) -> Response:
+    ip_request: str = request.client.host
+    logger.info(f'{ip_request=}')
+    ips_allowed: list = await get_actual_ips()
+    logger.info(f'{ips_allowed=}')
 
+    if ip_request not in ips_allowed:
+        return Response(status_code=400)
 
-@app.get('/payment/failure')
-async def get_payment(order_id: Union[str, None] = None, amount: Union[str, None] = None, currency: Union[str, None] = None):
-    await push_amqp_message({'order_id': order_id, 'amount': amount, 'currency': currency, 'success': False},
-                            routing_key='payment-to-bot')
-    return responses.Response(status_code=200)
+    secret_key_2 = os.environ.get('SECRET_KEY_2')
+    key = f'{payment.merchant_id}:{payment.amount}:{payment.currency}:{secret_key_2}:{payment.order_id}'
+    internal_sign = await create_hash(key)
+    logger.info(f'{internal_sign=}, {payment.sign=}')
+
+    if internal_sign != payment.sign:
+        return Response(status_code=400)
+
+    data = {
+        'order_id': payment.order_id,
+        'amount': payment.amount,
+        'currency': payment.currency,
+        'merchant_id': payment.merchant_id,
+        'status': True
+    }
+
+    await push_amqp_message(data, routing_key='payment-to-bot')
+    return Response(status_code=200)

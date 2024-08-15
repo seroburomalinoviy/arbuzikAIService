@@ -7,33 +7,36 @@ from dotenv import load_dotenv
 import os
 import json
 
+from schemas import Order
+
 load_dotenv()
 logger = logging.getLogger(__name__)
 
 
-async def create_hash(data: dict):
-    secret_key_1 = os.environ.get("SECRET_KEY_1")
+async def create_hash(key: str):
     sign = hashlib.sha256()
-    key = f'{data["merchant_id"]}:{data["amount"]}:{data["currency"]}:{secret_key_1}:{data["order_id"]}'
     sign.update(key.encode())
     return sign.hexdigest()
 
 
 async def get_payment_url(data: str) -> dict:
-    data = json.loads(data)
+    order = Order(data)
     headers = {
         "Accept": "application/json",
         "Content-Type": "application/x-www-form-urlencoded",
     }
     body = {
         "merchant_id": uuid.UUID(os.environ.get("MERCHANT_ID")),
-        "amount": data.get("amount"),
-        "order_id": data.get("order_id"),
+        "amount": order.amount,
+        "order_id": order.order_id,
         "currency": "RUB",
-        "desc": data.get("subscription_title"),
+        "desc": order.subscription_title,
         "lang": "ru",
     }
-    body["sign"] = await create_hash(body)
+
+    secret_key_1 = os.environ.get("SECRET_KEY_1")
+    key = f'{data["merchant_id"]}:{data["amount"]}:{data["currency"]}:{secret_key_1}:{data["order_id"]}'
+    body["sign"] = await create_hash(key)
 
     client = httpx.AsyncClient()
     try:
@@ -52,3 +55,18 @@ async def get_payment_url(data: str) -> dict:
 
     return response.json() | data
 
+
+async def get_actual_ips() -> list:
+    client = httpx.AsyncClient()
+
+    try:
+        response = await client.get('https://aaio.so/api/public/ips')
+    except Exception as e:
+        logger.error(e)
+
+    if response.status_code != 200:
+        logger.warning(f'Error during request to  aaio status_code: {response.status_code}')
+
+    await client.aclose()
+
+    return response.json().get('list')

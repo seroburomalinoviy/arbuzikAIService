@@ -48,7 +48,7 @@ async def amqp_listener():
             async for message in queue_iter:
                 async with message.process():
 
-                    data: dict = await get_payment_url(message.body)
+                    data: dict = await get_payment_url(message.body.decode())
                     await push_amqp_message(data, routing_key='payment-url')
 
                     if queue.name in message.body.decode():

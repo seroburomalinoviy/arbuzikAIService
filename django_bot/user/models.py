@@ -65,10 +65,6 @@ class User(models.Model):
 
 
 class Order(models.Model):
-    choices = [
-        ('paid', 'Оплачено'),
-        ('notpaid', 'Не оплачено'),
-    ]
 
     id = models.UUIDField(
         default=uuid.uuid4,
@@ -76,16 +72,21 @@ class Order(models.Model):
         primary_key=True
     )
 
+    comment = models.TextField(
+        verbose_name='Комментарий системы',
+        null=True,
+        blank=True
+    )
+
     created = models.DateTimeField(
         'Заказ создан',
         auto_now_add=True
     )
 
-    status = models.CharField(
+    status = models.BooleanField(
         'Статус оплаты',
         null=True,
-        blank=True,
-        choices=choices
+        blank=True
     )
 
     amount = models.FloatField(
