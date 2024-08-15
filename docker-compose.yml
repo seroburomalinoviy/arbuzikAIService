@@ -147,7 +147,7 @@ services:
   payment-api:
     container_name: payment-api
     build: ./payment-service
-    command: sh -c 'uvicorn api:app --host 0.0.0.0 --port 8001 --forwarded-allow-ips='127.0.0.1,[::1]''
+    command: sh -c 'uvicorn api:app --host 0.0.0.0 --port 8001 --proxy-headers''
     expose:
       - 8001
     env_file:

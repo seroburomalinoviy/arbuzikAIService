@@ -1,7 +1,8 @@
 import json
+from typing import Annotated
 
 from pydantic import BaseModel
-import uuid
+from fastapi import Form
 
 
 class Order:
@@ -14,11 +15,11 @@ class Order:
 
 
 class ApiPayment(BaseModel):
-    status: str
-    merchant_id: str
-    invoice_id: str
-    order_id: str
-    amount: str
-    currency: str
-    sign: str
+    status: Annotated[str, Form()]
+    merchant_id: Annotated[str, Form()]
+    invoice_id: Annotated[str, Form()]
+    order_id: Annotated[str, Form()]
+    amount: Annotated[str, Form()]
+    currency: Annotated[str, Form()]
+    sign: Annotated[str, Form()]
 
