@@ -185,7 +185,7 @@ async def preview_paid_subscription(update: Update, context: ContextTypes.DEFAUL
         await query.answer()
         chat_id = query.from_user.id
         title = query.data.split("paid_subscription_")[1]
-    logger.info(f'{chat_id=}')
+
     subscription = await Subscription.objects.aget(title=title)
 
     await context.bot.send_photo(
@@ -194,7 +194,7 @@ async def preview_paid_subscription(update: Update, context: ContextTypes.DEFAUL
             str(settings.MEDIA_ROOT) + "/" + str(subscription.image_cover), "rb"
         ),
     )
-
+    logger.info(f'{chat_id=}')
     await context.bot.send_message(
         chat_id=chat_id,
         text=message if message else subscription.description,
