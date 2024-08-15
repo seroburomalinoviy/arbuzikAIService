@@ -27,33 +27,32 @@ async def check(request: Request):
 @app.post('/payment')
 async def get_payment(request: Request) -> Response:
     f = await request.form()
-    logger.info(f'{f}')
     json_f = jsonable_encoder(f)
-    logger.info(f'{json_f}')
+    payment = ApiPayment(json_f)
 
-    # ip_request: str = request.client.host
-    # logger.info(f'{ip_request=}')
-    # ips_allowed: list = await get_actual_ips()
-    # logger.info(f'{ips_allowed=}')
-    #
-    # if ip_request not in ips_allowed:
-    #     return Response(status_code=400)
-    #
-    # secret_key_2 = os.environ.get('SECRET_KEY_2')
-    # key = f'{payment.merchant_id}:{payment.amount}:{payment.currency}:{secret_key_2}:{payment.order_id}'
-    # internal_sign = await create_hash(key)
-    # logger.info(f'{internal_sign=}, {payment.sign=}')
-    #
-    # if internal_sign != payment.sign:
-    #     return Response(status_code=400)
-    #
-    # data = {
-    #     'order_id': payment.order_id,
-    #     'amount': payment.amount,
-    #     'currency': payment.currency,
-    #     'merchant_id': payment.merchant_id,
-    #     'status': True
-    # }
-    #
-    # await push_amqp_message(data, routing_key='payment-to-bot')
+    ip_request: str = request.client.host
+    logger.info(f'{ip_request=}')
+    ips_allowed: list = await get_actual_ips()
+    logger.info(f'{ips_allowed=}')
+
+    if ip_request not in ips_allowed:
+        return Response(status_code=400)
+
+    secret_key_2 = os.environ.get('SECRET_KEY_2')
+    key = f'{payment.merchant_id}:{payment.amount}:{payment.currency}:{secret_key_2}:{payment.order_id}'
+    internal_sign = await create_hash(key)
+    logger.info(f'{internal_sign=}, {payment.sign=}')
+
+    if internal_sign != payment.sign:
+        return Response(status_code=400)
+
+    data = {
+        'order_id': payment.order_id,
+        'amount': payment.amount,
+        'currency': payment.currency,
+        'merchant_id': payment.merchant_id,
+        'status': True
+    }
+
+    await push_amqp_message(data, routing_key='payment-to-bot')
     return Response(status_code=200)
