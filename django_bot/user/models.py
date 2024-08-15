@@ -66,15 +66,19 @@ class User(models.Model):
 
 class Order(models.Model):
     choices = [
-        ('waiting', 'Ожидается'),
         ('paid', 'Оплачено'),
-        ('failure', 'Не оплачено'),
+        ('notpaid', 'Не оплачено'),
     ]
 
     id = models.UUIDField(
         default=uuid.uuid4,
         editable=False,
         primary_key=True
+    )
+
+    created = models.DateTimeField(
+        'Заказ создан',
+        auto_now_add=True
     )
 
     status = models.CharField(

@@ -3,6 +3,7 @@ import os
 from dotenv import load_dotenv
 import aio_pika
 import json
+import asyncio
 
 from aaio_request import get_payment_url
 
@@ -11,16 +12,27 @@ load_dotenv()
 logger = logging.getLogger(__name__)
 
 
-async def amqp_listener():
-    logger.debug("Begin listening")
+class PikaConnector:
+    @classmethod
+    async def connector(cls):
+        try:
+            connector = await aio_pika.connect_robust(
+                host=os.environ.get("RABBIT_HOST"),
+                port=int(os.environ.get("RABBIT_PORT")),
+                login=os.environ.get("RABBIT_USER"),
+                password=os.environ.get("RABBIT_PASSWORD"),
+            )
+            logger.info(f"Connected to rabbit")
+            return connector
+        except aio_pika.exceptions.CONNECTION_EXCEPTIONS as e:
+            logger.error(e)
+            await asyncio.sleep(3)
+            return await cls.connector()
 
-    connection = await aio_pika.connect_robust(
-        host=os.environ.get("RABBIT_HOST"),
-        port=int(os.environ.get("RABBIT_PORT")),
-        login=os.environ.get("RABBIT_USER"),
-        password=os.environ.get("RABBIT_PASSWORD"),
-    )
-    logger.debug("Connection with rabbitmq established")
+
+async def amqp_listener():
+
+    connection = await PikaConnector.connector()
 
     queue_name = "bot-to-payment"
 
@@ -45,13 +57,7 @@ async def amqp_listener():
 
 async def push_amqp_message(data: dict, routing_key):
     payload = json.dumps(data)
-    connection = await aio_pika.connect_robust(
-        host=os.environ.get("RABBIT_HOST"),
-        port=int(os.environ.get("RABBIT_PORT")),
-        login=os.environ.get("RABBIT_USER"),
-        password=os.environ.get("RABBIT_PASSWORD"),
-    )
-    logger.info("Connected to rabbit")
+    connection = await PikaConnector.connector()
 
     async with connection:
         channel = await connection.channel()

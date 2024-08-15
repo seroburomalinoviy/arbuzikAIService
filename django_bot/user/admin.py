@@ -23,7 +23,8 @@ class OrderAdmin(admin.ModelAdmin):
         "status",
         "amount",
         "currency",
-        "subscription_title"
+        "subscription_title",
+        "created"
     ]
 
     @admin.display(description='Пользователь')

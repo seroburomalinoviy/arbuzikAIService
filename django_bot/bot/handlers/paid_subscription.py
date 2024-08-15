@@ -147,7 +147,7 @@ async def buy_subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
     subscription = await Subscription.objects.aget(title=sub_title)
 
     order = await Order.objects.acreate(
-        status='waiting',
+        status='notpaid',
         user=user,
         subscription=subscription
     )
