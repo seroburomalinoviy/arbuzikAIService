@@ -8,6 +8,12 @@ from fastapi import FastAPI, Request
 from fastapi.responses import Response, HTMLResponse
 from fastapi.encoders import jsonable_encoder
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(name)s - %(message)s >>> %(funcName)s(%(lineno)d)",
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
+
 logger = logging.getLogger(__name__)
 
 app = FastAPI(redoc_url=None)
