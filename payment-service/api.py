@@ -35,16 +35,16 @@ async def get_payment(request: Request) -> Response:
     ips_allowed: list = await get_actual_ips()
     logger.info(f'{ips_allowed=}')
 
-    if ip_request not in ips_allowed:
-        return Response(status_code=400)
+    # if ip_request not in ips_allowed:
+    #     return Response(status_code=400)
 
     secret_key_2 = os.environ.get('SECRET_KEY_2')
     key = f'{payment.merchant_id}:{payment.amount}:{payment.currency}:{secret_key_2}:{payment.order_id}'
     internal_sign = await create_hash(key)
     logger.info(f'{internal_sign=}, {payment.sign=}')
 
-    if internal_sign != payment.sign:
-        return Response(status_code=400)
+    # if internal_sign != payment.sign:
+    #     return Response(status_code=400)
 
     data = {
         'order_id': payment.order_id,
