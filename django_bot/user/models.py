@@ -74,7 +74,7 @@ class Order(models.Model):
     id = models.UUIDField(
         default=uuid.uuid4,
         editable=False,
-        unique=True
+        primary_key=True
     )
 
     status = models.CharField(
