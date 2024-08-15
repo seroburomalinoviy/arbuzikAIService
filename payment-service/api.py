@@ -3,7 +3,7 @@ from aaio_request import get_actual_ips, create_hash
 
 import os
 import logging
-from schemas import Payment
+from schemas import ApiPayment
 from fastapi import FastAPI, Request
 from fastapi.responses import Response, HTMLResponse
 
@@ -18,7 +18,7 @@ async def check():
 
 
 @app.post('/payment')
-async def get_payment(payment: Payment, request: Request) -> Response:
+async def get_payment(payment: ApiPayment, request: Request) -> Response:
     ip_request: str = request.client.host
     logger.info(f'{ip_request=}')
     ips_allowed: list = await get_actual_ips()

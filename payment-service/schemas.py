@@ -13,10 +13,10 @@ class Order:
         self.chat_id = data['chat_id']
 
 
-class Payment(BaseModel):
+class ApiPayment(BaseModel):
     status: str
-    merchant_id: uuid
-    invoice_id: uuid
+    merchant_id: str
+    invoice_id: str
     order_id: str
     amount: float
     currency: str
