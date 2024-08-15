@@ -67,7 +67,7 @@ async def send_payment_answer(data):
         order.user.subscription = order.subscription
         order.user.subscription_status = True
         order.user.subscription_final_date = get_moscow_time() + timedelta(days=order.subscription.days_limit)
-        await order.asave()
+        await order.user.asave()
         await payment.bot.send_message(
             chat_id=payment.chat_id,
             text='Оплата прошла успешно'
