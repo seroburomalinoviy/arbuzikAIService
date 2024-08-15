@@ -12,9 +12,9 @@ logger = logging.getLogger(__name__)
 app = FastAPI(redoc_url=None)
 
 
-@app.get('/')
-async def check():
-    return HTMLResponse(content="Success", status_code=200)
+@app.get('/check')
+async def check(request: Request):
+    return HTMLResponse(content=f"Success: your ip: {request.client.host}", status_code=200)
 
 
 @app.post('/payment')
