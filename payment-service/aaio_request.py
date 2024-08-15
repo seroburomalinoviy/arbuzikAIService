@@ -67,6 +67,7 @@ async def get_actual_ips() -> list:
         response = await client.get('https://aaio.so/api/public/ips')
     except Exception as e:
         logger.error(e)
+        raise Exception('cant get actual ips')
 
     if response.status_code != 200:
         logger.warning(f'Error during request to  aaio status_code: {response.status_code}')
