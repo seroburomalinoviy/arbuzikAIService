@@ -30,6 +30,8 @@ async def get_payment(request: Request) -> Response:
     json_f = jsonable_encoder(f)
     payment = ApiPayment(json_f)
 
+    logger.info(f'{json_f=}')
+
     ip_request: str = request.client.host
     logger.info(f'{ip_request=}')
     ips_allowed: list = await get_actual_ips()
@@ -41,7 +43,6 @@ async def get_payment(request: Request) -> Response:
     secret_key_2 = os.environ.get('SECRET_KEY_2')
     key = f'{payment.merchant_id}:{payment.amount}:{payment.currency}:{secret_key_2}:{payment.order_id}'
     internal_sign = await create_hash(key)
-    logger.info(f'{internal_sign=}, {payment.sign=}')
 
     if internal_sign != payment.sign:
         return Response(status_code=400)

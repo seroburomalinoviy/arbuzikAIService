@@ -153,7 +153,6 @@ async def buy_subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
         comment=f'Заказ создан, ожидается оплата'
     )
 
-    logger.info(f'{order.id=}')
     data = {
         'subscription_title': subscription.telegram_title,
         'order_id': str(order.id),
