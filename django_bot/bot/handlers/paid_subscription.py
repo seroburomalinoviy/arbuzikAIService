@@ -119,7 +119,7 @@ async def show_paid_subscriptions(update: Update, context: ContextTypes.DEFAULT_
     else:
         query = update.callback_query
         await query.answer()
-        chat_id = update.callback_query.message.chat.id
+        chat_id = query.message.chat.id
         message = message_text.all_paid_subs
         button_text = "⏩ Перейти к выбору голосов"
 
@@ -183,7 +183,7 @@ async def preview_paid_subscription(update: Update, context: ContextTypes.DEFAUL
     else:
         query = update.callback_query
         await query.answer()
-        chat_id = update.callback_query.message.chat.id
+        chat_id = query.message.chat.id
         title = query.data.split("paid_subscription_")[1]
 
     subscription = await Subscription.objects.aget(title=title)
