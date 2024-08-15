@@ -11,7 +11,7 @@ from bot.logic import message_text, keyboards
 from bot.logic.amqp_driver import push_amqp_message
 from bot.logic.constants import *
 from bot.logic.utils import get_moscow_time, log_journal
-from bot.handlers.paid_subscription import offer_vip_subscription, show_paid_subscriptions
+from bot.handlers.paid_subscription import preview_paid_subscription, show_paid_subscriptions
 
 from telegram import Voice as TelegramVoice
 from telegram import Audio as TelegramAudio
@@ -383,7 +383,7 @@ async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not await Subscription.objects.filter(
         voice__slug=slug_voice, title=user.subscription.title
     ).acount():
-        await offer_vip_subscription(update, context)
+        await preview_paid_subscription(update, context, subscription_title='violetvip')
         return BASE_STATES
 
     context.user_data["processing_permission"] = True

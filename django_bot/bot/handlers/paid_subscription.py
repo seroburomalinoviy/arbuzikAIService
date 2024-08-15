@@ -20,46 +20,46 @@ from bot.logic.constants import *
 from bot.logic.amqp_driver import push_amqp_message
 
 
-@log_journal
-async def offer_vip_subscription(update, context):
-    chat_id = (
-        update.effective_chat.id
-        if update.message
-        else update.callback_query.message.chat.id
-    )
-    subscription_title = "violetvip"
-    subscription = await Subscription.objects.aget(title=subscription_title)
-
-    await context.bot.send_photo(
-        chat_id=chat_id,
-        photo=open(
-            str(settings.MEDIA_ROOT) + "/" + str(subscription.image_cover), "rb"
-        ),
-    )
-
-    await context.bot.send_message(
-        chat_id=chat_id,
-        text=message_text.offer_vip_subscription_text,
-        parse_mode=ParseMode.MARKDOWN,
-        reply_markup=InlineKeyboardMarkup(
-            [
-                [
-                    InlineKeyboardButton(
-                        f" 💵 Разовый платёж - {subscription.price} руб",
-                        callback_data=f"payment_{subscription.price}_{subscription.title}",
-                    )
-                ],
-                [
-                    InlineKeyboardButton(
-                        "▶️ Другие подписки", callback_data="paid_subscriptions"
-                    ),
-                    InlineKeyboardButton(
-                        "⏩ Вернуться в меню", callback_data="category_menu"
-                    ),
-                ],
-            ]
-        ),
-    )
+# @log_journal
+# async def offer_vip_subscription(update, context):
+#     chat_id = (
+#         update.effective_chat.id
+#         if update.message
+#         else update.callback_query.message.chat.id
+#     )
+#     subscription_title = "violetvip"
+#     subscription = await Subscription.objects.aget(title=subscription_title)
+#
+#     await context.bot.send_photo(
+#         chat_id=chat_id,
+#         photo=open(
+#             str(settings.MEDIA_ROOT) + "/" + str(subscription.image_cover), "rb"
+#         ),
+#     )
+#
+#     await context.bot.send_message(
+#         chat_id=chat_id,
+#         text=message_text.offer_vip_subscription_text,
+#         parse_mode=ParseMode.MARKDOWN,
+#         reply_markup=InlineKeyboardMarkup(
+#             [
+#                 [
+#                     InlineKeyboardButton(
+#                         f" 💵 Разовый платёж - {subscription.price} руб",
+#                         callback_data=f"payment_{subscription.price}_{subscription.title}",
+#                     )
+#                 ],
+#                 [
+#                     InlineKeyboardButton(
+#                         "▶️ Другие подписки", callback_data="paid_subscriptions"
+#                     ),
+#                     InlineKeyboardButton(
+#                         "⏩ Вернуться в меню", callback_data="category_menu"
+#                     ),
+#                 ],
+#             ]
+#         ),
+#     )
 
 
 # @log_journal
@@ -105,12 +105,23 @@ async def offer_vip_subscription(update, context):
 
 @log_journal
 async def show_paid_subscriptions(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if not update.message:
+    """
+    Если есть апдейт значит функция вызвана ботом, чтобы сообщить, что его подписка закончилась
+    Иначе функция вызвана юзером нажатием кнопки
+    :param update:
+    :param context:
+    :return:
+    """
+    if update.message:
+        chat_id = update.effective_chat.id
+        message = message_text.offer_subscription_text
+        button_text = "⏩ Вернуться в меню"
+    else:
         query = update.callback_query
         await query.answer()
         chat_id = update.callback_query.message.chat.id
-    else:
-        chat_id = update.effective_chat.id
+        message = message_text.all_paid_subs
+        button_text = "⏩ Перейти к выбору голосов"
 
     keyboard = list()
     async for sub in Subscription.objects.exclude(
@@ -128,7 +139,7 @@ async def show_paid_subscriptions(update: Update, context: ContextTypes.DEFAULT_
     keyboard.append(
         [
             InlineKeyboardButton(
-                "⏩ Перейти к выбору голосов", callback_data="category_menu"
+                button_text, callback_data="category_menu"
             )
         ]
     )
@@ -146,7 +157,7 @@ async def show_paid_subscriptions(update: Update, context: ContextTypes.DEFAULT_
 
     await context.bot.send_message(
         chat_id=chat_id,
-        text=message_text.all_paid_subs,
+        text=message,
         parse_mode=ParseMode.MARKDOWN,
         reply_markup=InlineKeyboardMarkup(keyboard),
     )
@@ -155,23 +166,38 @@ async def show_paid_subscriptions(update: Update, context: ContextTypes.DEFAULT_
 
 
 @log_journal
-async def preview_paid_subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    query = update.callback_query
-    await query.answer()
+async def preview_paid_subscription(update: Update, context: ContextTypes.DEFAULT_TYPE, subscription_title=None):
+    """
+    Если в сообщении есть апдейт значит функция вызвана ботом при попытке пользователя записать вип
+    голос без вип подписки
+    Иначе эта функция вызвана юзером нажатием кнопки
+    :param update:
+    :param context:
+    :param subscription_title:
+    :return:
+    """
+    if update.message:
+        chat_id = update.effective_chat.id
+        message = message_text.offer_vip_subscription_text
+        title = subscription_title
+    else:
+        query = update.callback_query
+        await query.answer()
+        chat_id = update.callback_query.message.chat.id
+        title = query.data.split("paid_subscription_")[1]
 
-    subscription_title = query.data.split("paid_subscription_")[1]
-    subscription = await Subscription.objects.aget(title=subscription_title)
+    subscription = await Subscription.objects.aget(title=title)
 
     await context.bot.send_photo(
-        chat_id=query.message.chat.id,
+        chat_id=chat_id,
         photo=open(
             str(settings.MEDIA_ROOT) + "/" + str(subscription.image_cover), "rb"
         ),
     )
 
     await context.bot.send_message(
-        chat_id=query.message.chat.id,
-        text=subscription.description,
+        chat_id=chat_id,
+        text=message if message else subscription.description,
         parse_mode=ParseMode.MARKDOWN,
         reply_markup=InlineKeyboardMarkup(
             [
