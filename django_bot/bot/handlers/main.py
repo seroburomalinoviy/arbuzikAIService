@@ -11,7 +11,7 @@ from bot.logic import message_text, keyboards
 from bot.logic.amqp_driver import push_amqp_message
 from bot.logic.constants import *
 from bot.logic.utils import get_moscow_time, log_journal
-from bot.handlers.paid_subscription import offer_subscriptions, offer_vip_subscription
+from bot.handlers.paid_subscription import offer_vip_subscription, show_paid_subscriptions
 
 from telegram import Voice as TelegramVoice
 from telegram import Audio as TelegramAudio
@@ -375,7 +375,7 @@ async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not is_valid_subscription(user):
         user.subscription_status = False
         await user.asave()
-        await offer_subscriptions(update, context)
+        await show_paid_subscriptions(update, context)
         return BASE_STATES
 
     slug_voice = context.user_data.get("slug_voice")
@@ -509,7 +509,7 @@ async def voice_audio_process(update: Update, context: ContextTypes.DEFAULT_TYPE
     if not is_valid_subscription(user):
         user.subscription_status = False
         await user.asave()
-        await offer_subscriptions(update, context)
+        await show_paid_subscriptions(update, context)
         return BASE_STATES
 
     input_obj: TelegramVoice | TelegramAudio = (

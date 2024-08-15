@@ -62,51 +62,55 @@ async def offer_vip_subscription(update, context):
     )
 
 
-@log_journal
-async def offer_subscriptions(update: Update, context):
-    chat_id = (
-        update.effective_chat.id
-        if update.message
-        else update.callback_query.message.chat.id
-    )
-    keyboard = list()
-    async for sub in Subscription.objects.exclude(title=os.environ.get("DEFAULT_SUBSCRIPTION")).all().order_by("price"):
-        sub_title = sub.title
-        keyboard.append(
-            [
-                InlineKeyboardButton(
-                    sub.telegram_title, callback_data=f"paid_subscription_{sub_title}"
-                )
-            ]
-        )
-
-    keyboard.append(
-        [InlineKeyboardButton("⏩ Вернуться в меню", callback_data="category_menu")]
-    )
-
-    demo_sub = await Subscription.objects.aget(
-        title=os.environ.get("DEFAULT_SUBSCRIPTION")
-    )
-
-    await context.bot.send_photo(
-        chat_id=chat_id,
-        photo=open(
-            str(settings.MEDIA_ROOT) + "/" + str(demo_sub.image_cover), "rb"
-        ),  # в демо подписке лежит специальная картинка
-    )
-
-    await context.bot.send_message(
-        chat_id=chat_id,
-        text=message_text.offer_subscription_text,
-        parse_mode=ParseMode.MARKDOWN,
-        reply_markup=InlineKeyboardMarkup(keyboard),
-    )
+# @log_journal
+# async def offer_subscriptions(update: Update, context):
+#     chat_id = (
+#         update.effective_chat.id
+#         if update.message
+#         else update.callback_query.message.chat.id
+#     )
+#     keyboard = list()
+#     async for sub in Subscription.objects.exclude(title=os.environ.get("DEFAULT_SUBSCRIPTION")).all().order_by("price"):
+#         sub_title = sub.title
+#         keyboard.append(
+#             [
+#                 InlineKeyboardButton(
+#                     sub.telegram_title, callback_data=f"paid_subscription_{sub_title}"
+#                 )
+#             ]
+#         )
+#
+#     keyboard.append(
+#         [InlineKeyboardButton("⏩ Вернуться в меню", callback_data="category_menu")]
+#     )
+#
+#     demo_sub = await Subscription.objects.aget(
+#         title=os.environ.get("DEFAULT_SUBSCRIPTION")
+#     )
+#
+#     await context.bot.send_photo(
+#         chat_id=chat_id,
+#         photo=open(
+#             str(settings.MEDIA_ROOT) + "/" + str(demo_sub.image_cover), "rb"
+#         ),  # в демо подписке лежит специальная картинка
+#     )
+#
+#     await context.bot.send_message(
+#         chat_id=chat_id,
+#         text=message_text.offer_subscription_text,
+#         parse_mode=ParseMode.MARKDOWN,
+#         reply_markup=InlineKeyboardMarkup(keyboard),
+#     )
 
 
 @log_journal
 async def show_paid_subscriptions(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    query = update.callback_query
-    await query.answer()
+    if not update.message:
+        query = update.callback_query
+        await query.answer()
+        chat_id = update.callback_query.message.chat.id
+    else:
+        chat_id = update.effective_chat.id
 
     keyboard = list()
     async for sub in Subscription.objects.exclude(
@@ -134,14 +138,14 @@ async def show_paid_subscriptions(update: Update, context: ContextTypes.DEFAULT_
     )
 
     await context.bot.send_photo(
-        chat_id=query.message.chat.id,
+        chat_id=chat_id,
         photo=open(
             str(settings.MEDIA_ROOT) + "/" + str(demo_sub.image_cover), "rb"
         ),  # в демо подписке лежит специальная картинка
     )
 
     await context.bot.send_message(
-        chat_id=query.message.chat.id,
+        chat_id=chat_id,
         text=message_text.all_paid_subs,
         parse_mode=ParseMode.MARKDOWN,
         reply_markup=InlineKeyboardMarkup(keyboard),
