@@ -114,12 +114,11 @@ async def show_paid_subscriptions(update: Update, context: ContextTypes.DEFAULT_
     :return:
     """
     if offer:
-        query = None
         button_text = "⏩ Вернуться в меню"
         message = message_text.offer_subscription_text
     else:
-        query = update.callback_query
-        await query.answer()
+        # query = update.callback_query
+        # await query.answer()
         message = message_text.all_paid_subs
         button_text = "⏩ Перейти к выбору голосов"
 
@@ -149,19 +148,20 @@ async def show_paid_subscriptions(update: Update, context: ContextTypes.DEFAULT_
     )
 
     await context.bot.send_photo(
-        chat_id=update.effective_chat.id if update.message else query.from_user.id,
+        chat_id=update.effective_chat.id if update.message else update.callback_query.from_user.id,
         photo=open(
             str(settings.MEDIA_ROOT) + "/" + str(demo_sub.image_cover), "rb"
         ),  # в демо подписке лежит специальная картинка
     )
 
     await context.bot.send_message(
-        chat_id=update.effective_chat.id if update.message else query.from_user.id,
+        chat_id=update.effective_chat.id if update.message else update.callback_query.from_user.id,
         text=message,
         parse_mode=ParseMode.MARKDOWN,
         reply_markup=InlineKeyboardMarkup(keyboard),
     )
 
+    await update.callback_query.answer()
     return BASE_STATES
 
 
@@ -178,7 +178,6 @@ async def preview_paid_subscription(update: Update, context: ContextTypes.DEFAUL
     :return:
     """
     if offer:
-        query = None
         title = subscription_title
         message = message_text.offer_vip_subscription_text
     else:
