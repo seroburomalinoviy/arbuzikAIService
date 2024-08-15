@@ -56,11 +56,12 @@ async def send_payment_answer(data):
     order.status = 'paid' if payment.success else 'failure'
     order.currency = payment.currency
     order.amount = payment.amount
+    chat_id = order.user.telegram_id
 
     if not payment.success:
         await order.asave()
         await payment.bot.send_message(
-            chat_id=payment.chat_id,
+            chat_id=chat_id,
             text='Оплата не прошла'
         )
     else:
@@ -69,7 +70,7 @@ async def send_payment_answer(data):
         order.user.subscription_final_date = get_moscow_time() + timedelta(days=order.subscription.days_limit)
         await order.user.asave()
         await payment.bot.send_message(
-            chat_id=payment.chat_id,
+            chat_id=chat_id,
             text='Оплата прошла успешно'
         )
 
