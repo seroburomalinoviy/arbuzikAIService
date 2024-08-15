@@ -21,6 +21,7 @@ load_dotenv()
 
 logger = logging.getLogger(__name__)
 
+
 class PikaConnector:
     @classmethod
     async def connector(cls):
@@ -49,7 +50,7 @@ class AnswerSerializer:
 
 
 async def send_payment_answer(data):
-    payment = AnswerSerializer(_json=data)
+    payment = AnswerSerializer(data)
     order = await Order.objects.select_related("user", "subscription").aget(id=payment.order_id)
     order.status = 'paid' if payment.success else 'failure'
     order.currency = payment.currency
@@ -73,7 +74,7 @@ async def send_payment_answer(data):
 
 
 async def send_payment_url(data):
-    payment_page = AnswerSerializer(json=data)
+    payment_page = AnswerSerializer(data)
 
     logger.info(f'Sent payment url to {payment_page.chat_id}')
 
@@ -93,7 +94,7 @@ async def send_rvc_answer(data):
     """
     Send voice to user from RVC-NN
     """
-    audio = AnswerSerializer(_json=data)
+    audio = AnswerSerializer(data)
 
     file_path = os.environ.get("USER_VOICES") + "/" + audio.voice_filename
 
@@ -123,18 +124,10 @@ async def send_rvc_answer(data):
 
     logger.info("Voice files removed")
 
-    # return BASE_STATES
-
 
 async def push_amqp_message(data: dict, routing_key):
     payload = json.dumps(data)
-    connection = await aio_pika.connect_robust(
-        host=os.environ.get("RABBIT_HOST"),
-        port=int(os.environ.get("RABBIT_PORT")),
-        login=os.environ.get("RABBIT_USER"),
-        password=os.environ.get("RABBIT_PASSWORD"),
-    )
-    logger.info("Connected to rabbit")
+    connection = await PikaConnector.connector()
 
     async with connection:
         channel = await connection.channel()
@@ -146,18 +139,7 @@ async def push_amqp_message(data: dict, routing_key):
 
 
 async def amqp_rvc_listener():
-    try:
-        connection = await aio_pika.connect_robust(
-            host=os.environ.get("RABBIT_HOST"),
-            port=int(os.environ.get("RABBIT_PORT")),
-            login=os.environ.get("RABBIT_USER"),
-            password=os.environ.get("RABBIT_PASSWORD"),
-        )
-    except aio_pika.exceptions.CONNECTION_EXCEPTIONS as e:
-        logger.error(e.args[0])
-        await asyncio.sleep(3)
-        return await amqp_rvc_listener()
-    logger.info(f"Connected to rabbit")
+    connection = await PikaConnector.connector()
 
     async with connection:
         # Creating channel
@@ -182,18 +164,7 @@ async def amqp_rvc_listener():
 
 
 async def amqp_payment_listener():
-    try:
-        connection = await aio_pika.connect_robust(
-            host=os.environ.get("RABBIT_HOST"),
-            port=int(os.environ.get("RABBIT_PORT")),
-            login=os.environ.get("RABBIT_USER"),
-            password=os.environ.get("RABBIT_PASSWORD"),
-        )
-    except aio_pika.exceptions.CONNECTION_EXCEPTIONS as e:
-        logger.error(e.args[0])
-        await asyncio.sleep(3)
-        return await amqp_rvc_listener()
-    logger.info(f"Connected to rabbit")
+    connection = await PikaConnector.connector()
 
     async with connection:
         # Creating channel
@@ -218,18 +189,7 @@ async def amqp_payment_listener():
 
 
 async def amqp_payment_url_listener():
-    try:
-        connection = await aio_pika.connect_robust(
-            host=os.environ.get("RABBIT_HOST"),
-            port=int(os.environ.get("RABBIT_PORT")),
-            login=os.environ.get("RABBIT_USER"),
-            password=os.environ.get("RABBIT_PASSWORD"),
-        )
-    except aio_pika.exceptions.CONNECTION_EXCEPTIONS as e:
-        logger.error(e.args[0])
-        await asyncio.sleep(3)
-        return await amqp_rvc_listener()
-    logger.info(f"Connected to rabbit")
+    connection = await PikaConnector.connector()
 
     async with connection:
         # Creating channel
