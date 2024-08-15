@@ -182,22 +182,22 @@ async def preview_paid_subscription(update: Update, context: ContextTypes.DEFAUL
         title = subscription_title
         message = message_text.offer_vip_subscription_text
     else:
-        query = update.callback_query
-        await query.answer()
-        title = query.data.split("paid_subscription_")[1]
+        # query = update.callback_query
+        # await query.answer()
+        title = update.callback_query.data.split("paid_subscription_")[1]
         message = None
 
     subscription = await Subscription.objects.aget(title=title)
 
     await context.bot.send_photo(
-        chat_id=update.effective_chat.id if update.message else query.from_user.id,
+        chat_id=update.effective_chat.id if update.message else update.callback_query.from_user.id,
         photo=open(
             str(settings.MEDIA_ROOT) + "/" + str(subscription.image_cover), "rb"
         )
     )
 
     await context.bot.send_message(
-        chat_id=update.effective_chat.id if update.message else query.from_user.id,
+        chat_id=update.effective_chat.id if update.message else update.callback_query.from_user.id,
         text=message if message else subscription.description,
         parse_mode=ParseMode.MARKDOWN,
         reply_markup=InlineKeyboardMarkup(
@@ -216,6 +216,7 @@ async def preview_paid_subscription(update: Update, context: ContextTypes.DEFAUL
             ]
         ),
     )
+    await update.callback_query.answer()
 
     return BASE_STATES
 
