@@ -383,7 +383,7 @@ async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not await Subscription.objects.filter(
         voice__slug=slug_voice, title=user.subscription.title
     ).acount():
-        await preview_paid_subscription(update, context, subscription_title='violetvip')
+        await preview_paid_subscription(update, context, subscription_title='violetvip', offer=True)
         return BASE_STATES
 
     context.user_data["processing_permission"] = True
