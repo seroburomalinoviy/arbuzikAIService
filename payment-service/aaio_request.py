@@ -50,5 +50,5 @@ async def get_payment_url(data: str) -> dict:
     if response.status_code != 200:
         logger.warning(f'Error during request to  aaio status_code: {response.status_code}')
 
-    return response.json()
+    return response.json() | data
 
