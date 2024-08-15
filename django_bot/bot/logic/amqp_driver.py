@@ -21,6 +21,23 @@ load_dotenv()
 
 logger = logging.getLogger(__name__)
 
+class PikaConnector:
+    @classmethod
+    async def connector(cls):
+        try:
+            connector = await aio_pika.connect_robust(
+                host=os.environ.get("RABBIT_HOST"),
+                port=int(os.environ.get("RABBIT_PORT")),
+                login=os.environ.get("RABBIT_USER"),
+                password=os.environ.get("RABBIT_PASSWORD"),
+            )
+            logger.info(f"Connected to rabbit")
+            return connector
+        except aio_pika.exceptions.CONNECTION_EXCEPTIONS as e:
+            logger.error(e)
+            await asyncio.sleep(3)
+            return await cls.connector()
+
 
 class AnswerSerializer:
     """Serialize json answer to an object with attributes and extra attribute bot"""
@@ -128,7 +145,7 @@ async def push_amqp_message(data: dict, routing_key):
     logger.info(f"message {payload} sent to rabbit")
 
 
-async def amqp_listener():
+async def amqp_rvc_listener():
     try:
         connection = await aio_pika.connect_robust(
             host=os.environ.get("RABBIT_HOST"),
@@ -139,7 +156,7 @@ async def amqp_listener():
     except aio_pika.exceptions.CONNECTION_EXCEPTIONS as e:
         logger.error(e.args[0])
         await asyncio.sleep(3)
-        return await amqp_listener()
+        return await amqp_rvc_listener()
     logger.info(f"Connected to rabbit")
 
     async with connection:
@@ -163,10 +180,32 @@ async def amqp_listener():
                     if queue.name in message.body.decode():
                         break
 
-        # Declaring queue payment-to-bot
-        queue2 = await channel.declare_queue(name="payment-to-bot", durable=True, auto_delete=True)
 
-        async with queue2.iterator() as queue_iter:
+async def amqp_payment_listener():
+    try:
+        connection = await aio_pika.connect_robust(
+            host=os.environ.get("RABBIT_HOST"),
+            port=int(os.environ.get("RABBIT_PORT")),
+            login=os.environ.get("RABBIT_USER"),
+            password=os.environ.get("RABBIT_PASSWORD"),
+        )
+    except aio_pika.exceptions.CONNECTION_EXCEPTIONS as e:
+        logger.error(e.args[0])
+        await asyncio.sleep(3)
+        return await amqp_rvc_listener()
+    logger.info(f"Connected to rabbit")
+
+    async with connection:
+        # Creating channel
+        channel = await connection.channel()
+
+        # Will take no more than 10 messages in advance
+        await channel.set_qos(prefetch_count=10)
+
+        # Declaring queue payment-to-bot
+        queue = await channel.declare_queue(name="payment-to-bot", durable=True, auto_delete=True)
+
+        async with queue.iterator() as queue_iter:
             async for message in queue_iter:
                 async with message.process():
                     logger.info(f"bot got msg from rabbit: {message.body}")
@@ -174,18 +213,40 @@ async def amqp_listener():
                     await send_payment_answer(message.body)
                     logger.info(f'{message.body.decode()=}')
 
-                    if queue2.name in message.body.decode():
+                    if queue.name in message.body.decode():
                         break
 
-        # Declaring queue payment-url
-        queue3 = await channel.declare_queue(name="payment-url", durable=True, auto_delete=True)
 
-        async with queue3.iterator() as queue_iter:
+async def amqp_payment_url_listener():
+    try:
+        connection = await aio_pika.connect_robust(
+            host=os.environ.get("RABBIT_HOST"),
+            port=int(os.environ.get("RABBIT_PORT")),
+            login=os.environ.get("RABBIT_USER"),
+            password=os.environ.get("RABBIT_PASSWORD"),
+        )
+    except aio_pika.exceptions.CONNECTION_EXCEPTIONS as e:
+        logger.error(e.args[0])
+        await asyncio.sleep(3)
+        return await amqp_rvc_listener()
+    logger.info(f"Connected to rabbit")
+
+    async with connection:
+        # Creating channel
+        channel = await connection.channel()
+
+        # Will take no more than 10 messages in advance
+        await channel.set_qos(prefetch_count=10)
+
+        # Declaring queue payment-url
+        queue = await channel.declare_queue(name="payment-url", durable=True, auto_delete=True)
+
+        async with queue.iterator() as queue_iter:
             async for message in queue_iter:
                 async with message.process():
                     logger.info(f"bot got msg from rabbit: {message.body}")
 
                     await send_payment_url(message.body)
 
-                    if queue3.name in message.body.decode():
+                    if queue.name in message.body.decode():
                         break
