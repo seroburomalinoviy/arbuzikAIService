@@ -150,7 +150,7 @@ async def buy_subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
         status=False,
         user=user,
         subscription=subscription,
-        comment=f'Заказ создан, ожидается оплата'
+        comment=f'Заказ создан, ожидается оплата. Или оплата не произведена.'
     )
 
     data = {
