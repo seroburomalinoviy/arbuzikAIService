@@ -147,7 +147,7 @@ async def amqp_rvc_listener():
         channel = await connection.channel()
 
         # Will take no more than 10 messages in advance
-        await channel.set_qos(prefetch_count=10)
+        await channel.set_qos(prefetch_count=1000)
 
         # Declaring queue rvc-to-bot
         queue = await channel.declare_queue(name="rvc-to-bot", durable=True, auto_delete=True)
@@ -172,7 +172,7 @@ async def amqp_payment_listener():
         channel = await connection.channel()
 
         # Will take no more than 10 messages in advance
-        await channel.set_qos(prefetch_count=10)
+        await channel.set_qos(prefetch_count=1000)
 
         # Declaring queue payment-to-bot
         queue = await channel.declare_queue(name="payment-to-bot", durable=True, auto_delete=True)
@@ -197,7 +197,7 @@ async def amqp_payment_url_listener():
         channel = await connection.channel()
 
         # Will take no more than 10 messages in advance
-        await channel.set_qos(prefetch_count=10)
+        await channel.set_qos(prefetch_count=10000)
 
         # Declaring queue payment-url
         queue = await channel.declare_queue(name="payment-url", durable=True, auto_delete=True)
