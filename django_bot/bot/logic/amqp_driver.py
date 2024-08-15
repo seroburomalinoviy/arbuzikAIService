@@ -50,7 +50,7 @@ async def send_payment_answer(data):
     order.status = payment.status
     order.currency = payment.currency
     order.amount = payment.amount
-    order.comment = f'Получено оповещение об оплате от aaio со следующими параметрами: сумма {payment.amount}, валюта: {payment.currency}'
+    order.comment = f'Заказ оплачен через сервис aaio'
     await order.asave()
     chat_id = order.user.telegram_id
 
