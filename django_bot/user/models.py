@@ -2,6 +2,7 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils import timezone
 import os
+import uuid
 
 from bot.models import Subscription, Voice
 
@@ -70,6 +71,12 @@ class Order(models.Model):
         ('failure', 'Не оплачено'),
     ]
 
+    id = models.UUIDField(
+        default=uuid.uuid4,
+        editable=False,
+        unique=True
+    )
+
     status = models.CharField(
         'Статус оплаты',
         null=True,
@@ -103,6 +110,9 @@ class Order(models.Model):
         null=True,
         related_name="orders"
     )
+
+    def __str__(self):
+        return str(self.id)
 
     class Meta:
         verbose_name = "Оплата подписок"

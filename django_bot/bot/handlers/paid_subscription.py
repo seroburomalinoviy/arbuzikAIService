@@ -114,13 +114,11 @@ async def show_paid_subscriptions(update: Update, context: ContextTypes.DEFAULT_
     """
     if update.message:
         chat_id = update.effective_chat.id
-        message = message_text.offer_subscription_text
         button_text = "⏩ Вернуться в меню"
     else:
         query = update.callback_query
         await query.answer()
         chat_id = query.from_user.id
-        message = message_text.all_paid_subs
         button_text = "⏩ Перейти к выбору голосов"
 
     keyboard = list()
@@ -149,15 +147,15 @@ async def show_paid_subscriptions(update: Update, context: ContextTypes.DEFAULT_
     )
 
     await context.bot.send_photo(
-        chat_id=chat_id,
+        chat_id=update.effective_chat.id if update.message else query.from_user.id,
         photo=open(
             str(settings.MEDIA_ROOT) + "/" + str(demo_sub.image_cover), "rb"
         ),  # в демо подписке лежит специальная картинка
     )
 
     await context.bot.send_message(
-        chat_id=chat_id,
-        text=message,
+        chat_id=update.effective_chat.id if update.message else query.from_user.id,
+        text=message_text.offer_subscription_text if update.message else message_text.all_paid_subs,
         parse_mode=ParseMode.MARKDOWN,
         reply_markup=InlineKeyboardMarkup(keyboard),
     )
@@ -189,7 +187,7 @@ async def preview_paid_subscription(update: Update, context: ContextTypes.DEFAUL
         chat_id=update.effective_chat.id if update.message else query.from_user.id,
         photo=open(
             str(settings.MEDIA_ROOT) + "/" + str(subscription.image_cover), "rb"
-        ),
+        )
     )
 
     await context.bot.send_message(
