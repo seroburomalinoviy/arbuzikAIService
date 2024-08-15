@@ -35,7 +35,7 @@ async def get_payment_url(data: str) -> dict:
     }
 
     secret_key_1 = os.environ.get("SECRET_KEY_1")
-    key = f'{data["merchant_id"]}:{data["amount"]}:{data["currency"]}:{secret_key_1}:{data["order_id"]}'
+    key = f'{str(data["merchant_id"])}:{data["amount"]}:{data["currency"]}:{secret_key_1}:{data["order_id"]}'
     body["sign"] = await create_hash(key)
 
     client = httpx.AsyncClient()
