@@ -208,6 +208,7 @@ async def buy_subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
         subscription=subscription
     )
 
+    logger.info(f'{order.id=}')
     data = {
         'subscription_title': subscription.telegram_title,
         'order_id': order.id,
