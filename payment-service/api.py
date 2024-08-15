@@ -43,8 +43,8 @@ async def get_payment(request: Request) -> Response:
     internal_sign = await create_hash(key)
     logger.info(f'{internal_sign=}, {payment.sign=}')
 
-    # if internal_sign != payment.sign:
-    #     return Response(status_code=400)
+    if internal_sign != payment.sign:
+        return Response(status_code=400)
 
     data = {
         'order_id': payment.order_id,

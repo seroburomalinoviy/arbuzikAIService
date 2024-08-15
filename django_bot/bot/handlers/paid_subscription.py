@@ -149,7 +149,8 @@ async def buy_subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
     order = await Order.objects.acreate(
         status=False,
         user=user,
-        subscription=subscription
+        subscription=subscription,
+        comment=f'Заказ создан, ожидается оплата'
     )
 
     logger.info(f'{order.id=}')
