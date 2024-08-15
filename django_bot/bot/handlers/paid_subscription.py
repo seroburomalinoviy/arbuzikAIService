@@ -177,27 +177,24 @@ async def preview_paid_subscription(update: Update, context: ContextTypes.DEFAUL
     :return:
     """
     if update.message:
-        _chat_id = update.effective_chat.id
-        message = message_text.offer_vip_subscription_text
         title = subscription_title
     else:
         query = update.callback_query
         await query.answer()
-        _chat_id = query.from_user.id
         title = query.data.split("paid_subscription_")[1]
 
     subscription = await Subscription.objects.aget(title=title)
 
     await context.bot.send_photo(
-        chat_id=_chat_id,
+        chat_id=update.effective_chat.id if update.message else query.from_user.id,
         photo=open(
             str(settings.MEDIA_ROOT) + "/" + str(subscription.image_cover), "rb"
         ),
     )
-    logger.info(f'{_chat_id=}')
+
     await context.bot.send_message(
-        chat_id=_chat_id,
-        text=message if message else subscription.description,
+        chat_id=update.effective_chat.id if update.message else query.from_user.id,
+        text=message_text.offer_vip_subscription_text if update.message else subscription.description,
         parse_mode=ParseMode.MARKDOWN,
         reply_markup=InlineKeyboardMarkup(
             [
