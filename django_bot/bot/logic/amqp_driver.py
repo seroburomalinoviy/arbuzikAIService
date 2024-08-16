@@ -128,9 +128,10 @@ async def send_rvc_answer(data):
         reply_markup=InlineKeyboardMarkup(keyboards.final_buttons),
     )
 
-    # todo: не удалять а перемещать в директорию /tmp
-    os.remove(file_path)
-    os.remove(file_path + ".tmp")
+    tmp_path = os.environ.get("USER_VOICES") + "/" + "tmp"
+    os.makedirs(tmp_path, exist_ok=True)
+    os.replace(file_path, tmp_path)
+    os.replace(file_path + ".tmp", tmp_path)
 
     logger.info("Voice files removed")
 
