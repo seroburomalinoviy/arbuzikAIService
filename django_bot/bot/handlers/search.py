@@ -40,7 +40,7 @@ async def inline_searching(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 id=str(uuid4()),
                 title=voice.title,
                 description=voice.description,
-                thumbnail_url=os.environ.get("GITHUB_HOST") + voice.image if voice.image else '',
+                # thumbnail_url=os.environ.get("GITHUB_HOST") + voice.image if voice.image else '',
                 input_message_content=InputTextMessageContent(voice.slug),
             )
         )
