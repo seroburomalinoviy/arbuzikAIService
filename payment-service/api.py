@@ -4,7 +4,7 @@ from aaio_request import get_actual_ips, create_hash
 import os
 import logging
 from schemas import ApiPayment
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Header
 from fastapi.responses import Response, HTMLResponse
 from fastapi.encoders import jsonable_encoder
 
@@ -20,8 +20,8 @@ app = FastAPI(redoc_url=None)
 
 
 @app.get('/check')
-async def check(request: Request):
-    return HTMLResponse(content=f"Success: your ip: {request.client.host}", status_code=200)
+async def check(request: Request, remote_ip: str = Header(None, alias='X-Real-IP')):
+    return HTMLResponse(content=f"Success: your ip: {remote_ip}", status_code=200)
 
 
 @app.post('/payment')
