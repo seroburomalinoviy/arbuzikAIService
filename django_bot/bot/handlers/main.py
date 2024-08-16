@@ -288,9 +288,9 @@ async def voice_inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE)
                 description=voice.description,
                 # todo установить ssl сертификат
                 # todo или хостить на гитхаб
-                thumbnail_url=test_image,  # str(settings.MEDIA_URL) + str(voice_media_data.image),
-                thumbnail_height=20,
-                thumbnail_width=20,
+                thumbnail_url=os.environ.get("GITHUB_HOST") + voice.image,  # str(settings.MEDIA_URL) + str(voice_media_data.image),
+                # thumbnail_height=20,
+                # thumbnail_width=20,
                 input_message_content=InputTextMessageContent(voice.slug),
             )
         )

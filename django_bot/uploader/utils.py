@@ -79,7 +79,7 @@ def voice_parser(filepath):
                 model_pth=os.environ.get("MEDIA_DATA_VOLUME").strip("/").split("/")[-1] + "/" + row[FILE] + ".pth",
                 model_index=os.environ.get("MEDIA_DATA_VOLUME").strip("/").split("/")[-1] + "/" + row[FILE] + ".index",
                 demka=os.environ.get("MEDIA_DATA_VOLUME").strip("/").split("/")[-1] + "/" + row[FILE] + ".mp3",
-                image=os.environ.get("GITHUB_HOST") + row[FILE] + ".jpeg",
+                image=row[FILE] + ".jpeg",
             )
             for sub in row[SUBSCRIPTIOS].split(", "):
                 subscription = Subscription.objects.get(title=sub)
