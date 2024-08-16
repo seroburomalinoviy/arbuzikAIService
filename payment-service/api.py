@@ -27,7 +27,7 @@ async def check():
 @app.post('/payment')
 async def get_payment(request: Request, remote_ip: str = Header(None, alias='X-Real-IP')) -> Response:
     f = await request.form()
-    json_f = jsonable_encoder(f)
+    json_f = await jsonable_encoder(f)
     payment = ApiPayment(json_f)
 
     logger.info(f'{json_f=}')
