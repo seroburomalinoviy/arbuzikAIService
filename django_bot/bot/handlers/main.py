@@ -283,8 +283,6 @@ async def voice_inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE)
                 title=voice.title,
                 description=voice.description,
                 thumbnail_url=os.environ.get("GITHUB_HOST") + voice.image if voice.image else '',
-                # thumbnail_height=20,
-                # thumbnail_width=20,
                 input_message_content=InputTextMessageContent(voice.slug),
             )
         )
@@ -538,6 +536,11 @@ async def voice_audio_process(update: Update, context: ContextTypes.DEFAULT_TYPE
     user_id = str(update.message.from_user.id)
     chat_id = str(update.message.chat.id)
 
+    message = await update.message.reply_text(
+        message_text.conversation_end,
+        reply_markup=InlineKeyboardMarkup(keyboards.check_status),
+    )
+
     payload = {
         "duration": duration,
         "voice_title": voice.title,
@@ -548,16 +551,12 @@ async def voice_audio_process(update: Update, context: ContextTypes.DEFAULT_TYPE
         "pitch": pitch,
         "voice_model_pth": voice_model_pth,
         "voice_model_index": voice_model_index,
+        "message_id": message.id
     }
 
     await push_amqp_message(payload, routing_key="bot-to-rvc")
 
     await update_subscription(user)
-
-    await update.message.reply_text(
-        message_text.conversation_end,
-        reply_markup=InlineKeyboardMarkup(keyboards.check_status),
-    )
 
     return BASE_STATES
 

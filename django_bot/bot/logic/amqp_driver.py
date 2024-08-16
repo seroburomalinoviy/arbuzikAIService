@@ -105,6 +105,11 @@ async def send_rvc_answer(data):
 
     logger.debug(f"file_path: {file_path}")
 
+    await audio.bot.delete_message(
+        chat_id=audio.chat_id,
+        message_id=audio.message_id
+    )
+
     if audio.extension == ".ogg":
         await audio.bot.send_voice(chat_id=audio.chat_id, voice=open(file_path, "rb"))
     else:
