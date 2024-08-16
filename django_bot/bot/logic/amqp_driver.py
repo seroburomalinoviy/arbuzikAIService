@@ -130,8 +130,8 @@ async def send_rvc_answer(data):
 
     tmp_path = os.environ.get("USER_VOICES") + "/" + "tmp/"
     os.makedirs(tmp_path, exist_ok=True)
-    os.replace(file_path, tmp_path)
-    os.replace(file_path + ".tmp", tmp_path)
+    os.replace(file_path, tmp_path + audio.voice_filename)
+    os.replace(file_path + ".tmp", tmp_path + audio.voice_filename + '.tmp')
 
     logger.info("Voice files removed")
 
