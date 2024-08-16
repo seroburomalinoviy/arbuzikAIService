@@ -76,20 +76,10 @@ def voice_parser(filepath):
                 gender=row[GENDER],
                 search_words=row[SEARCH_WORDS],
                 subcategory=subcategory,
-                model_pth=os.environ.get("MEDIA_DATA_VOLUME").strip("/").split("/")[-1]
-                + "/"
-                + row[FILE]
-                + ".pth",
-                model_index=os.environ.get("MEDIA_DATA_VOLUME")
-                .strip("/")
-                .split("/")[-1]
-                + "/"
-                + row[FILE]
-                + ".index",
-                demka=os.environ.get("MEDIA_DATA_VOLUME").strip("/").split("/")[-1]
-                + "/"
-                + row[FILE]
-                + ".mp3",
+                model_pth=os.environ.get("MEDIA_DATA_VOLUME").strip("/").split("/")[-1] + "/" + row[FILE] + ".pth",
+                model_index=os.environ.get("MEDIA_DATA_VOLUME").strip("/").split("/")[-1] + "/" + row[FILE] + ".index",
+                demka=os.environ.get("MEDIA_DATA_VOLUME").strip("/").split("/")[-1] + "/" + row[FILE] + ".mp3",
+                image=os.environ.get("GITHUB_HOST") + row[FILE] + ".jpeg",
             )
             for sub in row[SUBSCRIPTIOS].split(", "):
                 subscription = Subscription.objects.get(title=sub)
