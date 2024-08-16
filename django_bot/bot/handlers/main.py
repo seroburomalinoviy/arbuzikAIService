@@ -273,6 +273,7 @@ async def voice_inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE)
         return
     context.user_data["slug_subcategory"] = slug_subcategory
 
+    test_image = 'http://193.106.172.202:8002/images/test_img.jpeg'
     default_image = "https://img.icons8.com/2266EE/search"
     default_image = "https://img.freepik.com/free-photo/3d-rendering-hydraulic-elements_23-2149333332.jpg?t=st=1714904107~exp=1714907707~hmac=98d51596c9ad15af1086b0d1916f5567c1191255c42d157c87c59bab266d6e84&w=2000"
     results = []
@@ -286,7 +287,7 @@ async def voice_inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE)
                 description=voice.description,
                 # todo установить ssl сертификат
                 # todo или хостить на гитхаб
-                thumbnail_url=default_image,  # str(settings.MEDIA_URL) + str(voice_media_data.image),
+                thumbnail_url=test_image,  # str(settings.MEDIA_URL) + str(voice_media_data.image),
                 input_message_content=InputTextMessageContent(voice.slug),
             )
         )
