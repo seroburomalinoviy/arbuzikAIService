@@ -20,6 +20,7 @@ logger = logging.getLogger(__name__)
 
 load_dotenv()
 
+
 @log_journal
 async def inline_searching(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """

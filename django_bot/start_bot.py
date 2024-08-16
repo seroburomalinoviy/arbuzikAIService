@@ -20,11 +20,11 @@ def main() -> None:
     logging.getLogger("httpx").setLevel(logging.WARNING)
 
 
-    # logging.basicConfig(
-    #     level=logging.INFO,
-    #     format="%(asctime)s - %(levelname)s - %(name)s - %(message)s >>> %(funcName)s(%(lineno)d)",
-    #     datefmt="%Y-%m-%d %H:%M:%S",
-    # )
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(levelname)s - %(name)s - %(message)s >>> %(funcName)s(%(lineno)d)",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
 
     TOKEN = os.environ.get("BOT_TOKEN")
     application = ApplicationBuilder().token(TOKEN).build()
