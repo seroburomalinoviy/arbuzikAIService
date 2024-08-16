@@ -58,7 +58,12 @@ class Voice(models.Model):
     slug = models.SlugField(
         "Voice slug",
     )
-    image = models.URLField("Имя картинки (можно с любым расширением)")
+    image = models.CharField(
+        "Имя картинки (можно с любым расширением)",
+        max_length=200,
+        null=True,
+        blank=True
+    )
     model_pth = models.FileField(
         "Файл pth",
         upload_to="data/",
