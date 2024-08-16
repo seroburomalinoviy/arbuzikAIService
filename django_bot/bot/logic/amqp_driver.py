@@ -72,6 +72,7 @@ async def send_payment_answer(data):
                 minutes=str(int(order.user.subscription.time_voice_limit / 60)),
                 vip='+' if order.user.subscription.title == 'violetvip' else 'кроме'
             ),
+            parse_mode=ParseMode.HTML,
             reply_markup=InlineKeyboardMarkup(keyboards.category_menu_2),
             disable_web_page_preview=True
         )
