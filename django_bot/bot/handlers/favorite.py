@@ -116,8 +116,7 @@ async def roll_out(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 id=str(uuid4()),
                 title=voice.title,
                 description=voice.description,
-                # todo установить ssl сертификат
-                thumbnail_url=default_image,  # str(settings.MEDIA_URL) + str(voice_media_data.image),
+                thumbnail_url=os.environ.get("GITHUB_HOST") + voice.image if voice.image else '',
                 input_message_content=InputTextMessageContent(voice.slug),
             )
         )

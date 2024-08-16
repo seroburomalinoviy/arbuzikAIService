@@ -27,7 +27,6 @@ async def inline_searching(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not query:
         return
 
-    default_image = "https://img.freepik.com/free-photo/3d-rendering-hydraulic-elements_23-2149333332.jpg?t=st=1714904107~exp=1714907707~hmac=98d51596c9ad15af1086b0d1916f5567c1191255c42d157c87c59bab266d6e84&w=2000"
     results = []
     async for voice in Voice.objects.filter(search_words__icontains=query.query):
         results.append(
@@ -35,8 +34,7 @@ async def inline_searching(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 id=str(uuid4()),
                 title=voice.title,
                 description=voice.description,
-                # todo установить ssl сертификат
-                thumbnail_url=default_image,  # str(settings.MEDIA_URL) + str(voice_media_data.image),
+                thumbnail_url=os.environ.get("GITHUB_HOST") + voice.image if voice.image else '',
                 input_message_content=InputTextMessageContent(voice.slug),
             )
         )
