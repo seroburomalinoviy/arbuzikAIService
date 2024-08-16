@@ -15,7 +15,7 @@ category_menu = [
 ]
 
 category_menu_2 = [
-    InlineKeyboardButton("⏩ Перейти к выбору голосов", callback_data="category_menu")
+    [InlineKeyboardButton("⏩ Перейти к выбору голосов", callback_data="category_menu")]
 ]
 
 check_subscription = [
