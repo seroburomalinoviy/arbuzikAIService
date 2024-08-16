@@ -273,10 +273,6 @@ async def voice_inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE)
         return
     context.user_data["slug_subcategory"] = slug_subcategory
 
-    test_image = "http://193.106.172.202:8002/images/test_img.jpeg"
-    test_image = "https://seroburomalinoviy.github.io/assets/img/logo.jpeg"
-    default_image = "https://img.icons8.com/2266EE/search"
-    default_image = "https://img.freepik.com/free-photo/3d-rendering-hydraulic-elements_23-2149333332.jpg?t=st=1714904107~exp=1714907707~hmac=98d51596c9ad15af1086b0d1916f5567c1191255c42d157c87c59bab266d6e84&w=2000"
     results = []
     async for voice in Voice.objects.filter(
         subcategory__slug=slug_subcategory,
@@ -286,9 +282,7 @@ async def voice_inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE)
                 id=str(uuid4()),
                 title=voice.title,
                 description=voice.description,
-                # todo установить ssl сертификат
-                # todo или хостить на гитхаб
-                thumbnail_url=os.environ.get("GITHUB_HOST") + voice.image,  # str(settings.MEDIA_URL) + str(voice_media_data.image),
+                thumbnail_url=os.environ.get("GITHUB_HOST") + voice.image,
                 # thumbnail_height=20,
                 # thumbnail_width=20,
                 input_message_content=InputTextMessageContent(voice.slug),
