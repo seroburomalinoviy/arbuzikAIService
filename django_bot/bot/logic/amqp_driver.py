@@ -66,7 +66,12 @@ async def send_payment_answer(data):
         await order.user.asave()
         await payment.bot.send_message(
             chat_id=chat_id,
-            text=message_text.successful_payment,
+            text=message_text.successful_payment.format(
+                sub_title=order.subscription.telegram_title[1:],
+                days=order.subscription.days_limit,
+                minutes=str(int(order.user.subscription.time_voice_limit / 60)),
+                vip='+' if order.user.subscription.title == 'violetvip' else 'кроме'
+            ),
             reply_markup=InlineKeyboardMarkup(keyboards.category_menu_2),
             disable_web_page_preview=True
         )
