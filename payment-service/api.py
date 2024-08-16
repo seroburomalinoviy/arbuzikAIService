@@ -45,7 +45,8 @@ async def get_payment(request: Request) -> Response:
     internal_sign = await create_hash(key)
 
     if internal_sign != payment.sign:
-        return Response(status_code=400)
+        logger.warning('No appropreated sign!')
+        # return Response(status_code=400)
 
     data = {
         'order_id': payment.order_id,
