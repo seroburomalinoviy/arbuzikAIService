@@ -2,6 +2,7 @@ from uuid import uuid4
 import os
 import django
 from dotenv import load_dotenv
+import logging
 
 from telegram import Update, InlineQueryResultArticle, InputTextMessageContent
 from telegram.ext import ContextTypes, ConversationHandler
@@ -14,6 +15,8 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 django.setup()
 
 from bot.models import Voice, Subscription
+
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 
@@ -31,6 +34,7 @@ async def inline_searching(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     results = []
     async for voice in Voice.objects.filter(search_words__icontains=query.query):
+        logger.info(os.environ.get("GITHUB_HOST") + voice.image)
         results.append(
             InlineQueryResultArticle(
                 id=str(uuid4()),
