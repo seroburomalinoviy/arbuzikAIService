@@ -3,6 +3,7 @@ from uuid import uuid4
 import django
 import logging
 from asgiref.sync import sync_to_async
+from dotenv import load_dotenv
 
 from telegram import (
     Update,
@@ -26,6 +27,8 @@ from bot.models import Voice, Subscription
 from user.models import User
 
 logger = logging.getLogger(__name__)
+
+load_dotenv()
 
 
 @sync_to_async
@@ -108,7 +111,6 @@ async def roll_out(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     user = await User.objects.aget(telegram_id=update.inline_query.from_user.id)
 
-    default_image = "https://img.freepik.com/free-photo/3d-rendering-hydraulic-elements_23-2149333332.jpg?t=st=1714904107~exp=1714907707~hmac=98d51596c9ad15af1086b0d1916f5567c1191255c42d157c87c59bab266d6e84&w=2000"
     results = []
     async for voice in user.favorites.all():
         results.append(

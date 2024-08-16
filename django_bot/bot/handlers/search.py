@@ -1,6 +1,7 @@
 from uuid import uuid4
 import os
 import django
+from dotenv import load_dotenv
 
 from telegram import Update, InlineQueryResultArticle, InputTextMessageContent
 from telegram.ext import ContextTypes, ConversationHandler
@@ -14,6 +15,7 @@ django.setup()
 
 from bot.models import Voice, Subscription
 
+load_dotenv()
 
 @log_journal
 async def inline_searching(update: Update, context: ContextTypes.DEFAULT_TYPE):
