@@ -128,7 +128,7 @@ async def send_rvc_answer(data):
         reply_markup=InlineKeyboardMarkup(keyboards.final_buttons),
     )
 
-    tmp_path = os.environ.get("USER_VOICES") + "/" + "tmp"
+    tmp_path = os.environ.get("USER_VOICES") + "/" + "tmp/"
     os.makedirs(tmp_path, exist_ok=True)
     os.replace(file_path, tmp_path)
     os.replace(file_path + ".tmp", tmp_path)
