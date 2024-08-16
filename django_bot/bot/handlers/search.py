@@ -35,7 +35,6 @@ async def inline_searching(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     results = []
     async for voice in Voice.objects.filter(search_words__icontains=query.query):
-        logger.info(os.environ.get("GITHUB_HOST") + voice.image)
         results.append(
             InlineQueryResultArticle(
                 id=str(uuid4()),
@@ -45,5 +44,5 @@ async def inline_searching(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 input_message_content=InputTextMessageContent(voice.slug),
             )
         )
-    await query.answer(results, cache_time=1, auto_pagination=True)
+    await query.answer(results, cache_time=100, auto_pagination=True)
     return ConversationHandler.END
