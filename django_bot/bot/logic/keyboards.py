@@ -14,6 +14,10 @@ category_menu = [
     InlineKeyboardButton("⏪ Вернуться назад", callback_data="category_menu")
 ]
 
+category_menu_2 = [
+    InlineKeyboardButton("⏩ Перейти к выбору голосов", callback_data="category_menu")
+]
+
 check_subscription = [
     [
         InlineKeyboardButton("Подписаться", url="https://t.me/arbuzik_smiley_group"),

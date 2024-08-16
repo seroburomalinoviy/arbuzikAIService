@@ -66,7 +66,9 @@ async def send_payment_answer(data):
         await order.user.asave()
         await payment.bot.send_message(
             chat_id=chat_id,
-            text='Оплата прошла успешно'
+            text=message_text.successful_payment,
+            reply_markup=InlineKeyboardMarkup(keyboards.category_menu_2),
+            disable_web_page_preview=True
         )
 
 
