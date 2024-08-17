@@ -116,7 +116,6 @@ async def send_rvc_answer(data):
         await audio.bot.send_audio(
             chat_id=audio.chat_id,
             audio=open(file_path, "rb"),
-            title=audio.voice_title,
             duration=audio.duration,
             filename=audio.voice_title,
         )
