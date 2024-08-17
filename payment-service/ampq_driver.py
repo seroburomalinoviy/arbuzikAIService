@@ -9,9 +9,6 @@ from aaio_request import get_payment_url
 
 load_dotenv()
 
-logger = logging.getLogger(__name__)
-
-
 class PikaConnector:
     @classmethod
     async def connector(cls):
@@ -22,10 +19,10 @@ class PikaConnector:
                 login=os.environ.get("RABBIT_USER"),
                 password=os.environ.get("RABBIT_PASSWORD"),
             )
-            logger.info(f"Connected to rabbit")
+            logging.info(f"Connected to rabbit")
             return connector
         except aio_pika.exceptions.CONNECTION_EXCEPTIONS as e:
-            logger.error(e)
+            logging.error(e)
             await asyncio.sleep(3)
             return await cls.connector()
 
@@ -42,7 +39,7 @@ async def amqp_listener():
 
         queue = await channel.declare_queue(queue_name, durable=True, auto_delete=True)
 
-        logger.debug(f"get queue {queue_name} from rabbit")
+        logging.debug(f"get queue {queue_name} from rabbit")
 
         async with queue.iterator() as queue_iter:
             async for message in queue_iter:
@@ -65,7 +62,7 @@ async def push_amqp_message(data: dict, routing_key):
             aio_pika.Message(body=payload.encode()),
             routing_key=routing_key,
         )
-    logger.info(f"message {payload} sent to rabbit {routing_key=}")
+    logging.info(f"message {payload} sent to rabbit {routing_key=}")
 
 
 

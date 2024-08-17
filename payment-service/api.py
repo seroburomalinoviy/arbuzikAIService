@@ -8,13 +8,13 @@ from fastapi import FastAPI, Request, Header
 from fastapi.responses import Response, HTMLResponse
 from fastapi.encoders import jsonable_encoder
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(name)s - %(message)s >>> %(funcName)s(%(lineno)d)",
-    datefmt="%Y-%m-%d %H:%M:%S",
-)
-
-logger = logging.getLogger(__name__)
+os.makedirs('/logs', exist_ok=True)
+rotating_handler = logging.handlers.RotatingFileHandler('/logs/payment-api.log', backupCount=5, maxBytes=512 * 1024)
+log_format = "%(asctime)s - %(levelname)s - %(name)s - %(message)s >>> %(funcName)s(%(lineno)d)"
+formatter = logging.Formatter(log_format)
+rotating_handler.setFormatter(formatter)
+logging.basicConfig(level=logging.INFO, format=log_format, datefmt="%Y-%m-%d %H:%M:%S")
+logging.getLogger('').addHandler(rotating_handler)
 
 app = FastAPI(redoc_url=None)
 
@@ -30,13 +30,13 @@ async def get_payment(request: Request, remote_ip: str = Header(None, alias='X-R
     json_f = await jsonable_encoder(f)
     payment = ApiPayment(json_f)
 
-    logger.info(f'{json_f=}')
+    logging.info(f'{json_f=}')
 
     ips_allowed: list = await get_actual_ips()
-    logger.info(f'{ips_allowed=}, {remote_ip=}')
+    logging.info(f'{ips_allowed=}, {remote_ip=}')
 
     if remote_ip not in ips_allowed:
-        logger.warning('Not allowed ip!')
+        logging.warning('Not allowed ip!')
         return Response(status_code=400)
 
     secret_key_2 = os.environ.get('SECRET_KEY_2')
@@ -44,7 +44,7 @@ async def get_payment(request: Request, remote_ip: str = Header(None, alias='X-R
     internal_sign = await create_hash(key)
 
     if internal_sign != payment.sign:
-        logger.warning('No appropriated sign!')
+        logging.warning('No appropriated sign!')
         return Response(status_code=400)
 
     data = {

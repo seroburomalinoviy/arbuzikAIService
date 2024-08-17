@@ -10,7 +10,6 @@ import json
 from schemas import Order
 
 load_dotenv()
-logger = logging.getLogger(__name__)
 
 
 async def create_hash(key: str):
@@ -50,12 +49,12 @@ async def get_payment_url(data: str) -> dict:
             headers=headers,
         )
     except Exception as e:
-        logger.error(f'Error during request to  aaio {e}')
+        logging.error(f'Error during request to  aaio {e}')
 
     await client.aclose()
 
     if response.status_code != 200:
-        logger.warning(f'Error during request to  aaio status_code: {response.status_code}')
+        logging.warning(f'Error during request to  aaio status_code: {response.status_code}')
 
     return response.json() | json.loads(data)
 
@@ -66,11 +65,11 @@ async def get_actual_ips() -> list:
     try:
         response = await client.get('https://aaio.so/api/public/ips')
     except Exception as e:
-        logger.error(e)
+        logging.error(e)
         raise Exception('cant get actual ips')
 
     if response.status_code != 200:
-        logger.warning(f'Error during request to  aaio status_code: {response.status_code}')
+        logging.warning(f'Error during request to  aaio status_code: {response.status_code}')
 
     await client.aclose()
 
