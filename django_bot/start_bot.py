@@ -71,27 +71,63 @@ def main() -> None:
 
 
 if "__main__" == __name__:
-    class CustomFilter(logging.Filter):
-        COLOR = {
-            "DEBUG": "GREEN",
-            "INFO": "GREEN",
-            "WARNING": "YELLOW",
-            "ERROR": "RED",
-            "CRITICAL": "RED",
+    # class CustomFilter(logging.Filter):
+    #     COLOR = {
+    #         "DEBUG": "GREEN",
+    #         "INFO": "GREEN",
+    #         "WARNING": "YELLOW",
+    #         "ERROR": "RED",
+    #         "CRITICAL": "RED",
+    #     }
+    #
+    #     def filter(self, record):
+    #         record.color = CustomFilter.COLOR[record.levelname]
+    #         return True
+    #
+    # os.makedirs('/logs', exist_ok=True)
+    # handler = RotatingFileHandler('/logs/bot.log', backupCount=5, maxBytes=512 * 1024)
+    # log_format = "%(asctime)s - %(levelname)s - %(name)s - %(message)s >>> %(funcName)s(%(lineno)d)"
+    # formatter = logging.Formatter(log_format)
+    # handler.setFormatter(formatter)
+    # handler.addFilter(CustomFilter())
+    # logging.basicConfig(level=logging.INFO, format=log_format, datefmt="%Y-%m-%d %H:%M:%S")
+    # logging.getLogger('').addHandler(handler)
+    import logging
+
+
+    class CustomFormatter(logging.Formatter):
+        grey = "\x1b[38;20m"
+        yellow = "\x1b[33;20m"
+        red = "\x1b[31;20m"
+        bold_red = "\x1b[31;1m"
+        reset = "\x1b[0m"
+        format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s (%(filename)s:%(lineno)d)"
+
+        FORMATS = {
+            logging.DEBUG: grey + format + reset,
+            logging.INFO: grey + format + reset,
+            logging.WARNING: yellow + format + reset,
+            logging.ERROR: red + format + reset,
+            logging.CRITICAL: bold_red + format + reset
         }
 
-        def filter(self, record):
-            record.color = CustomFilter.COLOR[record.levelname]
-            return True
+        def format(self, record):
+            log_fmt = self.FORMATS.get(record.levelno)
+            formatter = logging.Formatter(log_fmt)
+            return formatter.format(record)
 
-    os.makedirs('/logs', exist_ok=True)
-    handler = RotatingFileHandler('/logs/bot.log', backupCount=5, maxBytes=512 * 1024)
-    log_format = "%(asctime)s - %(levelname)s - %(name)s - %(message)s >>> %(funcName)s(%(lineno)d)"
-    formatter = logging.Formatter(log_format)
-    handler.setFormatter(formatter)
-    handler.addFilter(CustomFilter())
-    logging.basicConfig(level=logging.INFO, format=log_format, datefmt="%Y-%m-%d %H:%M:%S")
-    logging.getLogger('').addHandler(handler)
+
+    # create logger with 'spam_application'
+    logger = logging.getLogger("My_app")
+    logger.setLevel(logging.DEBUG)
+
+    # create console handler with a higher log level
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.DEBUG)
+
+    ch.setFormatter(CustomFormatter())
+
+    logger.addHandler(ch)
 
     logging.getLogger("httpx").setLevel(logging.WARNING)
 
