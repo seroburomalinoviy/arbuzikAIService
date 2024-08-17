@@ -10,21 +10,27 @@ from bot.logic.setup import init_handlers
 from bot.logic.amqp_driver import amqp_payment_url_listener, amqp_payment_listener, amqp_rvc_listener
 
 
-
-
 def main() -> None:
     load_dotenv()
-
-
-
     logging.getLogger("httpx").setLevel(logging.WARNING)
 
+    os.makedirs('/logs/bot', exist_ok=True)
+
+    rotating_handler = logging.handlers.RotatingFileHandler('/logs/bot.log',
+                                                            backupCount=5,
+                                                            maxBytes=512 * 1024)
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(name)s - %(lineno)d - %(message)s')
+
+    rotating_handler.setFormatter(formatter)
 
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s - %(levelname)s - %(name)s - %(message)s >>> %(funcName)s(%(lineno)d)",
         datefmt="%Y-%m-%d %H:%M:%S",
     )
+
+    logging.getLogger('').addHandler(rotating_handler)
+
 
     TOKEN = os.environ.get("BOT_TOKEN")
     application = ApplicationBuilder().token(TOKEN).build()

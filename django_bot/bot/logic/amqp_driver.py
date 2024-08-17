@@ -22,7 +22,7 @@ from user.models import Order
 
 load_dotenv()
 
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__)
 
 
 class PikaConnector:
@@ -35,10 +35,10 @@ class PikaConnector:
                 login=os.environ.get("RABBIT_USER"),
                 password=os.environ.get("RABBIT_PASSWORD"),
             )
-            logger.info(f"Connected to rabbit")
+            logging.info(f"Connected to rabbit")
             return connector
         except aio_pika.exceptions.CONNECTION_EXCEPTIONS as e:
-            logger.error(e)
+            logging.error(e)
             await asyncio.sleep(3)
             return await cls.connector()
 
@@ -81,7 +81,7 @@ async def send_payment_answer(data):
 async def send_payment_url(data):
     payment_page = PayUrl(data)
 
-    logger.info(f'Sent payment url to {payment_page.chat_id}')
+    logging.info(f'Sent payment url to {payment_page.chat_id}')
 
     await payment_page.bot.send_message(
         chat_id=payment_page.chat_id,
@@ -103,7 +103,7 @@ async def send_rvc_answer(data):
 
     file_path = os.environ.get("USER_VOICES") + "/" + audio.voice_filename
 
-    logger.debug(f"file_path: {file_path}")
+    logging.debug(f"file_path: {file_path}")
 
     await audio.bot.delete_message(
         chat_id=audio.chat_id,
@@ -136,7 +136,7 @@ async def send_rvc_answer(data):
     # os.replace(file_path, tmp_path + audio.voice_filename)
     # os.replace(file_path + ".tmp", tmp_path + audio.voice_filename + '.tmp')
 
-    logger.info("Voice files removed")
+    logging.info("Voice files removed")
 
 
 async def push_amqp_message(data: dict, routing_key):
@@ -149,7 +149,7 @@ async def push_amqp_message(data: dict, routing_key):
             aio_pika.Message(body=payload.encode()),
             routing_key=routing_key,
         )
-    logger.info(f"message {payload} sent to rabbit")
+    logging.info(f"message {payload} sent to rabbit")
 
 
 async def amqp_rvc_listener():
@@ -168,7 +168,7 @@ async def amqp_rvc_listener():
         async with queue.iterator() as queue_iter:
             async for message in queue_iter:
                 async with message.process():
-                    logger.info(f"bot got msg from rabbit: {message.body.decode()}")
+                    logging.info(f"bot got msg from rabbit: {message.body.decode()}")
 
                     await send_rvc_answer(message.body.decode())
 
@@ -192,7 +192,7 @@ async def amqp_payment_listener():
         async with queue.iterator() as queue_iter:
             async for message in queue_iter:
                 async with message.process():
-                    logger.info(f"bot got msg from rabbit: {message.body.decode()}")
+                    logging.info(f"bot got msg from rabbit: {message.body.decode()}")
 
                     await send_payment_answer(message.body.decode())
 
@@ -216,7 +216,7 @@ async def amqp_payment_url_listener():
         async with queue.iterator() as queue_iter:
             async for message in queue_iter:
                 async with message.process():
-                    logger.info(f"bot got msg from rabbit: {message.body.decode()}")
+                    logging.info(f"bot got msg from rabbit: {message.body.decode()}")
 
                     await send_payment_url(message.body.decode())
 

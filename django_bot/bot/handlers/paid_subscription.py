@@ -4,7 +4,7 @@ from telegram.constants import ParseMode
 
 import os
 import logging
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__)
 
 from django.conf import settings
 import django

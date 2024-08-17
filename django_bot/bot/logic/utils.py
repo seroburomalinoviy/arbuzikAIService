@@ -5,7 +5,7 @@ import functools
 from telegram import Update
 import logging
 
-logger_journal = logging.getLogger(__name__)
+# logger_journal = logging.getLogger(__name__)
 
 
 def get_moscow_time() -> datetime:
@@ -25,7 +25,7 @@ def log_journal(func):
         else:
             _id = "Not found"
 
-        logger_journal.info(
+        logging.info(
             f"JOURNAL: {func.__name__} - was called for user - {_id} - tg_id"
         )
         return await func(*args, **kwargs)

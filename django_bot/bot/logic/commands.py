@@ -10,7 +10,7 @@ from telegram.ext import ContextTypes, ConversationHandler
 from telegram import Update, InlineKeyboardMarkup
 
 load_dotenv()
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__)
 
 
 class StartHandler(BaseCommandHandler):
