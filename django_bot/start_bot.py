@@ -1,4 +1,5 @@
-# import logging
+import logging
+from logging.handlers import RotatingFileHandler
 import os
 from dotenv import load_dotenv
 import asyncio
@@ -12,8 +13,7 @@ from bot.logic.amqp_driver import amqp_payment_url_listener, amqp_payment_listen
 
 
 def start_rotating_logging(path):
-    import logging
-    from logging.handlers import RotatingFileHandler
+
 
     log_format = "%(asctime)s - %(levelname)s - %(name)s - %(message)s >>> %(funcName)s(%(lineno)d)"
     logging.basicConfig(level=logging.INFO, format=log_format, datefmt="%Y-%m-%d %H:%M:%S")
@@ -91,6 +91,7 @@ def main() -> None:
 
 if "__main__" == __name__:
     os.makedirs('/logs', exist_ok=True)
+
     start_rotating_logging(path="/logs/bot.log")
     logging.getLogger("httpx").setLevel(logging.WARNING)
 
