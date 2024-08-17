@@ -320,7 +320,7 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_audio(
             audio=open(demka_path, "rb"),
             filename=voice.title,
-            thumbnail=os.environ.get('GITHUB_HOST') + voice.image
+            thumbnail=open(os.environ.get('GITHUB_HOST') + voice.image, 'rb')
         )
 
     if not context.user_data.get(f"pitch_{update.message.text}"):
