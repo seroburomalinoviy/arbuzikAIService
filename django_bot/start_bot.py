@@ -89,7 +89,7 @@ if "__main__" == __name__:
     log_format = "%(asctime)s - %(levelname)s - %(name)s - %(message)s >>> %(funcName)s(%(lineno)d)"
     formatter = logging.Formatter(log_format)
     handler.setFormatter(formatter)
-    handler.addFilter(CustomFilter)
+    handler.addFilter(CustomFilter())
     logging.basicConfig(level=logging.INFO, format=log_format, datefmt="%Y-%m-%d %H:%M:%S")
     logging.getLogger('').addHandler(handler)
 
