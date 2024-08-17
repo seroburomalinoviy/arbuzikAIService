@@ -118,7 +118,6 @@ async def send_rvc_answer(data):
             audio=open(file_path, "rb"),
             duration=audio.duration,
             filename=audio.voice_title,
-            thumbnail=os.environ.get('GITHUB_HOST') + audio.image
         )
 
     await audio.bot.send_message(

@@ -556,7 +556,6 @@ async def voice_audio_process(update: Update, context: ContextTypes.DEFAULT_TYPE
         "voice_model_pth": voice_model_pth,
         "voice_model_index": voice_model_index,
         "message_id": message.id,
-        "image": voice.image
     }
 
     await push_amqp_message(payload, routing_key="bot-to-rvc")
