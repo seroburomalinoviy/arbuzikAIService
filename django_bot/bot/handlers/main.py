@@ -280,11 +280,11 @@ async def voice_inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE)
                 id=str(uuid4()),
                 title=voice.title,
                 description=voice.description,
-                thumbnail_url=os.environ.get("GITHUB_HOST") + voice.image if voice.image else '',
+                thumbnail_url=os.environ.get("GITHUB_HOST") + voice.image,
                 input_message_content=InputTextMessageContent(voice.slug),
             )
         )
-    await update.inline_query.answer(results, cache_time=100, auto_pagination=True)
+    await update.inline_query.answer(results, cache_time=10000, auto_pagination=True)
     return ConversationHandler.END
 
 
@@ -320,7 +320,7 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_audio(
             audio=open(demka_path, "rb"),
             filename=voice.title,
-            thumbnail=open(os.environ.get('GITHUB_HOST') + voice.image, 'rb')
+            # thumbnail=open(os.environ.get('GITHUB_HOST') + voice.image, 'rb')
         )
 
     if not context.user_data.get(f"pitch_{update.message.text}"):
