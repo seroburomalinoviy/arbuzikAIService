@@ -35,7 +35,9 @@ services:
   redis:
     container_name: redis
     image: redis
-    command: sh -c 'sysctl vm.overcommit_memory=1 && 
+    command: sh -c 'sysctl vm.overcommit_memory=1 &&
+                    mkdir -p /usr/local/etc/redis &&
+                    echo "logfile log_redis_client.log" > /usr/local/etc/redis/redis.conf &&
                     redis-server /usr/local/etc/redis/redis.conf'
     ports:
       - "6379:6379"
@@ -43,6 +45,19 @@ services:
       - ./redis.conf:/usr/local/etc/redis/redis.conf
     restart:
       always
+    healthcheck:
+      test: [ "CMD", "redis-cli", "-a", "ping" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
 
   preclient:
     container_name: preclient
