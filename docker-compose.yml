@@ -35,7 +35,8 @@ services:
   redis:
     container_name: redis
     image: redis
-    command: ["redis-server" , "/usr/local/etc/redis/redis.conf"]
+    command: sh -c 'sysctl vm.overcommit_memory=1 && 
+                    redis-server /usr/local/etc/redis/redis.conf'
     ports:
       - "6379:6379"
     volumes:
