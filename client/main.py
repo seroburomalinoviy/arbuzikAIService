@@ -1,4 +1,5 @@
 import logging
+from logging.handlers import RotatingFileHandler
 import os
 import asyncio
 import sys
@@ -149,7 +150,7 @@ async def main():
 
 if __name__ == "__main__":
     os.makedirs('/logs', exist_ok=True)
-    rotating_handler = logging.handlers.RotatingFileHandler('/logs/client.log', backupCount=5, maxBytes=512 * 1024)
+    rotating_handler = RotatingFileHandler('/logs/client.log', backupCount=5, maxBytes=512 * 1024)
     log_format = "%(asctime)s - %(levelname)s - %(name)s - %(message)s >>> %(funcName)s(%(lineno)d)"
     formatter = logging.Formatter(log_format)
     rotating_handler.setFormatter(formatter)

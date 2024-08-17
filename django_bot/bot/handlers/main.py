@@ -5,6 +5,8 @@ from uuid import uuid4
 from asgiref.sync import sync_to_async
 import django
 from pydub import AudioSegment
+import logging
+from logging.handlers import RotatingFileHandler
 
 from bot.logic import message_text, keyboards
 from bot.logic.amqp_driver import push_amqp_message
@@ -30,12 +32,6 @@ django.setup()
 from bot.models import Voice, Category, Subcategory, Subscription
 from user.models import User
 
-import logging
-from logging.config import fileConfig
-
-fileConfig('log_config.ini')
-logger = logging.getLogger(__name__)
-
 load_dotenv()
 
 allowed_user_statuses = ["member", "creator", "administrator"]
@@ -44,7 +40,7 @@ unresolved_user_statuses = ["kicked", "restricted", "left"]
 
 @sync_to_async
 def cut_audio(path, time_limit):
-    logger.info(path)
+    logging.info(path)
     obj = AudioSegment.from_file(path)
     obj[: time_limit * 1001].export(path)
 
@@ -137,7 +133,7 @@ async def subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
     is_member = await context.bot.get_chat_member(
         chat_id=os.environ.get("CHANNEL_ID"), user_id=update.effective_user.id
     )
-    logger.debug(f"User {is_member.user} is {is_member.status}")
+    logging.debug(f"User {is_member.user} is {is_member.status}")
 
     query = update.callback_query
 
@@ -271,7 +267,7 @@ async def voice_inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE)
 
     slug_subcategory = update.inline_query.query.split("sub_")[1]
     if not slug_subcategory:
-        logger.error("Slug of subcategory is empty")
+        logging.error("Slug of subcategory is empty")
         return
     context.user_data["slug_subcategory"] = slug_subcategory
 

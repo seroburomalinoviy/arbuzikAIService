@@ -3,13 +3,14 @@ from aaio_request import get_actual_ips, create_hash
 
 import os
 import logging
+from logging.handlers import RotatingFileHandler
 from schemas import ApiPayment
 from fastapi import FastAPI, Request, Header
 from fastapi.responses import Response, HTMLResponse
 from fastapi.encoders import jsonable_encoder
 
 os.makedirs('/logs', exist_ok=True)
-rotating_handler = logging.handlers.RotatingFileHandler('/logs/payment-api.log', backupCount=5, maxBytes=512 * 1024)
+rotating_handler = RotatingFileHandler('/logs/payment-api.log', backupCount=5, maxBytes=512 * 1024)
 log_format = "%(asctime)s - %(levelname)s - %(name)s - %(message)s >>> %(funcName)s(%(lineno)d)"
 formatter = logging.Formatter(log_format)
 rotating_handler.setFormatter(formatter)
