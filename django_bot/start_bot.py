@@ -129,6 +129,6 @@ if "__main__" == __name__:
 
     logger.addHandler(ch)
 
-    logging.getLogger("httpx").setLevel(logging.WARNING)
+    logging.getLogger("httpx").setLevel(logging.DEBUG)
 
     main()
