@@ -20,7 +20,7 @@ def main() -> None:
     formatter = logging.Formatter(log_format)
     rotating_handler.setFormatter(formatter)
     logging.basicConfig(level=logging.INFO, format=log_format, datefmt="%Y-%m-%d %H:%M:%S")
-    logging.getLogger('').addHandler(rotating_handler)
+    logging.getLogger(__name__).addHandler(rotating_handler)
 
     TOKEN = os.environ.get("BOT_TOKEN")
     application = ApplicationBuilder().token(TOKEN).build()
