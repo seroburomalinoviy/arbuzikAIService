@@ -321,8 +321,7 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         await update.message.reply_audio(
             audio=open(demka_path, "rb"),
-            title=voice.title,
-            filename=voice.title
+            title=voice.title
         )
 
     if not context.user_data.get(f"pitch_{update.message.text}"):
