@@ -31,9 +31,6 @@ django.setup()
 from bot.models import Voice, Category, Subcategory, Subscription
 from user.models import User
 
-# logger = logging.getLogger(__name__)
-
-
 load_dotenv()
 
 allowed_user_statuses = ["member", "creator", "administrator"]

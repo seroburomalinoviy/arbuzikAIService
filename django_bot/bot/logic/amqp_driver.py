@@ -22,8 +22,6 @@ from user.models import Order
 
 load_dotenv()
 
-# logger = logging.getLogger(__name__)
-
 
 class PikaConnector:
     @classmethod

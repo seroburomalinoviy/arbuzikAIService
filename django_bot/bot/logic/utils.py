@@ -5,8 +5,6 @@ import functools
 from telegram import Update
 import logging
 
-# logger_journal = logging.getLogger(__name__)
-
 
 def get_moscow_time() -> datetime:
     return datetime.now(tz=ZoneInfo(settings.TIME_ZONE))

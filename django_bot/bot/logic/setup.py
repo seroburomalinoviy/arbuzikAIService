@@ -10,8 +10,6 @@ from bot.logic.conversations import (
 
 import logging
 
-# logger = logging.getLogger(__name__)
-
 
 async def on_result_chosen(update: Update, context: tg_ext.ContextTypes.DEFAULT_TYPE):
     result = update.chosen_inline_result.query

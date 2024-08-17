@@ -16,8 +16,6 @@ django.setup()
 
 from bot.models import Voice, Subscription
 
-# logger = logging.getLogger(__name__)
-
 load_dotenv()
 
 
