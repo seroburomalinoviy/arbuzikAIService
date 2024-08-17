@@ -37,6 +37,6 @@ if "__main__" == __name__:
     logging.basicConfig(level=logging.INFO, format=log_format, datefmt="%Y-%m-%d %H:%M:%S")
     logging.getLogger('').addHandler(handler)
 
-    logging.getLogger("httpx").setLevel(logging.DEBUG)
+    logging.getLogger("httpx").setLevel(logging.WARNING)
 
     main()
