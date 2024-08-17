@@ -17,6 +17,7 @@ class RVCData:
         self.duration = data['duration']
         self.voice_filename = data['voice_filename']
         self.message_id = data['message_id']
+        self.image = data.get("image")
         self.bot = Bot(token=os.environ.get("BOT_TOKEN"))
 
 

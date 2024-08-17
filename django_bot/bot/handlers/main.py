@@ -321,7 +321,8 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         await update.message.reply_audio(
             audio=open(demka_path, "rb"),
-            filename=voice.title
+            filename=voice.title,
+            thumbnail=os.environ.get('GITHUB_HOST') + voice.image
         )
 
     if not context.user_data.get(f"pitch_{update.message.text}"):
@@ -554,7 +555,8 @@ async def voice_audio_process(update: Update, context: ContextTypes.DEFAULT_TYPE
         "pitch": pitch,
         "voice_model_pth": voice_model_pth,
         "voice_model_index": voice_model_index,
-        "message_id": message.id
+        "message_id": message.id,
+        "image": voice.image
     }
 
     await push_amqp_message(payload, routing_key="bot-to-rvc")
