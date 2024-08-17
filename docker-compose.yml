@@ -77,7 +77,7 @@ services:
       - type: volume
         source: voices-volume
         target: ${USER_VOICES}
-      - ./logs:/logs
+      - ${LOGS_PATH}:/logs
 
   bot:
     build: ./django_bot
@@ -93,7 +93,7 @@ services:
     env_file:
       - .env
     volumes:
-      - ./logs:/logs
+      - ${LOGS_PATH}:/logs
       - type: volume
         source: voices-volume
         target: ${USER_VOICES}
