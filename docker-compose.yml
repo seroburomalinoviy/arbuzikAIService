@@ -77,6 +77,9 @@ services:
       - type: volume
         source: voices-volume
         target: ${USER_VOICES}
+      - type: volume
+        source: logs
+        target: /arbuzikai_logs
 
   bot:
     build: ./django_bot
@@ -92,6 +95,9 @@ services:
     env_file:
       - .env
     volumes:
+      - type: volume
+        source: logs
+        target: /arbuzikai_logs
       - type: volume
         source: voices-volume
         target: ${USER_VOICES}
@@ -171,6 +177,7 @@ services:
         condition: service_started
 
 volumes:
+  logs:
   static_volume:
   media-data-volume:
   voices-volume:
