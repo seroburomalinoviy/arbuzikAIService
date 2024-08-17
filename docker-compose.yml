@@ -156,6 +156,8 @@ services:
       - .env
     restart:
       always
+    volumes:
+      - ${LOGS_PATH}:/logs
     depends_on:
       bot:
         condition: service_started
@@ -168,6 +170,8 @@ services:
       - .env
     restart:
       always
+    volumes:
+      - ${LOGS_PATH}:/logs
     depends_on:
       payment-api:
         condition: service_started
