@@ -42,5 +42,8 @@ async def inline_searching(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 input_message_content=InputTextMessageContent(voice.slug),
             )
         )
-    await query.answer(results, cache_time=100, auto_pagination=True)
+    try:
+        await query.answer(results, cache_time=100, auto_pagination=True)
+    except:
+        logging.warning('A voice did not get an image')
     return ConversationHandler.END
