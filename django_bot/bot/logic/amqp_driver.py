@@ -126,7 +126,8 @@ async def send_rvc_answer(data):
     )
 
     os.remove(file_path)
-    os.remove(file_path + ".tmp")
+    if audio.extension == 'ogg':
+        os.remove(file_path + ".tmp")
 
     # tmp_path = os.environ.get("USER_VOICES") + "/" + "tmp/"
     # os.makedirs(tmp_path, exist_ok=True)

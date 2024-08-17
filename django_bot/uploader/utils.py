@@ -80,6 +80,7 @@ def voice_parser(filepath):
                 model_index=os.environ.get("MEDIA_DATA_VOLUME").strip("/").split("/")[-1] + "/" + row[FILE] + ".index",
                 demka=os.environ.get("MEDIA_DATA_VOLUME").strip("/").split("/")[-1] + "/" + row[FILE] + ".mp3",
                 image=row[FILE] + ".png",
+                demka_image=os.environ.get("MEDIA_DATA_VOLUME").strip("/").split("/")[-1] + "/" + row[FILE] + ".jpeg"
             )
             for sub in row[SUBSCRIPTIOS].split(", "):
                 subscription = Subscription.objects.get(title=sub)

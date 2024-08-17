@@ -313,6 +313,7 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
     voice = await Voice.objects.aget(slug=slug_voice)
     context.user_data["voice_title"] = voice.title
     demka_path = voice.demka.path
+    demka_image_path = voice.demka_image.path
 
     if not os.path.exists(demka_path):
         await update.message.reply_text("Демонстрация голоса в работе")
@@ -320,7 +321,7 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_audio(
             audio=open(demka_path, "rb"),
             filename=voice.title,
-            # thumbnail=open(os.environ.get('GITHUB_HOST') + voice.image, 'rb')
+            thumbnail=open(demka_image_path, 'rb')
         )
 
     if not context.user_data.get(f"pitch_{update.message.text}"):

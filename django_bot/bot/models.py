@@ -64,12 +64,20 @@ class Voice(models.Model):
         null=True,
         blank=True
     )
+    demka_image = models.FileField(
+        "Обложка демки (обязательно .jpeg)",
+        upload_to="data/",
+        editable=True,
+        null=True,
+        blank=True,
+        storage=OverwriteStorage(),
+    )
     model_pth = models.FileField(
         "Файл pth",
         upload_to="data/",
         editable=True,
         null=True,
-        blank=True,  # todo: change on Prod
+        blank=True,
         storage=OverwriteStorage(),
     )
     model_index = models.FileField(
@@ -77,7 +85,7 @@ class Voice(models.Model):
         upload_to="data/",
         editable=True,
         null=True,
-        blank=True,  # todo: change on Prod
+        blank=True,
         storage=OverwriteStorage(),
     )
     demka = models.FileField(
@@ -85,7 +93,7 @@ class Voice(models.Model):
         upload_to="data/",
         editable=True,
         null=True,
-        blank=True,  # todo: change on Prod
+        blank=True,
         storage=OverwriteStorage(),
     )
     title = models.CharField("Название голоса", max_length=200, editable=True)
