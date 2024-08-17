@@ -1,5 +1,4 @@
 from pathlib import Path
-import logging
 from dotenv import load_dotenv
 import os
 from uuid import uuid4
@@ -31,8 +30,13 @@ django.setup()
 from bot.models import Voice, Category, Subcategory, Subscription
 from user.models import User
 
-load_dotenv()
+import logging
+from logging.config import fileConfig
+
+fileConfig('log_config.ini')
 logger = logging.getLogger(__name__)
+
+load_dotenv()
 
 allowed_user_statuses = ["member", "creator", "administrator"]
 unresolved_user_statuses = ["kicked", "restricted", "left"]
