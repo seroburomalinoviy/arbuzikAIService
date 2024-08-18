@@ -49,6 +49,8 @@ services:
     volumes:
       - ./redis.conf:/usr/local/etc/redis.conf
       - ${LOGS_PATH}:/var/log/redis
+    env_file:
+      - .env
     restart:
       always
     healthcheck:
