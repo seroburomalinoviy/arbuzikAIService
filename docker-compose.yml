@@ -20,7 +20,7 @@ services:
     restart: always
     volumes:
       - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
-      - ${LOGS_PATH}:/logs
+      - ${LOGS_PATH}:/var/log/rabbitmq/logs
     environment:
       - RABBITMQ_CONFIG_FILE=/etc/rabbitmq/rabbitmq.conf
       - RABBITMQ_DEFAULT_USER=${RABBIT_USER}
