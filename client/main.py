@@ -137,7 +137,7 @@ async def reader(channel: aioredis.client.PubSub):
 async def main():
     try:
         redis = aioredis.from_url(
-            url=f"redis://127.0.0.1",
+            url=f"redis://{os.environ.get('REDIS_HOST')}",
         )
     except Exception as e:
         logging.error(e)
