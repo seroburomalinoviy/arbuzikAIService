@@ -35,7 +35,6 @@ services:
   redis:
     container_name: redis
     image: redis
-#    command: sh -c 'redis-server /usr/local/etc/redis.conf'
     command:
       - /bin/sh
       - -c
@@ -48,7 +47,7 @@ services:
       - "6379:6379"
     volumes:
       - ./redis.conf:/usr/local/etc/redis.conf
-      - ${LOGS_PATH}:/var/log/redis
+      - ${LOGS_PATH}:/logs
     env_file:
       - .env
     restart:
