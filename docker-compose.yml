@@ -35,7 +35,8 @@ services:
   redis:
     container_name: redis
     image: redis
-    command: ["redis-server"]
+    command: sh -c 'redis-server /usr/local/etc/redis/redis.conf'
+    #    command: ["redis-server"]
     #    command: sh -c 'sysctl vm.overcommit_memory=1 &&
 #                    mkdir -p /usr/local/etc/redis &&
 #                    echo "logfile log_redis_client.log" > /usr/local/etc/redis/redis.conf &&
@@ -45,7 +46,7 @@ services:
     volumes:
       - ./redis.conf:/usr/local/etc/redis/redis.conf
     restart:
-      always
+      unless-stopped
 #    healthcheck:
 #      test: [ "CMD", "redis-cli", "-a", "ping" ]
 #      interval: 30s
