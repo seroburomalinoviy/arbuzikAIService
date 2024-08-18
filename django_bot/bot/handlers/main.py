@@ -284,7 +284,7 @@ async def voice_inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE)
                 input_message_content=InputTextMessageContent(voice.slug),
             )
         )
-    await update.inline_query.answer(results, cache_time=10000, auto_pagination=True)
+    await update.inline_query.answer(results, cache_time=10, auto_pagination=True)
     return ConversationHandler.END
 
 
