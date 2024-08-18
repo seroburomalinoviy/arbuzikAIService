@@ -18,7 +18,10 @@ services:
     hostname: rabbitmq
     container_name: rabbitmq
     restart: always
+    volumes:
+      - ${LOGS_PATH}:/logs
     environment:
+      - RABBITMQ_LOGS=${RABBITMQ_LOGS}
       - RABBITMQ_DEFAULT_USER=${RABBIT_USER}
       - RABBITMQ_DEFAULT_PASS=${RABBIT_PASSWORD}
       - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit disk_free_limit 2147483648
