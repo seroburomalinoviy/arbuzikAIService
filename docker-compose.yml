@@ -60,14 +60,14 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
-    deploy:
-      resources:
-        limits:
-          cpus: '0.50'
-          memory: 512M
-        reservations:
-          cpus: '0.25'
-          memory: 256M
+#    deploy:
+#      resources:
+#        limits:
+#          cpus: '0.50'
+#          memory: 512M
+#        reservations:
+#          cpus: '0.25'
+#          memory: 256M
 
   preclient:
     container_name: preclient
