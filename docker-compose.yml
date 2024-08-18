@@ -51,7 +51,7 @@ services:
       - "6379:6379"
     volumes:
       - ./redis.conf:/usr/local/etc/redis.conf
-      - ${LOGS_PATH}:/logs
+      - ${LOGS_PATH}:/var/log/redis/log_redis_client.log
     env_file:
       - .env
     restart:
