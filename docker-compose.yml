@@ -35,8 +35,8 @@ services:
   redis:
     container_name: redis
     image: redis
-    command: sh -c 'redis-server /usr/local/etc/redis.conf'
-#    command: sh -c 'redis-server'
+#    command: sh -c 'redis-server /usr/local/etc/redis.conf'
+    command: sh -c 'redis-server'
     ports:
       - "6379:6379"
     volumes:
