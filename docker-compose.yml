@@ -40,6 +40,7 @@ services:
       - "6379:6379"
     volumes:
       - ./redis.conf:/usr/local/etc/redis.conf
+      - ${LOGS_PATH}:/log_redis_client.log  # from redis.conf
     restart:
       always
 #    healthcheck:
@@ -65,7 +66,7 @@ services:
     restart:
       always
     volumes:
-      - ${LOGS_PATH}:/log_redis_client.log  # from redis.conf
+      - ${LOGS_PATH}:/logs
     depends_on:
       redis:
         condition: service_started
