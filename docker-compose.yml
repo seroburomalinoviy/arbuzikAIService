@@ -65,7 +65,7 @@ services:
     restart:
       always
     volumes:
-      - ${LOGS_PATH}:/logs
+      - ${LOGS_PATH}:/log_redis_client.log  # from redis.conf
     depends_on:
       redis:
         condition: service_started
