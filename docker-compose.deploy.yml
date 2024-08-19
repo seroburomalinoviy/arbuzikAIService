@@ -8,19 +8,37 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
       - '5432:5432'
-    restart: always
+    # restart: always
     volumes:
       - /home/postgres/db_data:/var/lib/postgresql/data
       - /home/postgres/backups:/backups
     deploy:
       mode: replicated
       replicas: 1
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 3
+        window: 5s
+      # update_config:
+      #   parallelism: 1
+      #   delay: 10s
+      #   order: start-first
+      #   monitor: 10s
+      #   failure_action: pause
+      # rollback_config:
+      #   parallelism: 1
+      #   delay: 20s
+      #   failure_action: pause
+      #   monitor: 0s 
+      #   max_failure_ratio: 0
+      #   order: start-first
 
   rabbitmq:
     image: rabbitmq:3.10.7-management
     hostname: rabbitmq
     container_name: rabbitmq
-    restart: always
+    # restart: always
     environment:
       - RABBITMQ_DEFAULT_USER=${RABBIT_USER}
       - RABBITMQ_DEFAULT_PASS=${RABBIT_PASSWORD}
@@ -37,6 +55,24 @@ services:
     deploy:
       mode: replicated
       replicas: 1
+      restart_policy:
+        condition: any
+        delay: 10s
+        max_attempts: 3
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+        monitor: 10s
+        failure_action: pause
+      rollback_config:
+        parallelism: 1
+        delay: 20s
+        failure_action: pause
+        monitor: 0s 
+        max_failure_ratio: 0
+        order: start-first
 
   redis:
     container_name: redis
@@ -51,10 +87,29 @@ services:
     deploy:
       mode: replicated
       replicas: 1
+      restart_policy:
+        condition: any
+        delay: 10s
+        max_attempts: 3
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+        monitor: 10s
+        failure_action: pause
+      rollback_config:
+        parallelism: 1
+        delay: 20s
+        failure_action: pause
+        monitor: 0s 
+        max_failure_ratio: 0
+        order: start-first
 
   preclient:
     container_name: preclient
-    build: ./preclient
+    image: localhost:5000/preclient:latest
+    # build: ./preclient
     command: ["python", "main.py"]
     env_file:
       - .env
@@ -68,20 +123,39 @@ services:
     deploy:
       mode: replicated
       replicas: 1
+      restart_policy:
+        condition: any
+        delay: 10s
+        max_attempts: 3
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+        monitor: 10s
+        failure_action: pause
+      rollback_config:
+        parallelism: 1
+        delay: 20s
+        failure_action: pause
+        monitor: 0s 
+        max_failure_ratio: 0
+        order: start-first
 
   client:
     container_name: client
-    build: ./client
+    image: localhost:5000/client:latest
+    # build: ./client
     command: ["python", "main.py"]
     env_file:
       - .env
-    restart:
-      always
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
-      redis:
-        condition: service_started
+    # restart:
+    #   always
+    # depends_on:
+    #   rabbitmq:
+    #     condition: service_healthy
+    #   redis:
+    #     condition: service_started
     volumes:
       - type: volume
         source: media-data-volume
@@ -103,19 +177,27 @@ services:
         order: start-first
         monitor: 10s
         failure_action: pause
-      rollback_update:
+      rollback_config:
+        parallelism: 1
+        delay: 20s
+        failure_action: pause
+        monitor: 0s 
+        max_failure_ratio: 0
+        order: start-first
+
 
   bot:
-    build: ./django_bot
+    # build: ./django_bot
+    image: localhost:5000/bot:latest
     container_name: bot
     command: ["python", "start_bot.py"]
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
-      db:
-        condition: service_started
-    restart:
-      always
+    # depends_on:
+    #   rabbitmq:
+    #     condition: service_healthy
+    #   db:
+    #     condition: service_started
+    # restart:
+    #   always
     env_file:
       - .env
     volumes:
@@ -125,21 +207,43 @@ services:
       - type: volume
         source: media-data-volume
         target: ${MEDIA_DATA_VOLUME}
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: any
+        delay: 10s
+        max_attempts: 3
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+        monitor: 10s
+        failure_action: pause
+      rollback_config:
+        parallelism: 1
+        delay: 20s
+        failure_action: pause
+        monitor: 0s 
+        max_failure_ratio: 0
+        order: start-first
 
 
   django:
-    build: ./django_bot
+    # build: ./django_bot
+    image: localhost:5000/django:latest
     container_name: django
     command: sh -c 'python manage.py migrate --noinput && 
                     python manage.py collectstatic --noinput --clear &&
                     gunicorn config.asgi:application -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000'
     expose:
       - 8000
-    depends_on:
-      db:
-        condition: service_started
-    restart:
-      always
+    # depends_on:
+    #   db:
+    #     condition: service_started
+    # restart:
+    #   always
     env_file:
       - .env
     volumes:
@@ -149,6 +253,27 @@ services:
       - type: volume
         source: static_volume
         target: /app/static
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: any
+        delay: 10s
+        max_attempts: 3
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+        monitor: 10s
+        failure_action: pause
+      rollback_config:
+        parallelism: 1
+        delay: 20s
+        failure_action: pause
+        monitor: 0s 
+        max_failure_ratio: 0
+        order: start-first
 
   proxy-server:
     container_name: nginx
@@ -162,10 +287,31 @@ services:
       - type: volume
         source: static_volume
         target: /app/static
-    restart:
-      always
-    depends_on:
-      - django
+    # restart:
+    #   always
+    # depends_on:
+    #   - django
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: any
+        delay: 10s
+        max_attempts: 3
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+        monitor: 10s
+        failure_action: pause
+      rollback_config:
+        parallelism: 1
+        delay: 20s
+        failure_action: pause
+        monitor: 0s 
+        max_failure_ratio: 0
+        order: start-first
 
 
 volumes:
