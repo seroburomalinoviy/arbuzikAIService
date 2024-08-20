@@ -59,7 +59,7 @@ class Voice(models.Model):
         "Voice slug",
     )
     image = models.CharField(
-        "Имя картинки (можно с любым расширением)",
+        "Обложка голоса (можно с любым расширением)",
         max_length=200,
         null=True,
         blank=True
