@@ -166,7 +166,7 @@ CELERY_BEAT_SCHEDULE = {
     'clean_user_voices': {
         'task': 'bot.tasks.clean_user_voices',  # The name of the task
         # 'schedule': crontab(minute='0', hour='3'),  # How often the task should run
-        'schedule': crontab(minute='1'),
+        'schedule': 60.0,  # каждую минуту
         # 'args': (arg1, arg2),  # Positional arguments for the task (optional)
         # 'kwargs': {'keyword_arg': 'value'},  # Keyword arguments for the task (optional)
     },
