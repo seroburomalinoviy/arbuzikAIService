@@ -318,11 +318,15 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not os.path.exists(demka_path):
         await update.message.reply_text("Демонстрация голоса в работе")
     else:
-        await update.message.reply_audio(
-            audio=open(demka_path, "rb"),
-            filename=voice.title,
-            thumbnail=open(demka_image_path, 'rb')
-        )
+        message = update.message.reply_audio(
+                audio=open(demka_path, "rb"),
+                filename=voice.title,
+            )
+        if not demka_image_path:
+            await message
+        else:
+            message.thumbnail = open(demka_image_path, 'rb')
+            await message
 
     if not context.user_data.get(f"pitch_{update.message.text}"):
         context.user_data[f"pitch_{update.message.text}"] = 0
