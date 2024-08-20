@@ -80,7 +80,7 @@ def voice_parser(filepath):
                 model_index=os.environ.get("MEDIA_DATA_VOLUME").strip("/").split("/")[-1] + "/" + row[FILE] + ".index",
                 demka=os.environ.get("MEDIA_DATA_VOLUME").strip("/").split("/")[-1] + "/" + row[FILE] + ".mp3",
                 image=row[FILE] + ".png",
-                demka_image=os.environ.get("MEDIA_DATA_VOLUME").strip("/").split("/")[-1] + "/" + row[FILE] + ".jpeg"
+                demka_image=os.environ.get("MEDIA_DATA_VOLUME").strip("/").split("/")[-1] + "/" + row[FILE] + ".jpg"
             )
             if row[SUBSCRIPTIOS]:
                 for sub in row[SUBSCRIPTIOS].split(", "):
