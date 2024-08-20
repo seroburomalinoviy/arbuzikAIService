@@ -143,6 +143,16 @@ async def subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
             message_text.demo_rights,
             reply_markup=InlineKeyboardMarkup(keyboards.is_subscribed),
         )
+        system_voice = await Voice.objects.aget(slug=os.environ.get('SYSTEM_VOICE'))
+        demka_path = system_voice.demka.path
+        demka_cover = system_voice.demka_image
+        if demka_path and demka_cover:
+            await context.bot.send_audio(
+                chat_id=query.from_user.id,
+                audio=open(demka_path, "rb"),
+                filename=system_voice.title,
+                thumbnail=open(demka_cover, 'rb')
+            )
         return BASE_STATES
     elif is_member.status in unresolved_user_statuses:
         await query.answer(text="Сначала подпишись :)")
