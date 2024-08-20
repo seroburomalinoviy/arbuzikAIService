@@ -218,6 +218,10 @@ services:
       - .env
     restart:
       always
+    volumes:
+      - type: volume
+        source: voices-volume
+        target: ${USER_VOICES}
 
 volumes:
   static_volume:
