@@ -142,8 +142,8 @@ async def subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
         system_voice = await Voice.objects.aget(slug=os.environ.get('SYSTEM_VOICE'))
         demka_path = system_voice.demka.path
         demka_cover = system_voice.demka_image
-        if demka_path:
-            if demka_cover:
+        if os.path.exists(demka_path):
+            if os.path.exists(demka_cover):
                 await context.bot.send_audio(
                     chat_id=query.from_user.id,
                     audio=open(demka_path, "rb"),
@@ -341,7 +341,7 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not os.path.exists(demka_path):
         await update.message.reply_text("Демонстрация голоса в работе")
     else:
-        if not demka_image_path:
+        if not os.path.exists(demka_image_path):
             await update.message.reply_audio(
                 audio=open(demka_path, "rb"),
                 filename=voice.title,
