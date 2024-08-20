@@ -125,9 +125,9 @@ async def send_rvc_answer(data):
         reply_markup=InlineKeyboardMarkup(keyboards.final_buttons),
     )
 
-    os.remove(file_path)
-    if audio.extension == 'ogg':
-        os.remove(file_path + ".tmp")
+    # os.remove(file_path)
+    # if audio.extension == 'ogg':
+    #     os.remove(file_path + ".tmp")
 
     # tmp_path = os.environ.get("USER_VOICES") + "/" + "tmp/"
     # os.makedirs(tmp_path, exist_ok=True)
