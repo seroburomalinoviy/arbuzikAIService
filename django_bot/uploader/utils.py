@@ -82,9 +82,10 @@ def voice_parser(filepath):
                 image=row[FILE] + ".png",
                 demka_image=os.environ.get("MEDIA_DATA_VOLUME").strip("/").split("/")[-1] + "/" + row[FILE] + ".jpeg"
             )
-            for sub in row[SUBSCRIPTIOS].split(", "):
-                subscription = Subscription.objects.get(title=sub)
-                voice.subscriptions.add(subscription)
+            if row[SUBSCRIPTIOS]:
+                for sub in row[SUBSCRIPTIOS].split(", "):
+                    subscription = Subscription.objects.get(title=sub)
+                    voice.subscriptions.add(subscription)
 
             voice_counter += 1
 

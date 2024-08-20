@@ -21,7 +21,7 @@ class VoiceParserAdmin(admin.ModelAdmin):
             message = voice_parser(csv_file_path)
             messages.add_message(request, messages.INFO, message)
         except Exception as e:
-            messages.add_message(request, messages.WARNING, e)
+            messages.add_message(request, messages.ERROR, f'Операция отменена\n{e}')
 
 
 @admin.register(SubscriptionParser)
