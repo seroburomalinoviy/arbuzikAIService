@@ -143,7 +143,7 @@ async def subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
         demka_cover = system_voice.demka_image
         if demka_path:
             if demka_cover:
-                await context.bot.send_audio(
+                answer = await context.bot.send_audio(
                     chat_id=query.from_user.id,
                     audio=open(demka_path, "rb"),
                     filename=system_voice.title,
@@ -151,12 +151,13 @@ async def subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     duration=60
                 )
             else:
-                await context.bot.send_audio(
+                answer = await context.bot.send_audio(
                     chat_id=query.from_user.id,
                     audio=open(demka_path, "rb"),
                     filename=system_voice.title,
                     duration=60
                 )
+        logging.info(f'{answer=}')
         await query.answer()
         await query.edit_message_text(
             message_text.demo_rights,
