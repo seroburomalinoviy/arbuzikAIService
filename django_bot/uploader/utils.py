@@ -54,26 +54,20 @@ def voice_parser(filepath):
     with open(filepath, newline="") as f:
         reader = csv.DictReader(f)
         for row in reader:
-            if not row[CATEGORY]:
-                category = None
-            else:
-                category, category_created = Category.objects.get_or_create(
-                    title=row[CATEGORY],
-                )
-                if category_created:
-                    category_counter += 1
-                    category.save()
+            category, category_created = Category.objects.get_or_create(
+                title=row[CATEGORY],
+            )
+            if category_created:
+                category_counter += 1
+                category.save()
 
-            if not row[SUBCATEGORY]:
-                subcategory = None
-            else:
-                subcategory, subcategory_created = Subcategory.objects.get_or_create(
-                    title=row[SUBCATEGORY], category=category
-                )
-                if subcategory_created:
-                    subcategory_counter += 1
-                    subcategory.slug = row[SLUG_SUBCATEGORY]
-                    subcategory.save()
+            subcategory, subcategory_created = Subcategory.objects.get_or_create(
+                title=row[SUBCATEGORY], category=category
+            )
+            if subcategory_created:
+                subcategory_counter += 1
+                subcategory.slug = row[SLUG_SUBCATEGORY]
+                subcategory.save()
 
             voice = Voice.objects.create(
                 title=row[VOICE],
