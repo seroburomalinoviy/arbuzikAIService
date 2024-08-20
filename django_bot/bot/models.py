@@ -110,7 +110,11 @@ class Voice(models.Model):
 
     subscriptions = models.ManyToManyField("Subscription")
     subcategory = models.ForeignKey(
-        "Subcategory", on_delete=models.CASCADE, related_name="voices"
+        "Subcategory",
+        on_delete=models.SET_NULL,
+        related_name="voices",
+        null=True,
+        blank=True
     )
 
     def __str__(self):
