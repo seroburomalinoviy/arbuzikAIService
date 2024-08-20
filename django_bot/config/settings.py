@@ -150,7 +150,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # CSRF_COOKIE_HTTPONLY = True
 
 # Celery settings
-redis_for_celery = f"redis://{os.environ.get('REDIS_HOST')}:{os.environ.get('REDIS_PORT')}/1"
+redis_for_celery = f"redis://:{os.environ.get('REDIS_PASSWORD')}@{os.environ.get('REDIS_HOST')}:{os.environ.get('REDIS_PORT')}/1"
 CELERY_BROKER_URL = redis_for_celery
 CELERY_RESULT_BACKEND = redis_for_celery
 CELERY_CACHE_BACKEND = redis_for_celery
