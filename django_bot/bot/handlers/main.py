@@ -158,11 +158,12 @@ async def subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     duration=60
                 )
         logging.info(f'{answer=}')
-        await query.answer()
-        await query.edit_message_text(
-            message_text.demo_rights,
-            reply_markup=InlineKeyboardMarkup(keyboards.is_subscribed),
-        )
+        if answer:
+            await query.answer()
+            await query.edit_message_text(
+                message_text.demo_rights,
+                reply_markup=InlineKeyboardMarkup(keyboards.is_subscribed),
+            )
 
         return BASE_STATES
     elif is_member.status in unresolved_user_statuses:
