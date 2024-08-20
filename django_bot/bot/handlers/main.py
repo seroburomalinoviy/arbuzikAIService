@@ -139,10 +139,6 @@ async def subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if is_member.status in allowed_user_statuses:
         await query.answer()
-        await query.edit_message_text(
-            message_text.demo_rights,
-            reply_markup=InlineKeyboardMarkup(keyboards.is_subscribed),
-        )
         system_voice = await Voice.objects.aget(slug=os.environ.get('SYSTEM_VOICE'))
         demka_path = system_voice.demka.path
         demka_cover = system_voice.demka_image
@@ -160,6 +156,10 @@ async def subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     audio=open(demka_path, "rb"),
                     filename=system_voice.title,
                 )
+        await query.edit_message_text(
+            message_text.demo_rights,
+            reply_markup=InlineKeyboardMarkup(keyboards.is_subscribed),
+        )
 
         return BASE_STATES
     elif is_member.status in unresolved_user_statuses:
