@@ -5,6 +5,7 @@ import logging
 
 @shared_task
 def clean_user_voices():
+    logging.info('START TASK')
     os.system(f'rm -rf {os.environ.get("USER_VOICES")}/')
     logging.info('User voices was cleaned up')
 
