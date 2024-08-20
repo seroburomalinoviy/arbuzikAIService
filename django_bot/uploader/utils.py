@@ -54,7 +54,9 @@ def voice_parser(filepath):
     with open(filepath, newline="") as f:
         reader = csv.DictReader(f)
         for row in reader:
-            if row[CATEGORY]:
+            if not row[CATEGORY]:
+                category = None
+            else:
                 category, category_created = Category.objects.get_or_create(
                     title=row[CATEGORY],
                 )
@@ -62,7 +64,9 @@ def voice_parser(filepath):
                     category_counter += 1
                     category.save()
 
-            if row[SUBCATEGORY]:
+            if not row[SUBCATEGORY]:
+                subcategory = None
+            else:
                 subcategory, subcategory_created = Subcategory.objects.get_or_create(
                     title=row[SUBCATEGORY], category=category
                 )
@@ -77,7 +81,7 @@ def voice_parser(filepath):
                 description=row[DESCRIPTION],
                 gender=row[GENDER],
                 search_words=row[SEARCH_WORDS],
-                subcategory=subcategory if subcategory else None,
+                subcategory=subcategory,
                 model_pth=os.environ.get("MEDIA_DATA_VOLUME").strip("/").split("/")[-1] + "/" + row[FILE] + ".pth",
                 model_index=os.environ.get("MEDIA_DATA_VOLUME").strip("/").split("/")[-1] + "/" + row[FILE] + ".index",
                 demka=os.environ.get("MEDIA_DATA_VOLUME").strip("/").split("/")[-1] + "/" + row[FILE] + ".mp3",
