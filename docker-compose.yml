@@ -205,6 +205,20 @@ services:
       payment-api:
         condition: service_started
 
+  scheduler:
+    container_name: scheduler
+    build: ./django_bot
+    command: celery -A django_bot beat -l info -S django_celery_beat.schedulers:DatabaseScheduler
+    depends_on:
+      redis:
+        condition: service_started
+      bot:
+        condition: service_started
+    env_file:
+      - .env
+    restart:
+      always
+
 volumes:
   static_volume:
   media-data-volume:

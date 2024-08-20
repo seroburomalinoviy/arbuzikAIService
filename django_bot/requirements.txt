@@ -41,3 +41,6 @@ uvicorn
 gunicorn
 uvicorn-worker
 pydub
+celery
+django-celery
+django_celery_beat
