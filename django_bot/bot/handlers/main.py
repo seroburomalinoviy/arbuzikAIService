@@ -141,7 +141,7 @@ async def subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await query.answer()
         system_voice = await Voice.objects.aget(slug=os.environ.get('SYSTEM_VOICE'))
         demka_path = system_voice.demka.path
-        demka_cover = system_voice.demka_image
+        demka_cover = system_voice.demka_image.path
         if os.path.exists(demka_path):
             if os.path.exists(demka_cover):
                 await context.bot.send_audio(
