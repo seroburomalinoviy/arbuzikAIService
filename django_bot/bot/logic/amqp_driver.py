@@ -134,8 +134,6 @@ async def send_rvc_answer(data):
     # os.replace(file_path, tmp_path + audio.voice_filename)
     # os.replace(file_path + ".tmp", tmp_path + audio.voice_filename + '.tmp')
 
-    logging.info("Voice files removed")
-
 
 async def push_amqp_message(data: dict, routing_key):
     payload = json.dumps(data)
