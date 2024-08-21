@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+from celery.schedules import crontab
+
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -22,12 +24,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', False) == 'True'
+DEBUG = os.environ.get("DEBUG", False) == "True"
 
-ALLOWED_HOSTS = [i for i in os.environ.get('DJANGO_ALLOWED_HOSTS').split(',')]
+ALLOWED_HOSTS = [i for i in os.environ.get("DJANGO_ALLOWED_HOSTS").split(",")]
 
 
 # Application definition
@@ -39,9 +41,10 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    'bot',
-    'uploader',
-    'user'
+    "user",
+    "bot",
+    "uploader",
+    "django_celery_beat",
 ]
 
 MIDDLEWARE = [
@@ -133,9 +136,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = "static/"
-STATIC_ROOT = BASE_DIR / 'static'
+STATIC_ROOT = BASE_DIR / "static"
 MEDIA_URL = f"http://{os.environ.get('HOST')}/"
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = BASE_DIR / "media"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -146,3 +149,26 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # SESSION_COOKIE_SECURE = True
 # CSRF_COOKIE_HTTPONLY = True
 
+# Celery settings
+redis_for_celery = f"redis://:{os.environ.get('REDIS_PASSWORD')}@{os.environ.get('REDIS_HOST')}:{os.environ.get('REDIS_PORT')}/1"
+CELERY_BROKER_URL = redis_for_celery
+CELERY_RESULT_BACKEND = redis_for_celery
+CELERY_CACHE_BACKEND = redis_for_celery
+CELERY_ACCEPT_CONTENT = ["application/json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TIMEZONE = TIME_ZONE
+
+# Celery Beat settings
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
+
+CELERY_BEAT_SCHEDULE = {
+    'clean_user_voices': {
+        'task': 'bot.tasks.clean_user_voices',  # The name of the task
+        # 'schedule': crontab(minute='0', hour='3'),  # How often the task should run
+        'schedule': 60.0,  # каждую минуту
+        # 'args': (arg1, arg2),  # Positional arguments for the task (optional)
+        # 'kwargs': {'keyword_arg': 'value'},  # Keyword arguments for the task (optional)
+    },
+    # Add more tasks as needed
+}

@@ -1,4 +1,6 @@
 # Custom
+client/hubert_base.pt
+client/rmvpe.pt
 .env
 django_bot/.env.dev
 .ogg

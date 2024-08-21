@@ -18,7 +18,11 @@ services:
     hostname: rabbitmq
     container_name: rabbitmq
     restart: always
+    volumes:
+      - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+#      - ${LOGS_PATH}:/var/log/rabbitmq/logs:ro
     environment:
+      - RABBITMQ_CONFIG_FILE=/etc/rabbitmq/rabbitmq.conf
       - RABBITMQ_DEFAULT_USER=${RABBIT_USER}
       - RABBITMQ_DEFAULT_PASS=${RABBIT_PASSWORD}
       - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit disk_free_limit 2147483648
@@ -35,13 +39,36 @@ services:
   redis:
     container_name: redis
     image: redis
-    command: ["redis-server"]
+    command:
+      - /bin/sh
+      - -c
+      # - Double dollars, so that the variable is not expanded by Docker Compose
+      # - Surround by quotes, so that the shell does not split the password
+      # - The ${variable:?message} syntax causes shell to exit with a non-zero
+      #   code and print a message, when the variable is not set or empty
+      - redis-server /usr/local/etc/redis.conf --requirepass "$${REDIS_PASSWORD:?REDIS_PASSWORD variable is not set}"
     ports:
       - "6379:6379"
     volumes:
-      - ./redis.conf:/usr/local/etc/redis/redis.conf
+      - ./redis.conf:/usr/local/etc/redis.conf
+      - ${LOGS_PATH}:/var/log/redis
+    env_file:
+      - .env
     restart:
       always
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+#    deploy:
+#      resources:
+#        limits:
+#          cpus: '0.50'
+#          memory: 512M
+#        reservations:
+#          cpus: '0.25'
+#          memory: 256M
 
   preclient:
     container_name: preclient
@@ -51,6 +78,8 @@ services:
       - .env
     restart:
       always
+    volumes:
+      - ${LOGS_PATH}:/logs
     depends_on:
       redis:
         condition: service_started
@@ -77,6 +106,7 @@ services:
       - type: volume
         source: voices-volume
         target: ${USER_VOICES}
+      - ${LOGS_PATH}:/logs
 
   bot:
     build: ./django_bot
@@ -92,6 +122,7 @@ services:
     env_file:
       - .env
     volumes:
+      - ${LOGS_PATH}:/logs
       - type: volume
         source: voices-volume
         target: ${USER_VOICES}
@@ -128,6 +159,7 @@ services:
     image: nginx:latest
     ports:
       - "80:80"
+      - "8001:8001"
     env_file:
       - .env
     volumes:
@@ -138,8 +170,58 @@ services:
     restart:
       always
     depends_on:
-      - django
+      django:
+        condition: service_started
+      payment-api:
+        condition: service_started
 
+  payment-api:
+    container_name: payment-api
+    build: ./payment-service
+    command: sh -c 'uvicorn api:app --host 0.0.0.0 --port 8001 --proxy-headers'
+    expose:
+      - 8001
+    env_file:
+      - .env
+    restart:
+      always
+    volumes:
+      - ${LOGS_PATH}:/logs
+    depends_on:
+      bot:
+        condition: service_started
+
+  payment-listener:
+    container_name: payment-listener
+    build: ./payment-service
+    command: ["python", "main.py"]
+    env_file:
+      - .env
+    restart:
+      always
+    volumes:
+      - ${LOGS_PATH}:/logs
+    depends_on:
+      payment-api:
+        condition: service_started
+
+  scheduler:
+    container_name: scheduler
+    build: ./django_bot
+    command: celery -A config beat -l info -S django_celery_beat.schedulers:DatabaseScheduler
+    depends_on:
+      redis:
+        condition: service_started
+      bot:
+        condition: service_started
+    env_file:
+      - .env
+    restart:
+      always
+    volumes:
+      - type: volume
+        source: voices-volume
+        target: ${USER_VOICES}
 
 volumes:
   static_volume:
