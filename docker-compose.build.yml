@@ -86,3 +86,40 @@ services:
     #   - type: volume
     #     source: static_volume
     #     target: /app/static
+
+  payment-api:
+    # container_name: payment-api
+    build: ./payment-service
+    image: localhost:5000/payment-api
+    pull_policy: build
+    # # command: sh -c 'uvicorn api:app --host 0.0.0.0 --port 8001 --proxy-headers'
+    # expose:
+    #   - 8001
+    # env_file:
+    #   - .env
+    # restart:
+    #   always
+    # volumes:
+    #   - ${LOGS_PATH}:/logs
+    # depends_on:
+    #   bot:
+    #     condition: service_started
+
+
+  # scheduler:
+  #   container_name: scheduler
+  #   build: ./django_bot
+  #   command: celery -A config beat -l info -S django_celery_beat.schedulers:DatabaseScheduler
+  #   depends_on:
+  #     redis:
+  #       condition: service_started
+  #     bot:
+  #       condition: service_started
+  #   env_file:
+  #     - .env
+  #   restart:
+  #     always
+  #   volumes:
+  #     - type: volume
+  #       source: voices-volume
+  #       target: ${USER_VOICES}

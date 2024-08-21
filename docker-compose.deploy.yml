@@ -40,6 +40,7 @@ services:
     container_name: rabbitmq
     # restart: always
     environment:
+      - RABBITMQ_CONFIG_FILE=/etc/rabbitmq/rabbitmq.conf
       - RABBITMQ_DEFAULT_USER=${RABBIT_USER}
       - RABBITMQ_DEFAULT_PASS=${RABBIT_PASSWORD}
       - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit disk_free_limit 2147483648
@@ -77,11 +78,26 @@ services:
   redis:
     container_name: redis
     image: redis
-    command: ["redis-server"]
+    command:
+      - /bin/sh
+      - -c
+      # - Double dollars, so that the variable is not expanded by Docker Compose
+      # - Surround by quotes, so that the shell does not split the password
+      # - The ${variable:?message} syntax causes shell to exit with a non-zero
+      #   code and print a message, when the variable is not set or empty
+      - redis-server /usr/local/etc/redis.conf --requirepass "$${REDIS_PASSWORD:?REDIS_PASSWORD variable is not set}"
     ports:
       - "6379:6379"
     volumes:
       - ./redis.conf:/usr/local/etc/redis/redis.conf
+      - ${LOGS_PATH}:/var/log/redis
+    env_file:
+      - .env
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
     # restart:
     #   always
     deploy:
@@ -113,13 +129,15 @@ services:
     command: ["python", "main.py"]
     env_file:
       - .env
+    volumes:
+      - ${LOGS_PATH}:/logs
     restart:
       always
-    depends_on:
-      redis:
-        condition: service_started
-      rabbitmq:
-        condition: service_healthy
+    # depends_on:
+    #   redis:
+    #     condition: service_started
+    #   rabbitmq:
+    #     condition: service_healthy
     deploy:
       mode: replicated
       replicas: 1
@@ -201,6 +219,7 @@ services:
     env_file:
       - .env
     volumes:
+      - ${LOGS_PATH}:/logs
       - type: volume
         source: voices-volume
         target: ${USER_VOICES}
@@ -291,6 +310,117 @@ services:
     #   always
     # depends_on:
     #   - django
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: any
+        delay: 10s
+        max_attempts: 3
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+        monitor: 10s
+        failure_action: pause
+      rollback_config:
+        parallelism: 1
+        delay: 20s
+        failure_action: pause
+        monitor: 0s 
+        max_failure_ratio: 0
+        order: start-first
+
+    payment-api:
+      container_name: payment-api
+      image: localhost:5000/payment-api
+      command: sh -c 'uvicorn api:app --host 0.0.0.0 --port 8001 --proxy-headers'
+      expose:
+        - 8001
+      env_file:
+        - .env
+      # restart:
+      #   always
+      volumes:
+        - ${LOGS_PATH}:/logs
+      # depends_on:
+      #   bot:
+      #     condition: service_started
+      deploy:
+        mode: replicated
+        replicas: 1
+        restart_policy:
+          condition: any
+          delay: 10s
+          max_attempts: 3
+          window: 60s
+        update_config:
+          parallelism: 1
+          delay: 10s
+          order: start-first
+          monitor: 10s
+          failure_action: pause
+        rollback_config:
+          parallelism: 1
+          delay: 20s
+          failure_action: pause
+          monitor: 0s 
+          max_failure_ratio: 0
+          order: start-first
+
+  payment-listener:
+    container_name: payment-listener
+    image: localhost:5000/payment-api
+    command: ["python", "main.py"]
+    env_file:
+      - .env
+    # restart:
+    #   always
+    volumes:
+      - ${LOGS_PATH}:/logs
+    # depends_on:
+    #   payment-api:
+    #     condition: service_started
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: any
+        delay: 10s
+        max_attempts: 3
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+        monitor: 10s
+        failure_action: pause
+      rollback_config:
+        parallelism: 1
+        delay: 20s
+        failure_action: pause
+        monitor: 0s 
+        max_failure_ratio: 0
+        order: start-first
+
+  scheduler:
+    container_name: scheduler
+    image: localhost:5000/django:latest
+    command: celery -A config beat -l info -S django_celery_beat.schedulers:DatabaseScheduler
+    # depends_on:
+    #   redis:
+    #     condition: service_started
+    #   bot:
+    #     condition: service_started
+    env_file:
+      - .env
+    # restart:
+    #   always
+    volumes:
+      - type: volume
+        source: voices-volume
+        target: ${USER_VOICES}
     deploy:
       mode: replicated
       replicas: 1
