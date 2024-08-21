@@ -147,7 +147,6 @@ async def subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 await context.bot.send_audio(
                     chat_id=query.from_user.id,
                     audio=open(demka_path, "rb"),
-                    title=system_voice.title,
                     filename=system_voice.title,
                     thumbnail=open(demka_cover, 'rb'),
                     duration=60
@@ -156,7 +155,6 @@ async def subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 await context.bot.send_audio(
                     chat_id=query.from_user.id,
                     audio=open(demka_path, "rb"),
-                    title=system_voice.title,
                     filename=system_voice.title,
                     duration=60
                 )
