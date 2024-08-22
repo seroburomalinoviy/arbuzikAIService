@@ -38,7 +38,7 @@ def clean_user_voices():
 
 app.conf.beat_schedule = {
     'clean_user_voices': {
-        'task': 'celery.clean_user_voices',  # The name of the task
+        'task': 'config.celery.clean_user_voices',  # The name of the task
         # 'schedule': crontab(minute='0', hour='3'),  # How often the task should run
         'schedule': 60.0,  # каждую минуту
         # 'args': (arg1, arg2),  # Positional arguments for the task (optional)
