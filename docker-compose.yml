@@ -14,13 +14,13 @@ services:
       - /home/postgres/backups:/backups
 
   rabbitmq:
-    image: rabbitmq:3.8.27-management
+    image: rabbitmq:3.10.2-management
     hostname: rabbitmq
     container_name: rabbitmq
     restart: always
     volumes:
       - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
-      - ${LOGS_PATH}:/logs
+      - ${LOGS_PATH}:/logs:rw
     environment:
       - RABBITMQ_CONFIG_FILE=/etc/rabbitmq/rabbitmq.conf
       - RABBITMQ_DEFAULT_USER=${RABBIT_USER}
