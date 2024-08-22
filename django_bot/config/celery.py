@@ -19,7 +19,7 @@ app.autodiscover_tasks()
 
 
 @after_setup_logger.connect
-def setup_loggers(*args, **kwargs):
+def setup_loggers(logging, *args, **kwargs):
     os.makedirs('/logs', exist_ok=True)
     handler = RotatingFileHandler('/logs/celery.log', backupCount=5, maxBytes=512 * 1024)
     log_format = "%(asctime)s - %(levelname)s - %(name)s - %(message)s >>> %(funcName)s(%(lineno)d)"
@@ -31,9 +31,9 @@ def setup_loggers(*args, **kwargs):
 
 @app.task
 def clean_user_voices():
-    print('PRINT User voices was cleaned up ')
-    logging.info('User voices was cleaned up')
     os.system(f'rm -rf {os.environ.get("USER_VOICES")}/')
+    logging.info('User voices was cleaned up')
+    return True
 
 
 app.conf.beat_schedule = {
