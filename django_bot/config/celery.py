@@ -31,9 +31,9 @@ def setup_loggers(*args, **kwargs):
 
 @app.task
 def clean_user_voices():
-    print('User voices was cleaned up')
+    print('PRINT User voices was cleaned up ')
     logging.info('User voices was cleaned up')
-    os.remove(f'{os.environ.get("USER_VOICES")}/*')
+    os.system(f'rm -rf {os.environ.get("USER_VOICES")}/')
 
 
 app.conf.beat_schedule = {
