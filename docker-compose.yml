@@ -14,7 +14,7 @@ services:
       - /home/postgres/backups:/backups
 
   rabbitmq:
-    image: rabbitmq:3.10.7-management
+    image: rabbitmq:3.8.27-management
     hostname: rabbitmq
     container_name: rabbitmq
     restart: always
