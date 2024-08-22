@@ -216,9 +216,7 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     vip_category = await Category.objects.aget(title='VIP голоса')
     keyboard.append(
-        [
             [InlineKeyboardButton(vip_category.title, callback_data="category_" + str(vip_category.id))]
-        ]
     )
 
     query = update.callback_query
