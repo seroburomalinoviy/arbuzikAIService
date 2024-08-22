@@ -20,7 +20,7 @@ services:
     restart: always
     volumes:
       - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
-#      - ${LOGS_PATH}:/var/log/rabbitmq/logs:ro
+      - ${LOGS_PATH}:/logs
     environment:
       - RABBITMQ_CONFIG_FILE=/etc/rabbitmq/rabbitmq.conf
       - RABBITMQ_DEFAULT_USER=${RABBIT_USER}
@@ -61,14 +61,6 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
-#    deploy:
-#      resources:
-#        limits:
-#          cpus: '0.50'
-#          memory: 512M
-#        reservations:
-#          cpus: '0.25'
-#          memory: 256M
 
   preclient:
     container_name: preclient
