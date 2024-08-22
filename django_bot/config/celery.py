@@ -4,6 +4,8 @@ from logging.handlers import RotatingFileHandler
 from celery import Celery
 from celery.signals import after_setup_logger
 
+logger = logging.getLogger(__name__)
+
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 redis_for_celery = f"redis://:{os.environ.get('REDIS_PASSWORD')}@{os.environ.get('REDIS_HOST')}:{os.environ.get('REDIS_PORT')}/1"
 
@@ -15,18 +17,19 @@ app.conf.update(
     enable_utc=True,
     worker_hijack_root_logger=False,
 )
+app.conf.broker_connection_retry_on_startup = True
 app.autodiscover_tasks()
 
 
 @after_setup_logger.connect
-def setup_loggers(logging, *args, **kwargs):
-    os.makedirs('/logs', exist_ok=True)
+def setup_loggers(logger, *args, **kwargs):
+    os.makedirs(logger, exist_ok=True)
     handler = RotatingFileHandler('/logs/celery.log', backupCount=5, maxBytes=512 * 1024)
     log_format = "%(asctime)s - %(levelname)s - %(name)s - %(message)s >>> %(funcName)s(%(lineno)d)"
     formatter = logging.Formatter(log_format)
     handler.setFormatter(formatter)
     logging.basicConfig(level=logging.INFO, format=log_format, datefmt="%Y-%m-%d %H:%M:%S")
-    logging.getLogger('').addHandler(handler)
+    logger.addHandler(handler)
 
 
 @app.task
