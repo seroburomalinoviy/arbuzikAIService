@@ -148,27 +148,3 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # CSRF_COOKIE_SECURE = True
 # SESSION_COOKIE_SECURE = True
 # CSRF_COOKIE_HTTPONLY = True
-
-# Celery settings
-redis_for_celery = f"redis://:{os.environ.get('REDIS_PASSWORD')}@{os.environ.get('REDIS_HOST')}:{os.environ.get('REDIS_PORT')}/1"
-CELERY_BROKER_URL = redis_for_celery
-CELERY_RESULT_BACKEND = redis_for_celery
-CELERY_CACHE_BACKEND = redis_for_celery
-CELERY_ACCEPT_CONTENT = ["application/json"]
-CELERY_TASK_SERIALIZER = "json"
-CELERY_RESULT_SERIALIZER = "json"
-CELERY_TIMEZONE = TIME_ZONE
-
-# Celery Beat settings
-CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
-
-CELERY_BEAT_SCHEDULE = {
-    'clean_user_voices': {
-        'task': 'bot.tasks.clean_user_voices',  # The name of the task
-        # 'schedule': crontab(minute='0', hour='3'),  # How often the task should run
-        'schedule': 60.0,  # каждую минуту
-        # 'args': (arg1, arg2),  # Positional arguments for the task (optional)
-        # 'kwargs': {'keyword_arg': 'value'},  # Keyword arguments for the task (optional)
-    },
-    # Add more tasks as needed
-}

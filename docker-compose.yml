@@ -205,14 +205,24 @@ services:
       payment-api:
         condition: service_started
 
-  scheduler:
-    container_name: scheduler
+  celery-scheduler:
+    container_name: celery-scheduler
     build: ./django_bot
-    command: celery --app config beat --loglevel=debug --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    command: celery --app config beat --loglevel=info --scheduler django_celery_beat.schedulers:DatabaseScheduler
     depends_on:
       redis:
         condition: service_started
       bot:
+        condition: service_started
+    restart:
+      always
+
+  celery-worker:
+    container_name: celery-worker
+    build: ./django_bot
+    command: celery --app config worker --loglevel=info
+    depends_on:
+      celery-scheduler:
         condition: service_started
     env_file:
       - .env
