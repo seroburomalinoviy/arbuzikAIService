@@ -45,10 +45,6 @@ app.conf.beat_schedule = {
         # 'kwargs': {'keyword_arg': 'value'},  # Keyword arguments for the task (optional)
     },
     # Add more tasks as needed
-    'debug_task': {
-        'task': 'config.celery.debug_task',
-        'schedule': 60.0
-    }
 }
 
 
