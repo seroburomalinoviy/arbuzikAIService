@@ -31,14 +31,14 @@ def setup_loggers(logging, *args, **kwargs):
 
 @app.task
 def clean_user_voices():
-    os.system(f'rm -rf {os.environ.get("USER_VOICES")}/')
+    os.system(f'rm -rf {os.environ.get("USER_VOICES")}/*')
     logging.info('User voices was cleaned up')
     return True
 
 
 app.conf.beat_schedule = {
     'clean_user_voices': {
-        'task': 'config.celery.clean_user_voices',  # The name of the task
+        'task': 'config.celery.clean_user_voices',  # path to task
         # 'schedule': crontab(minute='0', hour='3'),  # How often the task should run
         'schedule': 60.0,  # каждую минуту
         # 'args': (arg1, arg2),  # Positional arguments for the task (optional)
