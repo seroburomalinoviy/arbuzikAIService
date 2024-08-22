@@ -1,9 +1,9 @@
-from celery import shared_task
+from config.celery import app
 import os
 import logging
 
 
-@shared_task
+@app.task()
 def clean_user_voices():
     logging.info('START TASK')
     print('hauhai')
