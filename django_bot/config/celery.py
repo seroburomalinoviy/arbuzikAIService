@@ -3,6 +3,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 from celery import Celery
 from celery.signals import after_setup_logger
+from celery.schedules import crontab
 
 logger = logging.getLogger(__name__)
 
@@ -34,15 +35,15 @@ def setup_loggers(logger, *args, **kwargs):
 @app.task
 def clean_user_voices():
     os.system(f'rm -rf {os.environ.get("USER_VOICES")}/*')
-    logging.info('User voices was cleaned up')
+    logger.info('User voices was cleaned up')
     return True
 
 
 app.conf.beat_schedule = {
     'clean_user_voices': {
         'task': 'config.celery.clean_user_voices',  # path to task
-        # 'schedule': crontab(minute='0', hour='3'),  # How often the task should run
-        'schedule': 60.0,  # каждую минуту
+        'schedule': crontab(minute='0', hour='3'),  # How often the task should run
+        # 'schedule': 60.0,  # каждую минуту
         # 'args': (arg1, arg2),  # Positional arguments for the task (optional)
         # 'kwargs': {'keyword_arg': 'value'},  # Keyword arguments for the task (optional)
     },
