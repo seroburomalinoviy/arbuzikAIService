@@ -23,7 +23,7 @@ app.autodiscover_tasks()
 
 @after_setup_logger.connect
 def setup_loggers(logger, *args, **kwargs):
-    handler = RotatingFileHandler('logs/celery-worker.log', backupCount=5, maxBytes=512 * 1024)
+    handler = RotatingFileHandler('/logs/celery-worker.log', backupCount=5, maxBytes=512 * 1024)
     log_format = "%(asctime)s - %(levelname)s - %(name)s - %(message)s >>> %(funcName)s(%(lineno)d)"
     formatter = logging.Formatter(log_format)
     handler.setFormatter(formatter)

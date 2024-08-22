@@ -218,8 +218,6 @@ services:
         condition: service_started
     restart:
       always
-    volumes:
-      - ${LOGS_PATH}:/logs
 
   celery-worker:
     container_name: celery-worker
