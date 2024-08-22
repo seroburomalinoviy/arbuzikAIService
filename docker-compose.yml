@@ -13,7 +13,7 @@ services:
       - /home/postgres/db_data:/var/lib/postgresql/data
       - /home/postgres/backups:/backups
       - ${LOGS_PATH}:/logs:rw
-      - ./postgres.conf:/var/lib/postgresql/data/postgresql.conf
+#      - ./postgres.conf:/var/lib/postgresql/data/postgresql.conf
 
   rabbitmq:
     image: rabbitmq:3.10.2-management
