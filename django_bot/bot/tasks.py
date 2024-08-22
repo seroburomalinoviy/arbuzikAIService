@@ -1,9 +1,9 @@
-from config.celery import app
+from config.celery import celery_app
 import os
 import logging
 
 
-@app.task()
+@celery_app.task()
 def clean_user_voices():
     # logging.info('START TASK')
     print('hauhai')
