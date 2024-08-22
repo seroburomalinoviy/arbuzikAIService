@@ -218,6 +218,8 @@ services:
         condition: service_started
     restart:
       always
+    volumes:
+      - ${LOGS_PATH}:/logs
 
   celery-worker:
     container_name: celery-worker
@@ -234,6 +236,7 @@ services:
       - type: volume
         source: voices-volume
         target: ${USER_VOICES}
+      - ${LOGS_PATH}:/logs
 
 volumes:
   static_volume:

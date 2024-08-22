@@ -20,12 +20,10 @@ app.conf.update(
 app.conf.broker_connection_retry_on_startup = True
 app.autodiscover_tasks()
 
-os.makedirs('/logs', exist_ok=True)
-
 
 @after_setup_logger.connect
 def setup_loggers(logger, *args, **kwargs):
-    handler = RotatingFileHandler('celery.log', backupCount=5, maxBytes=512 * 1024)
+    handler = RotatingFileHandler('logs/celery-worker.log', backupCount=5, maxBytes=512 * 1024)
     log_format = "%(asctime)s - %(levelname)s - %(name)s - %(message)s >>> %(funcName)s(%(lineno)d)"
     formatter = logging.Formatter(log_format)
     handler.setFormatter(formatter)
