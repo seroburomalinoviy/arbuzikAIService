@@ -20,11 +20,12 @@ app.conf.update(
 app.conf.broker_connection_retry_on_startup = True
 app.autodiscover_tasks()
 
+os.makedirs('/logs', exist_ok=True)
+
 
 @after_setup_logger.connect
 def setup_loggers(logger, *args, **kwargs):
-    os.makedirs(logger, exist_ok=True)
-    handler = RotatingFileHandler('/logs/celery.log', backupCount=5, maxBytes=512 * 1024)
+    handler = RotatingFileHandler('celery.log', backupCount=5, maxBytes=512 * 1024)
     log_format = "%(asctime)s - %(levelname)s - %(name)s - %(message)s >>> %(funcName)s(%(lineno)d)"
     formatter = logging.Formatter(log_format)
     handler.setFormatter(formatter)
@@ -49,20 +50,5 @@ app.conf.beat_schedule = {
     },
     # Add more tasks as needed
 }
-
-
-# Celery settings
-#
-# CELERY_BROKER_URL = redis_for_celery
-# CELERY_RESULT_BACKEND = redis_for_celery
-# CELERY_CACHE_BACKEND = redis_for_celery
-# CELERY_ACCEPT_CONTENT = ["application/json"]
-# CELERY_TASK_SERIALIZER = "json"
-# CELERY_RESULT_SERIALIZER = "json"
-# CELERY_TIMEZONE = TIME_ZONE
-#
-# # Celery Beat settings
-# CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
-
 
 
