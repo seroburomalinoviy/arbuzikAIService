@@ -201,7 +201,7 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = [keyboards.search_all_voices, keyboards.favorites]
     i = 0
     row = []
-    async for category in Category.objects.exclude(title=os.environ.get('SYSTEM_VOICE')).exclude(title='VIP голоса').all(order_by='title').values("title", "id"):
+    async for category in Category.objects.exclude(title=os.environ.get('SYSTEM_VOICE')).exclude(title='VIP голоса').all().order_by('title').values("title", "id"):
         i += 1
         row.append(
             InlineKeyboardButton(
