@@ -12,6 +12,7 @@ services:
     volumes:
       - /home/postgres/db_data:/var/lib/postgresql/data
       - /home/postgres/backups:/backups
+      - ${LOGS_PATH}:/logs:rw
 
   rabbitmq:
     image: rabbitmq:3.10.2-management
