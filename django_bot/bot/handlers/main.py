@@ -214,7 +214,7 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if row:
         keyboard.append(row)
 
-    vip_category = await Category.objects.aget(title='VIP голоса').values('title', 'id')
+    vip_category = await Category.objects.aget(title='VIP голоса')
     keyboard.append(
         [
             [InlineKeyboardButton(vip_category["title"], callback_data="category_" + str(vip_category["id"]))]
