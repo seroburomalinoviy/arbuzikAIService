@@ -208,7 +208,7 @@ services:
   scheduler:
     container_name: scheduler
     build: ./django_bot
-    command: celery -A config beat -l info -S django_celery_beat.schedulers:DatabaseScheduler
+    command: celery --app config beat --loglevel=debug --scheduler django_celery_beat.schedulers:DatabaseScheduler
     depends_on:
       redis:
         condition: service_started
