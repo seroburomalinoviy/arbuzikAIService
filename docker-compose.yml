@@ -13,7 +13,7 @@ services:
       - /home/postgres/db_data:/var/lib/postgresql/data
       - /home/postgres/backups:/backups
       - ${LOGS_PATH}:/logs:rw
-      - ./postgres.conf:/var/lib/postgresql/data/postgresql.conf
+#      - ./postgres.conf:/var/lib/postgresql/data/postgresql.conf
 
   rabbitmq:
     image: rabbitmq:3.10.2-management
@@ -133,7 +133,6 @@ services:
                     gunicorn config.asgi:application -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000'
     expose:
       - 8000
-    network_mode: host
     depends_on:
       db:
         condition: service_started
