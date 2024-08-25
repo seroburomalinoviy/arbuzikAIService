@@ -12,7 +12,7 @@ services:
     volumes:
       - /home/postgres/db_data:/var/lib/postgresql/data
       - /home/postgres/backups:/backups
-      - ${LOGS_PATH}:/logs:rw
+      - ${LOGS_PATH}:/var/lib/postgresql/data/logs
       - ./postgres.conf:/var/lib/postgresql/data/postgresql.conf
 
   rabbitmq:
