@@ -92,7 +92,7 @@ multidict==6.0.3
 networkx==2.8.8
 noisereduce==2.0.1
 oauthlib==3.2.2
-omegaconf==2.0.6
+omegaconf==2.0.6 --no-deps
 onnx==1.14.0
 onnxconverter-common==1.13.0
 onnxruntime-gpu==1.14.1
