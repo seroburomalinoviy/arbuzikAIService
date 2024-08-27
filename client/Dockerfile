@@ -1,7 +1,7 @@
 FROM python:3.10-bullseye
 
-ENV PYTHONUNBUFFERED 1
-ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
 
 RUN apt-get update && apt-get --no-install-recommends -y install build-essential python3-dev ffmpeg && \
 rm -rf /var/cache/apt  && apt clean && rm -rf /var/lib/apt/lists/*
