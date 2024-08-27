@@ -1,0 +1,11 @@
+# игнорировать директории .git и .cache
+.git
+.cache
+
+# игнорировать все файлы в формате markdown (md) кроме всех файлов README*.md, исключая README-secret.md
+*.md
+!README*.md
+README-secret.md
+
+Dockerfile
+Makefile
