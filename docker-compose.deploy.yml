@@ -150,8 +150,8 @@ services:
     command: ["python", "main.py"]
     env_file:
       - .env
-    volumes:
-      - ${LOGS_PATH}:/logs
+    # volumes:
+      # - ${LOGS_PATH}:/logs
     restart:
       always
     # depends_on:
@@ -254,7 +254,7 @@ services:
     env_file:
       - .env
     volumes:
-      - ${LOGS_PATH}:/logs
+      # - ${LOGS_PATH}:/logs
       - type: volume
         source: voices-volume
         target: ${USER_VOICES}
@@ -398,8 +398,8 @@ services:
       - .env
     # restart:
     #   always
-    volumes:
-      - ${LOGS_PATH}:/logs
+    # volumes:
+    #   - ${LOGS_PATH}:/logs
     # depends_on:
     #   bot:
     #     condition: service_started
@@ -440,8 +440,8 @@ services:
       - .env
     # restart:
     #   always
-    volumes:
-      - ${LOGS_PATH}:/logs
+    # volumes:
+    #   - ${LOGS_PATH}:/logs
     # depends_on:
     #   payment-api:
     #     condition: service_started
