@@ -18,7 +18,9 @@ class UserAdmin(admin.ModelAdmin):
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     empty_value_display = "<пусто>"
+    search_fields = ["id"]
     list_display = [
+        "id",
         "telegram_username",
         "status",
         "amount",
