@@ -334,7 +334,7 @@ services:
         failure_action: pause
         monitor: 0s 
         max_failure_ratio: 0
-        order: start-first\
+        order: start-first
       # resources:
       #   limits:
       #     cpus: 2
