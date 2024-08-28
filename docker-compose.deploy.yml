@@ -19,7 +19,7 @@ services:
         condition: any
         delay: 5s
         max_attempts: 3
-        window: 515
+        window: 51s
       # resources:
       #   limits:
       #     cpus: 1
