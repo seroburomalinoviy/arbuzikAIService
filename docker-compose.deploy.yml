@@ -388,49 +388,49 @@ services:
       #     cpus: 1
       #     memory: 256M
 
-    payment-api:
-      container_name: payment-api
-      image: localhost:5000/payment-api
-      command: sh -c 'uvicorn api:app --host 0.0.0.0 --port 8001 --proxy-headers'
-      expose:
-        - 8001
-      env_file:
-        - .env
-      # restart:
-      #   always
-      volumes:
-        - ${LOGS_PATH}:/logs
-      # depends_on:
-      #   bot:
-      #     condition: service_started
-      deploy:
-        mode: replicated
-        replicas: 1
-        restart_policy:
-          condition: any
-          delay: 10s
-          max_attempts: 3
-          window: 60s
-        update_config:
-          parallelism: 1
-          delay: 10s
-          order: start-first
-          monitor: 10s
-          failure_action: pause
-        rollback_config:
-          parallelism: 1
-          delay: 20s
-          failure_action: pause
-          monitor: 0s 
-          max_failure_ratio: 0
-          order: start-first
-        # resources:
-        # limits:
-        #   cpus: 2
-        #   memory: 512M
-        # reservations:
-        #   cpus: 1
-        #   memory: 256M
+  payment-api:
+    container_name: payment-api
+    image: localhost:5000/payment-api
+    command: sh -c 'uvicorn api:app --host 0.0.0.0 --port 8001 --proxy-headers'
+    expose:
+      - 8001
+    env_file:
+      - .env
+    # restart:
+    #   always
+    volumes:
+      - ${LOGS_PATH}:/logs
+    # depends_on:
+    #   bot:
+    #     condition: service_started
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: any
+        delay: 10s
+        max_attempts: 3
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+        monitor: 10s
+        failure_action: pause
+      rollback_config:
+        parallelism: 1
+        delay: 20s
+        failure_action: pause
+        monitor: 0s 
+        max_failure_ratio: 0
+        order: start-first
+      # resources:
+      # limits:
+      #   cpus: 2
+      #   memory: 512M
+      # reservations:
+      #   cpus: 1
+      #   memory: 256M
 
   payment-listener:
     container_name: payment-listener
