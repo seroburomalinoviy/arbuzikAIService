@@ -1,7 +1,7 @@
 services:
   db:
     image: postgres:13
-    container_name: postgres
+    # container_name: postgres
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
@@ -44,7 +44,7 @@ services:
   rabbitmq:
     image: rabbitmq:3.10.7-management
     hostname: rabbitmq
-    container_name: rabbitmq
+    # container_name: rabbitmq
     # restart: always
     environment:
       - RABBITMQ_CONFIG_FILE=/etc/rabbitmq/rabbitmq.conf
@@ -90,7 +90,7 @@ services:
       #     memory: 256M
 
   redis:
-    container_name: redis
+    # container_name: redis
     image: redis
     command:
       - /bin/sh
@@ -144,7 +144,7 @@ services:
       #   order: start-first
 
   preclient:
-    container_name: preclient
+    # container_name: preclient
     image: localhost:5000/preclient:latest
     # build: ./preclient
     command: ["python", "main.py"]
@@ -189,7 +189,7 @@ services:
       #     memory: 256M
 
   client:
-    container_name: client
+    # container_name: client
     image: localhost:5000/client:latest
     # build: ./client
     command: ["python", "main.py"]
@@ -242,15 +242,8 @@ services:
   bot:
     # build: ./django_bot
     image: localhost:5000/bot:latest
-    container_name: bot
+    # container_name: bot
     command: ["python", "start_bot.py"]
-    # depends_on:
-    #   rabbitmq:
-    #     condition: service_healthy
-    #   db:
-    #     condition: service_started
-    # restart:
-    #   always
     env_file:
       - .env
     volumes:
@@ -293,7 +286,7 @@ services:
   django:
     # build: ./django_bot
     image: localhost:5000/django:latest
-    container_name: django
+    # container_name: django
     command: sh -c 'python manage.py migrate --noinput && 
                     python manage.py collectstatic --noinput --clear &&
                     gunicorn config.asgi:application -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000'
@@ -342,8 +335,8 @@ services:
       #     cpus: 1
       #     memory: 256M
 
-  proxy-server:
-    container_name: nginx
+  proxyserver:
+    # container_name: nginx
     image: nginx:latest
     ports:
       - "80:80"
@@ -387,8 +380,8 @@ services:
       #     cpus: 1
       #     memory: 256M
 
-  payment-api:
-    container_name: payment-api
+  paymentapi:
+    # container_name: payment-api
     image: localhost:5000/payment-api
     command: sh -c 'uvicorn api:app --host 0.0.0.0 --port 8001 --proxy-headers'
     expose:
@@ -431,8 +424,8 @@ services:
       #   cpus: 1
       #   memory: 256M
 
-  payment-listener:
-    container_name: payment-listener
+  paymentlistener:
+    # container_name: payment-listener
     image: localhost:5000/payment-api
     command: ["python", "main.py"]
     env_file:
@@ -474,7 +467,7 @@ services:
       #     memory: 256M
 
   scheduler:
-    container_name: scheduler
+    # container_name: scheduler
     image: localhost:5000/django:latest
     command: celery -A config beat -l info -S django_celery_beat.schedulers:DatabaseScheduler
     # depends_on:
