@@ -20,13 +20,13 @@ services:
         delay: 5s
         max_attempts: 3
         window: 515
-      resources:
-        limits:
-          cpus: 1
-          memory: 512M
-        reservations:
-          cpus: 0.5
-          memory: 256M
+      # resources:
+      #   limits:
+      #     cpus: 1
+      #     memory: 512M
+      #   reservations:
+      #     cpus: 0.5
+      #     memory: 256M
       # update_config:
       #   parallelism: 1
       #   delay: 10s
@@ -81,13 +81,13 @@ services:
         monitor: 0s 
         max_failure_ratio: 0
         order: start-first
-      resources:
-        limits:
-          cpus: 2
-          memory: 512M
-        reservations:
-          cpus: 1
-          memory: 256M
+      # resources:
+      #   limits:
+      #     cpus: 2
+      #     memory: 512M
+      #   reservations:
+      #     cpus: 1
+      #     memory: 256M
 
   redis:
     container_name: redis
@@ -122,13 +122,13 @@ services:
         delay: 5s
         max_attempts: 3
         window: 10s
-      resources:
-        limits:
-          cpus: 2
-          memory: 512M
-        reservations:
-          cpus: 1
-          memory: 256M
+      # resources:
+      #   limits:
+      #     cpus: 2
+      #     memory: 512M
+      #   reservations:
+      #     cpus: 1
+      #     memory: 256M
       # update_config:
       #   parallelism: 1
       #   delay: 10s
@@ -180,13 +180,13 @@ services:
         monitor: 0s 
         max_failure_ratio: 0
         order: start-first
-      resources:
-        limits:
-          cpus: 2
-          memory: 512M
-        reservations:
-          cpus: 1
-          memory: 256M
+      # resources:
+      #   limits:
+      #     cpus: 2
+      #     memory: 512M
+      #   reservations:
+      #     cpus: 1
+      #     memory: 256M
 
   client:
     container_name: client
@@ -230,13 +230,13 @@ services:
         monitor: 0s 
         max_failure_ratio: 0
         order: start-first
-      resources:
-        limits:
-          cpus: 7
-          memory: 8G
-        reservations:
-          cpus: 3
-          memory: 4G
+      # resources:
+      #   limits:
+      #     cpus: 7
+      #     memory: 8G
+      #   reservations:
+      #     cpus: 3
+      #     memory: 4G
 
 
   bot:
@@ -282,13 +282,13 @@ services:
         monitor: 0s 
         max_failure_ratio: 0
         order: start-first
-      resources:
-        limits:
-          cpus: 2
-          memory: 512M
-        reservations:
-          cpus: 1
-          memory: 256M
+      # resources:
+      #   limits:
+      #     cpus: 2
+      #     memory: 512M
+      #   reservations:
+      #     cpus: 1
+      #     memory: 256M
 
 
   django:
@@ -335,13 +335,13 @@ services:
         monitor: 0s 
         max_failure_ratio: 0
         order: start-first\
-      resources:
-        limits:
-          cpus: 2
-          memory: 512M
-        reservations:
-          cpus: 1
-          memory: 256M
+      # resources:
+      #   limits:
+      #     cpus: 2
+      #     memory: 512M
+      #   reservations:
+      #     cpus: 1
+      #     memory: 256M
 
   proxy-server:
     container_name: nginx
@@ -380,13 +380,13 @@ services:
         monitor: 0s 
         max_failure_ratio: 0
         order: start-first
-      resources:
-        limits:
-          cpus: 2
-          memory: 512M
-        reservations:
-          cpus: 1
-          memory: 256M
+      # resources:
+      #   limits:
+      #     cpus: 2
+      #     memory: 512M
+      #   reservations:
+      #     cpus: 1
+      #     memory: 256M
 
     payment-api:
       container_name: payment-api
@@ -424,13 +424,13 @@ services:
           monitor: 0s 
           max_failure_ratio: 0
           order: start-first
-        resources:
-        limits:
-          cpus: 2
-          memory: 512M
-        reservations:
-          cpus: 1
-          memory: 256M
+        # resources:
+        # limits:
+        #   cpus: 2
+        #   memory: 512M
+        # reservations:
+        #   cpus: 1
+        #   memory: 256M
 
   payment-listener:
     container_name: payment-listener
@@ -466,13 +466,13 @@ services:
         monitor: 0s 
         max_failure_ratio: 0
         order: start-first
-      resources:
-        limits:
-          cpus: 2
-          memory: 512M
-        reservations:
-          cpus: 1
-          memory: 256M
+      # resources:
+      #   limits:
+      #     cpus: 2
+      #     memory: 512M
+      #   reservations:
+      #     cpus: 1
+      #     memory: 256M
 
   scheduler:
     container_name: scheduler
@@ -512,13 +512,13 @@ services:
         monitor: 0s 
         max_failure_ratio: 0
         order: start-first
-      resources:
-        limits:
-          cpus: 2
-          memory: 512M
-        reservations:
-          cpus: 1
-          memory: 256M
+      # resources:
+      #   limits:
+      #     cpus: 2
+      #     memory: 512M
+      #   reservations:
+      #     cpus: 1
+      #     memory: 256M
 
 
 volumes:
