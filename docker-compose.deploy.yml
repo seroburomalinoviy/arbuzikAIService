@@ -9,9 +9,9 @@ services:
     ports:
       - '5432:5432'
     # restart: always
-    volumes:
-      - /home/postgres/db_data:/var/lib/postgresql/data
-      - /home/postgres/backups:/backups
+    # volumes:
+    #   - /home/postgres/db_data:/var/lib/postgresql/data
+    #   - /home/postgres/backups:/backups
     deploy:
       mode: replicated
       replicas: 1
@@ -102,8 +102,8 @@ services:
       - redis-server /usr/local/etc/redis.conf --requirepass "$${REDIS_PASSWORD:?REDIS_PASSWORD variable is not set}"
     ports:
       - "6379:6379"
-    volumes:
-      - ./redis.conf:/usr/local/etc/redis/redis.conf
+    # volumes:
+    #   - ./redis.conf:/usr/local/etc/redis/redis.conf
       # - ${LOGS_PATH}:/var/log/redis
     env_file:
       - .env
@@ -202,13 +202,13 @@ services:
     #     condition: service_healthy
     #   redis:
     #     condition: service_started
-    volumes:
-      - type: volume
-        source: media-data-volume
-        target: /app/weights
-      - type: volume
-        source: voices-volume
-        target: ${USER_VOICES}
+    # volumes:
+    #   - type: volume
+    #     source: media-data-volume
+    #     target: /app/weights
+    #   - type: volume
+    #     source: voices-volume
+    #     target: ${USER_VOICES}
     deploy:
       mode: replicated
       replicas: 1
@@ -246,13 +246,13 @@ services:
     command: ["python", "start_bot.py"]
     env_file:
       - .env
-    volumes:
-      - type: volume
-        source: voices-volume
-        target: ${USER_VOICES}
-      - type: volume
-        source: media-data-volume
-        target: ${MEDIA_DATA_VOLUME}
+    # volumes:
+    #   - type: volume
+    #     source: voices-volume
+    #     target: ${USER_VOICES}
+    #   - type: volume
+    #     source: media-data-volume
+    #     target: ${MEDIA_DATA_VOLUME}
     deploy:
       mode: replicated
       replicas: 1
@@ -299,13 +299,13 @@ services:
     #   always
     env_file:
       - .env
-    volumes:
-      - type: volume
-        source: media-data-volume
-        target: ${MEDIA_DATA_VOLUME}
-      - type: volume
-        source: static_volume
-        target: /app/static
+    # volumes:
+    #   - type: volume
+    #     source: media-data-volume
+    #     target: ${MEDIA_DATA_VOLUME}
+    #   - type: volume
+    #     source: static_volume
+    #     target: /app/static
     deploy:
       mode: replicated
       replicas: 1
@@ -342,11 +342,11 @@ services:
       - "80:80"
     env_file:
       - .env
-    volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
-      - type: volume
-        source: static_volume
-        target: /app/static
+    # volumes:
+    #   - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    #   - type: volume
+    #     source: static_volume
+    #     target: /app/static
     # restart:
     #   always
     # depends_on:
@@ -479,10 +479,10 @@ services:
       - .env
     # restart:
     #   always
-    volumes:
-      - type: volume
-        source: voices-volume
-        target: ${USER_VOICES}
+    # volumes:
+    #   - type: volume
+    #     source: voices-volume
+    #     target: ${USER_VOICES}
     deploy:
       mode: replicated
       replicas: 1
@@ -513,8 +513,8 @@ services:
       #     memory: 256M
 
 
-volumes:
-  static_volume:
-  media-data-volume:
-  voices-volume:
+# volumes:
+#   static_volume:
+#   media-data-volume:
+#   voices-volume:
 
