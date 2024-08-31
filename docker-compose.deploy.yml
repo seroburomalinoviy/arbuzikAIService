@@ -299,13 +299,13 @@ services:
     #   always
     env_file:
       - .env
-    # volumes:
+    volumes:
     #   - type: volume
     #     source: media-data-volume
     #     target: ${MEDIA_DATA_VOLUME}
-    #   - type: volume
-    #     source: static_volume
-    #     target: /app/static
+      - type: volume
+        source: static_volume
+        target: /app/static
     deploy:
       mode: replicated
       replicas: 1
@@ -344,9 +344,9 @@ services:
       - .env
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
-      # - type: volume
-      #   source: static_volume
-      #   target: /app/static
+      - type: volume
+        source: static_volume
+        target: /app/static
     # restart:
     #   always
     # depends_on:
@@ -514,7 +514,7 @@ services:
 
 
 volumes:
-  # static_volume:
+  static_volume:
   # media-data-volume:
   voices-volume:
 
