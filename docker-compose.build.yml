@@ -1,126 +1,25 @@
 services:
   preclient:
-    # container_name: preclient
     build: ./preclient
     image: localhost:5000/preclient:latest
     pull_policy: build
-    # command: ["python", "main.py"]
-    # env_file:
-    #   - .env
-    # restart:
-    #   always
-    # depends_on:
-    #   redis:
-    #     condition: service_started
-    #   rabbitmq:
-    #     condition: service_healthy
     
-
   client:
-    # container_name: client
     build: ./client
     image: localhost:5000/client:latest
     pull_policy: build
-    # command: ["python", "main.py"]
-    # env_file:
-    #   - .env
-    # restart:
-    #   always
-    # depends_on:
-    #   rabbitmq:
-    #     condition: service_healthy
-    #   redis:
-    #     condition: service_started
-    # volumes:
-    #   - type: volume
-    #     source: media-data-volume
-    #     target: /app/weights
-    #   - type: volume
-    #     source: voices-volume
-    #     target: ${USER_VOICES}
 
   bot:
     build: ./django_bot
     image: localhost:5000/bot:latest
-    # container_name: bot
-    # command: ["python", "start_bot.py"]
     pull_policy: build
-    # depends_on:
-    #   rabbitmq:
-    #     condition: service_healthy
-    #   db:
-    #     condition: service_started
-    # restart:
-    #   always
-    # env_file:
-    #   - .env
-    # volumes:
-    #   - type: volume
-    #     source: voices-volume
-    #     target: ${USER_VOICES}
-    #   - type: volume
-    #     source: media-data-volume
-    #     target: ${MEDIA_DATA_VOLUME}
-
 
   django:
     build: ./django_bot
     image: localhost:5000/django:latest
     pull_policy: build
-    # container_name: django
-    # command: sh -c 'python manage.py migrate --noinput && 
-    #                 python manage.py collectstatic --noinput --clear &&
-    #                 gunicorn config.asgi:application -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000'
-    # expose:
-    #   - 8000
-    # depends_on:
-    #   db:
-    #     condition: service_started
-    # restart:
-    #   always
-    # env_file:
-    #   - .env
-    # volumes:
-    #   - type: volume
-    #     source: media-data-volume
-    #     target: ${MEDIA_DATA_VOLUME}
-    #   - type: volume
-    #     source: static_volume
-    #     target: /app/static
 
   payment-api:
-    # container_name: payment-api
     build: ./payment-service
     image: localhost:5000/payment-api
     pull_policy: build
-    # # command: sh -c 'uvicorn api:app --host 0.0.0.0 --port 8001 --proxy-headers'
-    # expose:
-    #   - 8001
-    # env_file:
-    #   - .env
-    # restart:
-    #   always
-    # volumes:
-    #   - ${LOGS_PATH}:/logs
-    # depends_on:
-    #   bot:
-    #     condition: service_started
-
-
-  # scheduler:
-  #   container_name: scheduler
-  #   build: ./django_bot
-  #   command: celery -A config beat -l info -S django_celery_beat.schedulers:DatabaseScheduler
-  #   depends_on:
-  #     redis:
-  #       condition: service_started
-  #     bot:
-  #       condition: service_started
-  #   env_file:
-  #     - .env
-  #   restart:
-  #     always
-  #   volumes:
-  #     - type: volume
-  #       source: voices-volume
-  #       target: ${USER_VOICES}
