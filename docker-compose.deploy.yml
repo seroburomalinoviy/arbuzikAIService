@@ -102,7 +102,7 @@ services:
       - redis-server /usr/local/etc/redis.conf --requirepass "$${REDIS_PASSWORD:?REDIS_PASSWORD variable is not set}"
     ports:
       - "6379:6379"
-    volumes:
+    # volumes:
       # - ./redis.conf:/usr/local/etc/redis/redis.conf
       # - ${LOGS_PATH}:/var/log/redis
     env_file:
