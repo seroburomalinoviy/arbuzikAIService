@@ -231,8 +231,21 @@ services:
         target: ${USER_VOICES}
       - ${LOGS_PATH}:/logs
 
+  grafana-monitor:
+    container_name: grafana-monitor
+    image: grafana/grafana-oss
+    restart: unless-stopped
+    environment:
+      # increases the log level from info to debug
+      - GF_LOG_LEVEL=debug
+    expose:
+      - 3000
+    volumes:
+      - grafana_storage:/var/lib/grafana
+
 volumes:
   static_volume:
   media-data-volume:
   voices-volume:
+  grafana_storage: {}
 
