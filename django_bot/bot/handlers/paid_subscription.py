@@ -5,6 +5,12 @@ from telegram.constants import ParseMode
 import os
 import logging
 
+from bot.logic.utils import log_journal
+from bot.logic import message_text
+from bot.logic.constants import *
+from bot.logic.amqp_driver import push_amqp_message
+from bot.config.celery import check_payment_api
+
 from django.conf import settings
 import django
 
@@ -13,10 +19,6 @@ django.setup()
 
 from bot.models import Subscription
 from user.models import User, Order
-from bot.logic.utils import log_journal
-from bot.logic import message_text
-from bot.logic.constants import *
-from bot.logic.amqp_driver import push_amqp_message
 
 
 @log_journal
@@ -160,6 +162,10 @@ async def buy_subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
     }
 
     await push_amqp_message(data, routing_key='bot-to-payment')
+
+    # проверка оплаты через 20 минут
+    time_waiting = 60 * int(os.environ.get('TIME_WAITING_PAYMENT_MIN'))
+    check_payment_api.apply_async(args=[str(order.id)], countdown=time_waiting)
 
     return BASE_STATES
 

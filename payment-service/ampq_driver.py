@@ -9,6 +9,7 @@ from aaio_request import get_payment_url
 
 load_dotenv()
 
+
 class PikaConnector:
     @classmethod
     async def connector(cls):
