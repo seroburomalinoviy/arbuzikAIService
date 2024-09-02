@@ -300,7 +300,7 @@ services:
     env_file:
       - .env
     volumes:
-      - media-data-volume:${MEDIA_DATA_VOLUME}
+      - media-data-volume:/app/media/data/
       # - type: volume
       #   source: media-data-volume
       #   target: ${MEDIA_DATA_VOLUME}
