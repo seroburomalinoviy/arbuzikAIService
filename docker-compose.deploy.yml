@@ -6,6 +6,8 @@ services:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
+    secrets:
+      - arbuzik
     ports:
       - '5432:5432'
     # restart: always
@@ -208,7 +210,7 @@ services:
         target: /app/weights
       - type: volume
         source: voices-volume
-        target: ${USER_VOICES}
+        target: /app/media/user-voices
     deploy:
       mode: replicated
       replicas: 1
@@ -249,7 +251,7 @@ services:
     volumes:
       - type: volume
         source: voices-volume
-        target: ${USER_VOICES}
+        target: /app/media/user-voices
       - type: volume
         source: media-data-volume
         target: /app/media/data/
