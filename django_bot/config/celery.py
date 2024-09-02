@@ -33,11 +33,6 @@ app.conf.update(
     visibility_timeout=21600,
 )
 
-# app.conf.broker_transport_options = {'visibility_timeout': 1800}
-# app.conf.result_backend_transport_options = {'visibility_timeout': 1800}
-# app.conf.visibility_timeout = 1800
-#
-# app.conf.broker_connection_retry_on_startup = True
 app.autodiscover_tasks()
 
 
@@ -51,20 +46,21 @@ def setup_loggers(logger, *args, **kwargs):
     logger.addHandler(handler)
 
 
-@app.task
+@app.task(ignore_result=True)
 def clean_user_voices():
     os.system(f'rm -rf {os.environ.get("USER_VOICES")}/*')
     logger.info('User voices was cleaned up')
     return True
 
 
-@app.task
+@app.task(ignore_result=True)
 def check_payment_api(order_id: str):
 
     order = Order.objects.get(id=order_id)
     if order.status:
         order.comment = 'Заказ оплачен'
         order.save()
+        logger.info('Заказ был оплачен')
         return True
 
     url = 'https://aaio.so/api/info-pay'
@@ -87,7 +83,7 @@ def check_payment_api(order_id: str):
         logger.error('ReadTimeout')  # Не хватило времени на выполнение запроса
 
     if response.status_code not in [200, 400, 401]:
-        logger.error('Response code: ' + str(response.status_code))  # Вывод неизвестного кода ответа
+        logger.error('Response code: ' + str(response.status_code))
         return True
     else:
         try:
@@ -96,20 +92,26 @@ def check_payment_api(order_id: str):
             logger.error(f'Не удалось пропарсить ответ: {e}')
 
         if response_json['type'] != 'success':
-            logger.error('Ошибка: ' + response_json['message'])  # Вывод ошибки
+            logger.error('Ошибка: ' + response_json['message'])
             return True
         else:
             if response_json['status'] == 'expired':
-                order.comment = 'Время заказа истекло в сервисе оплаты'
+                msg = 'Время заказа истекло в сервисе оплаты'
+                order.comment = msg
                 order.save()
+                logger.info(msg)
                 return True
             elif response_json['status'] == 'in_process':
-                order.comment = 'Заказ в процессе оплаты, потребуется ручное подтверждение оплаты в сервисе оплаты'
+                msg = 'Заказ в процессе оплаты, потребуется ручное подтверждение оплаты в сервисе оплаты'
+                order.comment = msg
                 order.save()
+                logger.info(msg)
                 return True
             elif response_json['status'] == 'success' or response_json['status'] == 'hold':
-                order.comment = 'Заказ оплачен'
+                msg = 'Заказ оплачен'
+                order.comment = msg
                 order.save()
+                logger.info(msg)
                 data = {
                     'order_id': response_json['order_id'],
                     'amount': response_json['amount'],
