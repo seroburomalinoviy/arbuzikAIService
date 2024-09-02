@@ -299,6 +299,9 @@ services:
     #   always
     env_file:
       - .env
+    configs:
+      - source: arb_config
+        target: .env
     volumes:
       - type: volume
         source: media-data-volume
