@@ -516,6 +516,10 @@ services:
       #     memory: 256M
 
 
+configs:
+  arb_config:
+    external: true
+
 volumes:
   static_volume:
   media-data-volume:
