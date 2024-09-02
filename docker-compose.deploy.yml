@@ -252,7 +252,7 @@ services:
         target: ${USER_VOICES}
       - type: volume
         source: media-data-volume
-        target: ${MEDIA_DATA_VOLUME}
+        target: /app/media/data/
     deploy:
       mode: replicated
       replicas: 1
@@ -297,15 +297,17 @@ services:
     #     condition: service_started
     # restart:
     #   always
-    env_file:
-      - .env
+    # env_file:
+    #   - .env
+    secrets:
+      - arbuzik
     configs:
       - source: arb_config
         target: .env
     volumes:
       - type: volume
         source: media-data-volume
-        target: ${MEDIA_DATA_VOLUME}
+        target: /app/media/data/
       - type: volume
         source: static_volume
         target: /app/static
@@ -519,6 +521,10 @@ services:
 configs:
   arb_config:
     external: true
+
+secrets:
+  arbuzik:
+    file: .env
 
 volumes:
   static_volume:
