@@ -204,7 +204,7 @@ services:
     #     condition: service_started
     volumes:
       - type: volume
-        source: media-data-volume
+        source: media_data_volume_stack
         target: /app/weights
       - type: volume
         source: voices-volume
@@ -251,7 +251,7 @@ services:
         source: voices-volume
         target: ${USER_VOICES}
       - type: volume
-        source: media-data-volume
+        source: media_data_volume_stack
         target: ${MEDIA_DATA_VOLUME}
     deploy:
       mode: replicated
@@ -301,7 +301,7 @@ services:
       - .env
     volumes:
       - type: volume
-        source: media-data-volume
+        source: media_data_volume_stack
         target: ${MEDIA_DATA_VOLUME}
       # - type: volume
       #   source: static_volume
@@ -516,5 +516,6 @@ services:
 volumes:
   # static_volume:
   media-data-volume:
+    name: media_data_volume_stack
   voices-volume:
 
