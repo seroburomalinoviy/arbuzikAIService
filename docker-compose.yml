@@ -154,6 +154,7 @@ services:
     ports:
       - "80:80"
       - "8001:8001"
+      - "3000:3000"
     env_file:
       - .env
     volumes:
