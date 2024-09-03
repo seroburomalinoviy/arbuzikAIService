@@ -12,6 +12,7 @@ class UserAdmin(admin.ModelAdmin):
         "subscription_status",
         "subscription_attempts",
         "subscription_final_date",
+        "date_created",
     ]
 
 

@@ -138,7 +138,7 @@ async def main():
     try:
         redis = aioredis.from_url(
             url=f"redis://{os.environ.get('REDIS_HOST')}",
-            password = os.environ.get('REDIS_PASSWORD')
+            password=os.environ.get('REDIS_PASSWORD')
         )
     except Exception as e:
         logging.error(e)

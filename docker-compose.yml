@@ -236,9 +236,8 @@ services:
     image: grafana/grafana-oss
     restart: unless-stopped
     environment:
-      # increases the log level from info to debug
-#      - GF_SERVER_ROOT_URL=http://193.106.172.202:3000/
-      - GF_LOG_LEVEL=debug
+      - GF_LOG_LEVEL=info
+      - GF_INSTALL_PLUGINS=redis-datasource
     expose:
       - 3000
     volumes:

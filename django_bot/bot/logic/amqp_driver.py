@@ -125,15 +125,6 @@ async def send_rvc_answer(data):
         reply_markup=InlineKeyboardMarkup(keyboards.final_buttons),
     )
 
-    # os.remove(file_path)
-    # if audio.extension == 'ogg':
-    #     os.remove(file_path + ".tmp")
-
-    # tmp_path = os.environ.get("USER_VOICES") + "/" + "tmp/"
-    # os.makedirs(tmp_path, exist_ok=True)
-    # os.replace(file_path, tmp_path + audio.voice_filename)
-    # os.replace(file_path + ".tmp", tmp_path + audio.voice_filename + '.tmp')
-
 
 async def push_amqp_message(data: dict, routing_key):
     payload = json.dumps(data)
