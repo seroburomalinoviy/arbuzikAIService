@@ -489,7 +489,7 @@ services:
     volumes:
       - type: volume
         source: voices-volume
-        target: ${USER_VOICES}
+        target: /app/media/user-voices
     deploy:
       mode: replicated
       replicas: 1
