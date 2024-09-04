@@ -96,7 +96,7 @@ def check_payment_api(order_id: str):
             return True
         else:
             if response_json['status'] == 'expired':
-                msg = 'Время заказа истекло в сервисе оплаты'
+                msg = 'Не оплачено, время заказа истекло в сервисе оплаты'
                 order.comment = msg
                 order.save()
                 logger.info(msg)
