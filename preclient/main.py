@@ -14,8 +14,7 @@ async def create_task(payload):
     logging.info(f"redis input args: {payload}")
 
     redis = aioredis.from_url(
-        url=f"redis://{os.environ.get('REDIS_HOST')}",
-        password=os.environ.get('REDIS_PASSWORD')
+        url=f"redis://{os.environ.get('REDIS_HOST')}/0"
     )
     pubsub = redis.pubsub()
     await pubsub.subscribe("channel:raw-data")
