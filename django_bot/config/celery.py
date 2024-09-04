@@ -123,9 +123,8 @@ def check_payment_api(order_id: str):
                 payload = json.dumps(data)
 
                 with amqp.Connection(
-                        host=os.environ.get("RABBIT_HOST"),
-                        port=int(os.environ.get("RABBIT_PORT")),
-                        login=os.environ.get("RABBIT_USER"),
+                        host=f'{os.environ.get("RABBIT_HOST")}:{os.environ.get("RABBIT_PORT")}',
+                        userid=os.environ.get("RABBIT_USER"),
                         password=os.environ.get("RABBIT_PASSWORD")
                 ) as c:
                     ch = c.channel()
