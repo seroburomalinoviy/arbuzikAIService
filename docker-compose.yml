@@ -196,7 +196,7 @@ services:
   celery-scheduler:
     container_name: celery-scheduler
     build: ./django_bot
-    command: celery --app config beat --loglevel=info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    command: celery --app config beat --scheduler django_celery_beat.schedulers:DatabaseScheduler
     env_file:
       - .env
     depends_on:
@@ -206,11 +206,13 @@ services:
         condition: service_started
     restart:
       always
+    volumes:
+      - ${LOGS_PATH}:/logs
 
   celery-worker:
     container_name: celery-worker
     build: ./django_bot
-    command: celery --app config worker --loglevel=info
+    command: celery --app config worker
     depends_on:
       celery-scheduler:
         condition: service_started
