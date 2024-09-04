@@ -12,13 +12,16 @@ class UserAdmin(admin.ModelAdmin):
         "subscription_status",
         "subscription_attempts",
         "subscription_final_date",
+        "date_created",
     ]
 
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     empty_value_display = "<пусто>"
+    search_fields = ["id"]
     list_display = [
+        "id",
         "telegram_username",
         "status",
         "amount",

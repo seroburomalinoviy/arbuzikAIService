@@ -12,15 +12,17 @@ services:
     volumes:
       - /home/postgres/db_data:/var/lib/postgresql/data
       - /home/postgres/backups:/backups
+      - ${LOGS_PATH}:/var/lib/postgresql/data/logs
+      - ./postgres.conf:/var/lib/postgresql/data/postgresql.conf
 
   rabbitmq:
-    image: rabbitmq:3.10.7-management
+    image: rabbitmq:3.10.2-management
     hostname: rabbitmq
     container_name: rabbitmq
     restart: always
     volumes:
       - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
-#      - ${LOGS_PATH}:/var/log/rabbitmq/logs:ro
+      - ${LOGS_PATH}:/logs:rw
     environment:
       - RABBITMQ_CONFIG_FILE=/etc/rabbitmq/rabbitmq.conf
       - RABBITMQ_DEFAULT_USER=${RABBIT_USER}
@@ -39,14 +41,7 @@ services:
   redis:
     container_name: redis
     image: redis
-    command:
-      - /bin/sh
-      - -c
-      # - Double dollars, so that the variable is not expanded by Docker Compose
-      # - Surround by quotes, so that the shell does not split the password
-      # - The ${variable:?message} syntax causes shell to exit with a non-zero
-      #   code and print a message, when the variable is not set or empty
-      - redis-server /usr/local/etc/redis.conf --requirepass "$${REDIS_PASSWORD:?REDIS_PASSWORD variable is not set}"
+    command: ["redis-server", "/usr/local/etc/redis.conf"]
     ports:
       - "6379:6379"
     volumes:
@@ -61,14 +56,6 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
-#    deploy:
-#      resources:
-#        limits:
-#          cpus: '0.50'
-#          memory: 512M
-#        reservations:
-#          cpus: '0.25'
-#          memory: 256M
 
   preclient:
     container_name: preclient
@@ -160,6 +147,7 @@ services:
     ports:
       - "80:80"
       - "8001:8001"
+      - "3000:3000"
     env_file:
       - .env
     volumes:
@@ -205,14 +193,28 @@ services:
       payment-api:
         condition: service_started
 
-  scheduler:
-    container_name: scheduler
+  celery-scheduler:
+    container_name: celery-scheduler
     build: ./django_bot
-    command: celery -A config beat -l info -S django_celery_beat.schedulers:DatabaseScheduler
+    command: celery --app config beat --loglevel=info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    env_file:
+      - .env
     depends_on:
       redis:
         condition: service_started
       bot:
+        condition: service_started
+    restart:
+      always
+    volumes:
+      - ${LOGS_PATH}:/logs
+
+  celery-worker:
+    container_name: celery-worker
+    build: ./django_bot
+    command: celery --app config worker --loglevel=info
+    depends_on:
+      celery-scheduler:
         condition: service_started
     env_file:
       - .env
@@ -222,9 +224,23 @@ services:
       - type: volume
         source: voices-volume
         target: ${USER_VOICES}
+      - ${LOGS_PATH}:/logs
+
+  grafana-monitor:
+    container_name: grafana-monitor
+    image: grafana/grafana-oss
+    restart: unless-stopped
+    environment:
+      - GF_LOG_LEVEL=info
+      - GF_INSTALL_PLUGINS=redis-datasource
+    expose:
+      - 3000
+    volumes:
+      - grafana_storage:/var/lib/grafana
 
 volumes:
   static_volume:
   media-data-volume:
   voices-volume:
+  grafana_storage: {}
 

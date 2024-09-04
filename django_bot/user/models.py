@@ -55,6 +55,10 @@ class User(models.Model):
     favorites = models.ManyToManyField(
         verbose_name="Избранные голоса", to=Voice, blank=True
     )
+    date_created = models.DateTimeField(
+        'Зарегистрирован',
+        auto_now_add=True
+    )
 
     def __str__(self):
         return str(self.telegram_id)
