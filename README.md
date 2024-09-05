@@ -292,7 +292,7 @@ Github
 
 1. Скопировать все модели в вольюм `media-data-volume`
    1. Путь к volume
-   ```bash
-   docker volume inspect media-data-volume
-   ```
+       ```bash
+       docker volume inspect media-data-volume
+       ```
 2. Склонить демки в `media-data-volume`
