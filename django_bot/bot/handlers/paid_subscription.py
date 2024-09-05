@@ -9,7 +9,7 @@ from bot.logic.utils import log_journal
 from bot.logic import message_text
 from bot.logic.constants import *
 from bot.logic.amqp_driver import push_amqp_message
-from config.celery import check_payment_api
+from bot.logic.celery_tasks import check_payment_api
 
 from django.conf import settings
 import django
