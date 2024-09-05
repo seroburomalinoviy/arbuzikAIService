@@ -53,6 +53,8 @@ services:
       # - RABBITMQ_DEFAULT_USER_FILE=/run/secrets/arbuzik
       # - RABBITMQ_DEFAULT_PASS_FILE=/run/secrets/arbuzik
       - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit disk_free_limit 2147483648
+    env_file:
+      - .env
     secrets:
       - arbuzik
     configs:
