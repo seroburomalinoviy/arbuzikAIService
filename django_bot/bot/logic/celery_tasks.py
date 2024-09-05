@@ -5,7 +5,7 @@ import requests
 from requests.exceptions import ConnectTimeout, ReadTimeout
 import json
 import amqp
-from celery import shared_task
+from config.celery import app
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 django.setup()
@@ -15,14 +15,14 @@ from user.models import Order
 logger = logging.getLogger(__name__)
 
 
-@shared_task(ignore_result=True)
+@app.task(ignore_result=True)
 def clean_user_voices():
     os.system(f'rm -rf {os.environ.get("USER_VOICES")}/*')
     logger.info('User voices was cleaned up')
     return True
 
 
-@shared_task(ignore_result=True)
+@app.task(ignore_result=True)
 def check_payment_api(order_id: str):
 
     order = Order.objects.get(id=order_id)
