@@ -1,4 +1,4 @@
-from config.celery import app
+from config.celery import celery_app
 import os
 import logging
 import django
@@ -15,14 +15,14 @@ from user.models import Order
 logger = logging.getLogger(__name__)
 
 
-@app.task(ignore_result=True)
+@celery_app.task(ignore_result=True)
 def clean_user_voices():
     os.system(f'rm -rf {os.environ.get("USER_VOICES")}/*')
     logger.info('User voices was cleaned up')
     return True
 
 
-@app.task(ignore_result=True)
+@celery_app.task(ignore_result=True)
 def check_payment_api(order_id: str):
 
     order = Order.objects.get(id=order_id)
