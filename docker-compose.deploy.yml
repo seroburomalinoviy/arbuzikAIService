@@ -12,7 +12,10 @@ services:
       - .env
     configs:
       - source: postgres_config
-        target: /var/lib/postgresql/data/postgresql.conf:rw
+        target: /var/lib/postgresql/data/postgresql.conf
+        uid: "103"
+        gid: "103"
+        mode: 0440
     ports:
       - '5432:5432'
     # restart: always
@@ -125,6 +128,10 @@ services:
     configs:
       - source: redis_config
         target: /usr/local/etc/redis/redis.conf
+        uid: "103"
+        gid: "103"
+        mode: 0440
+        
     healthcheck:
       test: [ "CMD", "redis-cli", "ping" ]
       interval: 30s
