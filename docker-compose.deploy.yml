@@ -12,7 +12,7 @@ services:
       - .env
     configs:
       - source: postgres_config
-        target: /var/lib/postgresql/data/postgresql.conf
+        target: /var/lib/postgresql/data/postgresql.conf:rw
     ports:
       - '5432:5432'
     # restart: always
