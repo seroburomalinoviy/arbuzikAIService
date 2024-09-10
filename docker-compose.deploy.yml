@@ -2,18 +2,24 @@ services:
   db:
     image: postgres:13
     # container_name: postgres
-    environment:
-      POSTGRES_DB_FILE: /run/secrets/arbuzik
-      POSTGRES_USER_FILE: /run/secrets/arbuzik
-      POSTGRES_PASSWORD_FILE: /run/secrets/arbuzik
-    secrets:
-      - arbuzik
+    # environment:
+    #   POSTGRES_DB_FILE: /run/secrets/arbuzik
+    #   POSTGRES_USER_FILE: /run/secrets/arbuzik
+    #   POSTGRES_PASSWORD_FILE: /run/secrets/arbuzik
+    # secrets:
+    #   - arbuzik
+    env_file:
+      - .env
+    configs:
+      - source: postgres_config
+        target: /var/lib/postgresql/data/postgresql.conf
     ports:
       - '5432:5432'
     # restart: always
     volumes:
       - /home/postgres/db_data:/var/lib/postgresql/data
       - /home/postgres/backups:/backups
+      - /home/u603202/logs:/var/lib/postgresql/data/logs
     deploy:
       mode: replicated
       replicas: 1
@@ -112,10 +118,13 @@ services:
     ports:
       - "6379:6379"
     volumes:
-      - ./redis.conf:/usr/local/etc/redis/redis.conf
-      # - ${LOGS_PATH}:/var/log/redis
+      # - ./redis.conf:/usr/local/etc/redis/redis.conf
+      - /home/u603202/logs:/var/log/redis
     env_file:
       - .env
+    configs:
+      - source: redis_config
+        target: /usr/local/etc/redis/redis.conf
     healthcheck:
       test: [ "CMD", "redis-cli", "ping" ]
       interval: 30s
@@ -159,8 +168,8 @@ services:
     command: ["python", "main.py"]
     env_file:
       - .env
-    # volumes:
-      # - ${LOGS_PATH}:/logs
+    volumes:
+      - /home/u603202/logs:/logs
     # restart:
     #   always
     # depends_on:
@@ -306,13 +315,13 @@ services:
     #     condition: service_started
     # restart:
     #   always
-    # env_file:
-    #   - .env
+    env_file:
+      - .env
     secrets:
       - arbuzik
-    configs:
-      - source: arb_config
-        target: .env
+    # configs:
+    #   - source: arb_config
+    #     target: .env
     volumes:
       - type: volume
         source: media-data-volume
@@ -357,7 +366,7 @@ services:
     env_file:
       - .env
     volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      # - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
       - type: volume
         source: static_volume
         target: /app/static
@@ -365,6 +374,10 @@ services:
     #   always
     # depends_on:
     #   - django
+    configs:
+     - source: nginx_config
+       target: /etc/nginx/conf.d/default.conf:ro
+    
     deploy:
       mode: replicated
       replicas: 1
@@ -404,8 +417,8 @@ services:
       - .env
     # restart:
     #   always
-    # volumes:
-    #   - ${LOGS_PATH}:/logs
+    volumes:
+      - /home/u603202/logs:/logs
     # depends_on:
     #   bot:
     #     condition: service_started
@@ -446,8 +459,8 @@ services:
       - .env
     # restart:
     #   always
-    # volumes:
-    #   - ${LOGS_PATH}:/logs
+    volumes:
+      - /home/u603202/logs:/logs
     # depends_on:
     #   payment-api:
     #     condition: service_started
@@ -532,6 +545,12 @@ configs:
     external: true
   rabbit_config:
     file: ./rabbitmq.conf
+  nginx_config:
+    file: ./nginx.conf
+  postgres_config:
+    file: ./postgres.conf
+  redis_config:
+    file: ./redis.conf
 
 secrets:
   arbuzik:
