@@ -13,9 +13,7 @@ services:
     configs:
       - source: postgres_config
         target: /var/lib/postgresql/data/postgresql.conf
-        uid: "103"
-        gid: "103"
-        mode: 0440
+        mode: 0777
     ports:
       - '5432:5432'
     # restart: always
@@ -131,7 +129,7 @@ services:
         uid: "103"
         gid: "103"
         mode: 0440
-        
+
     healthcheck:
       test: [ "CMD", "redis-cli", "ping" ]
       interval: 30s
