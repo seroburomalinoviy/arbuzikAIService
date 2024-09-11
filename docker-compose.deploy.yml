@@ -2,7 +2,8 @@ services:
   db:
     image: postgres:13
     # container_name: postgres
-    # environment:
+    environment:
+        PGPASSFILE: /run/secrets/pgpass_secret
     #   POSTGRES_DB_FILE: /run/secrets/arbuzik
     #   POSTGRES_USER_FILE: /run/secrets/arbuzik
     #   POSTGRES_PASSWORD_FILE: /run/secrets/arbuzik
@@ -13,7 +14,7 @@ services:
     configs:
       - source: postgres_config
         target: /var/lib/postgresql/data/postgresql.conf
-        mode: 0777
+        # mode: 0777
     ports:
       - '5432:5432'
     # restart: always
@@ -560,6 +561,8 @@ configs:
 secrets:
   arbuzik:
     file: .secrets
+  pgpass_secret:
+    file: ./pgpass.conf
 
 volumes:
   static_volume:
