@@ -108,7 +108,7 @@ services:
   redis:
     # container_name: redis
     image: redis
-    command: ["redis-server", "/usr/local/etc/redis.conf"]
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
       # - /bin/sh
       # - -c
       # # - Double dollars, so that the variable is not expanded by Docker Compose
