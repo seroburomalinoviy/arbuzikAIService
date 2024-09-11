@@ -15,9 +15,9 @@ services:
     configs:
       - source: postgres_config
         target: /var/lib/postgresql/data/postgresql.conf
-        uid: "1002"
-        gid: "1002"
-        mode: 0777
+        # uid: "1002"
+        # gid: "1002"
+        # mode: 0777
     ports:
       - '5432:5432'
     # restart: always
