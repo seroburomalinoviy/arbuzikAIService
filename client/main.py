@@ -52,6 +52,12 @@ def _create_connection():
     return pika.BlockingConnection(param)
 
 
+def decode_dict(msg: dict, encoding_used='utf-8'):
+    return {k.decode(encoding_used): v.decode(encoding_used) if isinstance(v, bytes) else decode_dict(v, encoding_used) for k, v in msg.items()}
+
+
+
+
 def convert_to_voice(path):
     """
     Creates a new file with `opus` format using `libopus` plugin. The new file can be recognized as a voice message by
@@ -90,9 +96,10 @@ async def reader(r):
                 stream_message = r.xread(count=1, streams={stream_key: '$'}, block=0)
                 logging.info(f"{stream_message=}")
                 if stream_message:
-                    payload: dict = stream_message[0][1][0][1]
-                    logging.info(f"Got payload: {payload}")
-                    # payload: dict = json.loads(message)
+                    message: dict = stream_message[0][1][0][1]
+                    payload: dict = decode_dict(message)
+
+                    logging.info(f"Got payload: {message}")
 
                     voice_name = payload.get("voice_name")
                     extension = payload.get("extension")
