@@ -7,7 +7,8 @@ import json
 import pika
 
 import async_timeout
-from redis import asyncio as aioredis
+import redis
+from redis.exceptions import ConnectionError, DataError, NoScriptError, RedisError, ResponseError
 from dotenv import load_dotenv
 from time import perf_counter
 
@@ -80,13 +81,15 @@ def push_amqp_message(payload):
     logging.debug(f"message {payload} sent to bot")
 
 
-async def reader(channel: aioredis.client.PubSub):
+async def reader(r):
     while True:
         try:
             async with async_timeout.timeout(1):
-                message = await channel.get_message(ignore_subscribe_messages=True)
-                if message is not None:
-                    message = message.get("data").decode()
+                stream_key = 'raw-data'
+                logging.info(f"stream length: {r.xlen(stream_key)}")
+                stream_message = r.xread(count=1, streams={stream_key: '$'})
+                if stream_message is not None:
+                    message = stream_message[1].decode()
                     payload = json.loads(message)
 
                     voice_name = payload.get("voice_name")
@@ -129,23 +132,31 @@ async def reader(channel: aioredis.client.PubSub):
 
                     push_amqp_message(payload)
 
-                await asyncio.sleep(0.01)
-        except asyncio.TimeoutError:
-            pass
+        except asyncio.TimeoutError as e:
+            logging.error(e)
 
 
 async def main():
     try:
-        redis = aioredis.from_url(
-            url=f"redis://{os.environ.get('REDIS_HOST')}"
+        r = redis.Redis(
+            host=f"redis://{os.environ.get('REDIS_HOST')}"
         )
+    except ConnectionError as e:
+        logging.error(e)
+        sys.exit(1)
+    except ResponseError as e:
+        logging.error(e)
+        sys.exit(1)
+    except RedisError as e:
+        logging.error(e)
+        sys.exit(1)
     except Exception as e:
         logging.error(e)
         sys.exit(1)
 
-    pubsub = redis.pubsub()
-    await pubsub.subscribe("channel:raw-data")
-    await asyncio.create_task(reader(pubsub))
+    # pubsub = redis.pubsub()
+    # await pubsub.subscribe("channel:raw-data")
+    await asyncio.create_task(reader(r))
 
 
 if __name__ == "__main__":

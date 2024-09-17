@@ -1,5 +1,6 @@
 import asyncio
-from redis import asyncio as aioredis
+import redis
+from redis.exceptions import ConnectionError, DataError, NoScriptError, RedisError, ResponseError
 import logging
 from logging.handlers import RotatingFileHandler
 import os
@@ -13,14 +14,18 @@ async def create_task(payload):
     # https://aioredis.readthedocs.io/en/latest/getting-started/
     logging.info(f"redis input args: {payload}")
 
-    redis = aioredis.from_url(
-        url=f"redis://{os.environ.get('REDIS_HOST')}"
+    r = redis.Redis(
+        host=f"redis://{os.environ.get('REDIS_HOST')}"
     )
-    pubsub = redis.pubsub()
-    await pubsub.subscribe("channel:raw-data")
-    await redis.publish("channel:raw-data", payload)
+    stream_key = "raw-data"
+
+    await r.xadd(stream_key, payload)
+    # pubsub = redis.pubsub()
+    # await pubsub.subscribe("channel:raw-data")
+    # await redis.publish("channel:raw-data", payload)
 
     logging.info("message send to redis")
+    logging.info(f"stream length: {r.xlen(stream_key)}")
 
 
 async def task_listener():
