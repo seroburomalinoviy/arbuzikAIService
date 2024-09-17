@@ -5,7 +5,6 @@ import asyncio
 import sys
 import json
 import pika
-from pydantic import BaseModel
 
 import async_timeout
 import redis
@@ -38,19 +37,6 @@ infer_parameters = {
     "Timbre": 8.0,
     "Quefrency": 1.2,
 }
-
-
-class Data(BaseModel):
-    duration: int
-    voice_title: str
-    user_id: str
-    chat_id: str
-    voice_name: str
-    extension: str
-    pitch: int
-    voice_model_pth: str
-    voice_model_index: str
-    message_id: str
 
 
 def _create_connection():
@@ -109,24 +95,24 @@ async def reader(r):
                 logging.info(f"{stream_message=}")
                 if stream_message:
                     message: dict = stream_message[0][1][0][1]
-                    payload: Data = Data(**decode_dict(message))
+                    payload: dict = decode_dict(message)
 
                     logging.info(f"Got payload: {payload}")
 
-                    voice_name = payload.voice_name
-                    extension = payload.extension
+                    voice_name = payload.get('voice_name')
+                    extension = payload.get('extension')
                     voice_filename = voice_name + extension
                     voice_path = os.environ["USER_VOICES"] + "/" + voice_filename
 
-                    infer_parameters["model_name"] = payload.voice_model_pth
-                    infer_parameters["feature_index_path"] = payload.voice_model_index
+                    infer_parameters["model_name"] = payload.get('voice_model_pth')
+                    infer_parameters["feature_index_path"] = payload.get('voice_model_index')
                     infer_parameters["source_audio_path"] = voice_path
                     infer_parameters["output_file_name"] = (
                         voice_filename + ".tmp"
                         if extension == ".ogg"
                         else voice_filename
                     )
-                    infer_parameters["transposition"] = payload.pitch
+                    infer_parameters["transposition"] = payload.get('pitch')
 
                     logging.debug(
                         f"infer parameters: {infer_parameters['model_name']=},\n"
@@ -147,13 +133,12 @@ async def reader(r):
                         )
 
                     stream_key = 'processed-data'
-                    r.xadd(stream_key, {'complete_for': perf_counter() - start, 'duration': payload.duration})
+                    r.xadd(stream_key, {'complete_for': perf_counter() - start, 'duration': payload.get('duration')})
 
-                    _payload: dict = payload.model_dump()
-                    _payload["voice_filename"] = voice_filename
-                    logging.debug(_payload)
+                    payload["voice_filename"] = voice_filename
+                    logging.debug(payload)
 
-                    push_amqp_message(_payload)
+                    push_amqp_message(payload)
 
         except asyncio.TimeoutError as e:
             logging.error(e)
