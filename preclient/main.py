@@ -23,9 +23,6 @@ async def create_task(payload: str):
 
     resp = r.xadd(stream_key, payload)
     logging.info(resp)
-    # pubsub = redis.pubsub()
-    # await pubsub.subscribe("channel:raw-data")
-    # await redis.publish("channel:raw-data", payload)
 
     logging.info("message send to redis")
     logging.info(f"stream length: {r.xlen(stream_key)}")

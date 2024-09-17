@@ -139,7 +139,9 @@ async def reader(r):
 async def main():
     try:
         r = redis.Redis(
-            host=f"redis://{os.environ.get('REDIS_HOST')}"
+            host=os.environ.get('REDIS_HOST'),
+            port=os.environ.get('REDIS_PORT'),
+            retry_on_timeout=True
         )
     except ConnectionError as e:
         logging.error(e)
@@ -154,8 +156,6 @@ async def main():
         logging.error(e)
         sys.exit(1)
 
-    # pubsub = redis.pubsub()
-    # await pubsub.subscribe("channel:raw-data")
     await asyncio.create_task(reader(r))
 
 
