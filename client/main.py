@@ -5,6 +5,7 @@ import asyncio
 import sys
 import json
 import pika
+from pydantic import BaseModel
 
 import async_timeout
 import redis
@@ -39,6 +40,19 @@ infer_parameters = {
 }
 
 
+class Data(BaseModel):
+    duration: int
+    voice_title: str
+    user_id: str
+    chat_id: str
+    voice_name: str
+    extension: str
+    pitch: int
+    voice_model_pth: str
+    voice_model_index: str
+    message_id: str
+
+
 def _create_connection():
     credentials = pika.PlainCredentials(
         username=os.environ.get("RABBIT_USER"),
@@ -54,8 +68,6 @@ def _create_connection():
 
 def decode_dict(msg: dict, encoding_used='utf-8'):
     return {k.decode(encoding_used): v.decode(encoding_used) if isinstance(v, bytes) else decode_dict(v, encoding_used) for k, v in msg.items()}
-
-
 
 
 def convert_to_voice(path):
@@ -97,26 +109,24 @@ async def reader(r):
                 logging.info(f"{stream_message=}")
                 if stream_message:
                     message: dict = stream_message[0][1][0][1]
-                    payload: dict = decode_dict(message)
+                    payload: Data = Data(**decode_dict(message))
 
                     logging.info(f"Got payload: {payload}")
 
-                    voice_name = payload.get("voice_name")
-                    extension = payload.get("extension")
+                    voice_name = payload.voice_name
+                    extension = payload.extension
                     voice_filename = voice_name + extension
                     voice_path = os.environ["USER_VOICES"] + "/" + voice_filename
 
-                    infer_parameters["model_name"] = payload.get("voice_model_pth")
-                    infer_parameters["feature_index_path"] = payload.get(
-                        "voice_model_index"
-                    )
+                    infer_parameters["model_name"] = payload.voice_model_pth
+                    infer_parameters["feature_index_path"] = payload.voice_model_index
                     infer_parameters["source_audio_path"] = voice_path
                     infer_parameters["output_file_name"] = (
                         voice_filename + ".tmp"
                         if extension == ".ogg"
                         else voice_filename
                     )
-                    infer_parameters["transposition"] = payload.get("pitch")
+                    infer_parameters["transposition"] = payload.pitch
 
                     logging.debug(
                         f"infer parameters: {infer_parameters['model_name']=},\n"
@@ -136,6 +146,10 @@ async def reader(r):
                             f"NN + Formatting finished for: {perf_counter() - start}"
                         )
 
+                    stream_key = 'processed-data'
+                    r.xadd(stream_key, {'complete_for': perf_counter() - start, 'duration': payload.duration})
+
+                    payload: dict = payload.model_dump(mode='json')
                     payload["voice_filename"] = voice_filename
                     logging.debug(payload)
 
