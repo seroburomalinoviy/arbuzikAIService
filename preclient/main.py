@@ -1,4 +1,6 @@
 import asyncio
+import json
+
 import redis
 from redis.exceptions import ConnectionError, DataError, NoScriptError, RedisError, ResponseError
 import logging
@@ -10,10 +12,10 @@ import aio_pika
 load_dotenv()
 
 
-async def create_task(payload):
-    # https://aioredis.readthedocs.io/en/latest/getting-started/
-    logging.info(f"redis input args: {payload}")
+async def create_task(payload: str):
+    logging.info(f"redis input args: {payload}, {type(payload)=}")
 
+    payload: dict = json.loads(payload)
     r = redis.Redis(
         host=f"redis://{os.environ.get('REDIS_HOST')}"
     )
