@@ -88,6 +88,7 @@ async def reader(r):
                 stream_key = 'raw-data'
                 logging.info(f"stream length: {r.xlen(stream_key)}")
                 stream_message = r.xread(count=1, streams={stream_key: '$'})
+                logging.info(f"{stream_message=}")
                 if stream_message is not None:
                     message = stream_message[1].decode()
                     payload = json.loads(message)
