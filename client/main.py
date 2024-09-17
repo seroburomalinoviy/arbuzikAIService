@@ -99,7 +99,7 @@ async def reader(r):
                     message: dict = stream_message[0][1][0][1]
                     payload: dict = decode_dict(message)
 
-                    logging.info(f"Got payload: {message}")
+                    logging.info(f"Got payload: {payload}")
 
                     voice_name = payload.get("voice_name")
                     extension = payload.get("extension")
