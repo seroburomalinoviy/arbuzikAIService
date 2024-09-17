@@ -133,7 +133,12 @@ async def reader(r):
                         )
 
                     stream_key = 'processed-data'
-                    r.xadd(stream_key, {'complete_for': perf_counter() - start, 'duration': payload.get('duration')})
+                    r.xadd(stream_key, {
+                        'complete_for': perf_counter() - start,
+                        'duration': payload.get('duration'),
+                        'count_of_tasks': abs(r.xlen('raw-data') - r.xlen('processed-data'))
+                        }
+                   )
 
                     payload["voice_filename"] = voice_filename
                     logging.debug(payload)
