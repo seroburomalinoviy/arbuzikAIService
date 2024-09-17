@@ -90,7 +90,7 @@ async def reader(r):
                 stream_message = r.xread(count=1, streams={stream_key: '$'}, block=0)
                 logging.info(f"{stream_message=}")
                 if stream_message:
-                    message: str = stream_message[1][0][1].decode()
+                    message: str = stream_message[0][1][0][1].decode()
                     payload: dict = json.loads(message)
 
                     voice_name = payload.get("voice_name")
