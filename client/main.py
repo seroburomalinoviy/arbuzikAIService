@@ -84,13 +84,13 @@ def push_amqp_message(payload):
 async def reader(r):
     while True:
         try:
-            async with async_timeout.timeout(1):
+            async with (async_timeout.timeout(1)):
                 stream_key = 'raw-data'
                 logging.info(f"stream length: {r.xlen(stream_key)}")
                 stream_message = r.xread(count=1, streams={stream_key: '$'}, block=0)
                 logging.info(f"{stream_message=}")
                 if stream_message:
-                    message = stream_message[1].decode()
+                    message = stream_message[0][1][1].decode()
                     payload = json.loads(message)
 
                     voice_name = payload.get("voice_name")
