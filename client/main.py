@@ -149,11 +149,11 @@ async def reader(r):
                     stream_key = 'processed-data'
                     r.xadd(stream_key, {'complete_for': perf_counter() - start, 'duration': payload.duration})
 
-                    payload: dict = payload.model_dump(mode='json')
-                    payload["voice_filename"] = voice_filename
-                    logging.debug(payload)
+                    _payload: dict = payload.model_dump()
+                    _payload["voice_filename"] = voice_filename
+                    logging.debug(_payload)
 
-                    push_amqp_message(payload)
+                    push_amqp_message(_payload)
 
         except asyncio.TimeoutError as e:
             logging.error(e)
