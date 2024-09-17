@@ -2,6 +2,7 @@ services:
   db:
     image: postgres:13
     # container_name: postgres
+    command: ["posgres", "-c", "config_file=/etc/postgresql.conf"]
     environment:
         PGPASSFILE: /run/secrets/pgpass_secret
     #   POSTGRES_DB_FILE: /run/secrets/arbuzik
@@ -14,7 +15,8 @@ services:
       - .env
     configs:
       - source: postgres_config
-        target: /var/lib/postgresql/data/postgresql.conf
+        target: /etc/postgresql.conf
+        # target: /var/lib/postgresql/data/postgresql.conf
         # uid: "1002"
         # gid: "1002"
         # mode: 0777
