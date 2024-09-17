@@ -149,7 +149,7 @@ services:
       restart_policy:
         condition: any
         delay: 5s
-        max_attempts: 3
+        max_attempts: 5
         window: 10s
       # resources:
       #   limits:
@@ -243,8 +243,8 @@ services:
       replicas: 1
       restart_policy:
         condition: any
-        delay: 10s
-        max_attempts: 3
+        delay: 20s
+        max_attempts: 6
         window: 60s
       update_config:
         parallelism: 1
