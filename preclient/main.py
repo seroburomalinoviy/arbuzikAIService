@@ -15,7 +15,7 @@ load_dotenv()
 async def create_task(payload: str):
     payload: dict = json.loads(payload)
     r = redis.Redis(
-        host=f"redis://{os.environ.get('REDIS_HOST')}",
+        host=os.environ.get('REDIS_HOST'),
         port=os.environ.get('REDIS_PORT'),
         retry_on_timeout=True
     )
