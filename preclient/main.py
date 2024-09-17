@@ -13,15 +13,16 @@ load_dotenv()
 
 
 async def create_task(payload: str):
-    logging.info(f"redis input args: {payload}, {type(payload)=}")
-
     payload: dict = json.loads(payload)
     r = redis.Redis(
-        host=f"redis://{os.environ.get('REDIS_HOST')}"
+        host=f"redis://{os.environ.get('REDIS_HOST')}",
+        port=os.environ.get('REDIS_PORT'),
+        retry_on_timeout=True
     )
     stream_key = "raw-data"
 
-    await r.xadd(stream_key, payload)
+    resp = r.xadd(stream_key, payload)
+    logging.info(resp)
     # pubsub = redis.pubsub()
     # await pubsub.subscribe("channel:raw-data")
     # await redis.publish("channel:raw-data", payload)
