@@ -20,6 +20,7 @@ async def create_task(payload: str):
         retry_on_timeout=True
     )
     stream_key = "raw-data"
+    payload['count_tasks'] = r.xlen(stream_key)
 
     resp = r.xadd(stream_key, payload)
     logging.info(resp)
