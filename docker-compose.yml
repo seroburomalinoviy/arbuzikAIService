@@ -6,14 +6,15 @@ services:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
+      PG_DATA: /var/lib/postgresql/data/_data
     command: ['postgres', '-c', 'config_file=/etc/postgresql.conf']
     ports:
       - '5432:5432'
     restart: always
     volumes:
-      - ./postgres_data:/var/lib/postgresql/data
+      - ./postgres_data:/var/lib/postgresql/data/_data
       - /home/postgres/backups:/backups
-      - ${LOGS_PATH}:/var/lib/postgresql/data/logs
+      - ${LOGS_PATH}:/var/lib/postgresql/data/_data/logs
       - ./postgres.conf:/etc/postgresql.conf
 
   rabbitmq:
