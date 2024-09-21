@@ -9,7 +9,7 @@ services:
       TZ: "Europe/Moscow"
     ports:
       - 5000:5000
-    env_file:
-      - .env
+    # env_file:
+    #   - .env
     volumes:
       - /home/swarm/docker_repo/data:/var/lib/registry
