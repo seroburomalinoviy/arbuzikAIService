@@ -6,15 +6,12 @@ services:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-      PGDATA: /var/lib/postgresql/data/_data/
     command: ['postgres', '-c', 'config_file=/etc/postgresql.conf']
     ports:
       - '5432:5432'
     restart: always
     volumes:
-      - postgres_data:/var/lib/postgresql/data/_data
       - /home/postgres/backups:/backups
-      - ${LOGS_PATH}:/var/lib/postgresql/data/_data/logs
       - ./postgres.conf:/etc/postgresql.conf
 
   rabbitmq:
@@ -24,7 +21,6 @@ services:
     restart: always
     volumes:
       - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
-      - ${LOGS_PATH}:/logs:rw
     environment:
       - RABBITMQ_CONFIG_FILE=/etc/rabbitmq/rabbitmq.conf
       - RABBITMQ_DEFAULT_USER=${RABBIT_USER}
@@ -48,7 +44,6 @@ services:
       - "6379:6379"
     volumes:
       - ./redis.conf:/usr/local/etc/redis.conf
-      - ${LOGS_PATH}:/var/log/redis
     env_file:
       - .env
     restart:
@@ -208,8 +203,7 @@ services:
         condition: service_started
     restart:
       always
-    volumes:
-      - ${LOGS_PATH}:/logs
+
 
   celery-worker:
     container_name: celery-worker
@@ -226,7 +220,6 @@ services:
       - type: volume
         source: voices-volume
         target: ${USER_VOICES}
-      - ${LOGS_PATH}:/logs
 
   grafana-monitor:
     container_name: grafana-monitor
@@ -245,5 +238,4 @@ volumes:
   media-data-volume:
   voices-volume:
   grafana_storage: {}
-  postgres_data:
 
