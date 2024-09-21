@@ -6,7 +6,7 @@ services:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-      PG_DATA: /var/lib/postgresql/data/_data/
+      PGDATA: /var/lib/postgresql/data/_data/
     command: ['postgres', '-c', 'config_file=/etc/postgresql.conf']
     ports:
       - '5432:5432'
