@@ -12,7 +12,7 @@ services:
       - '5432:5432'
     restart: always
     volumes:
-      - ./postgres_data:/var/lib/postgresql/data/_data
+      - postgres_data:/var/lib/postgresql/data/_data
       - /home/postgres/backups:/backups
       - ${LOGS_PATH}:/var/lib/postgresql/data/_data/logs
       - ./postgres.conf:/etc/postgresql.conf
