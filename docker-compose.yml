@@ -12,8 +12,8 @@ services:
     restart: always
     volumes:
 #      - db_data:/var/lib/postgresql/data
-#      - /home/postgres/backups:/backups
-      - ${LOGS_PATH}:/var/lib/postgresql/data/logs
+      - /home/postgres/backups:/backups
+#      - ${LOGS_PATH}:/var/lib/postgresql/data/logs
       - ./postgres.conf:/etc/postgresql.conf
 
   rabbitmq:
