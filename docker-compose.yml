@@ -120,9 +120,9 @@ services:
     container_name: django
     command: sh -c 'python manage.py migrate --noinput && 
                     python manage.py collectstatic --noinput --clear &&
-                    gunicorn config.asgi:application -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:80'
+                    gunicorn config.asgi:application -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000'
     expose:
-      - 80
+      - 8000
     network_mode: host
     depends_on:
       db:
@@ -143,7 +143,7 @@ services:
     container_name: nginx
     image: nginx:latest
     ports:
-      - "80:80"
+      - "8000:8000"
       - "8001:8001"
       - "3000:3000"
     env_file:
