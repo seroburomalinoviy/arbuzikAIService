@@ -26,7 +26,7 @@ services:
     volumes:
       - /home/postgres/db_data:/var/lib/postgresql/data
       - /home/postgres/backups:/backups
-      - /home/u603202/logs:/var/lib/postgresql/data/logs
+      # - /home/u603202/logs:/var/lib/postgresql/data/logs
     deploy:
       mode: replicated
       replicas: 1
