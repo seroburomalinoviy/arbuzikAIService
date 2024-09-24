@@ -68,8 +68,8 @@ services:
       - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit disk_free_limit 2147483648
     env_file:
       - .env
-    secrets:
-      - arbuzik
+    # secrets:
+    #   - arbuzik
     configs:
       - source: rabbit_config
         target: /etc/rabbitmq/rabbitmq.conf
@@ -328,8 +328,8 @@ services:
     #   always
     env_file:
       - .env
-    secrets:
-      - arbuzik
+    # secrets:
+    #   - arbuzik
     # configs:
     #   - source: arb_config
     #     target: .env
@@ -563,11 +563,11 @@ configs:
   redis_config:
     file: ./redis.conf
 
-secrets:
-  arbuzik:
-    file: .secrets
-  pgpass_secret:
-    file: ./pgpass.conf
+# secrets:
+#   # arbuzik:
+#   #   file: .secrets
+#   pgpass_secret:
+#     file: ./pgpass.conf
 
 volumes:
   static_volume:
