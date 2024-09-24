@@ -23,9 +23,9 @@ services:
     ports:
       - '5432:5432'
     # restart: always
-    # volumes:
+    volumes:
       # - /home/postgres/db_data:/var/lib/postgresql/data
-      # - /home/postgres/backups:/backups
+      - /home/postgres/backups:/backups
       # - /home/u603202/logs:/var/lib/postgresql/data/logs
     deploy:
       mode: replicated
