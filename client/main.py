@@ -7,7 +7,8 @@ import json
 import pika
 
 import async_timeout
-from redis import asyncio as aioredis
+import redis
+from redis.exceptions import ConnectionError, DataError, NoScriptError, RedisError, ResponseError
 from dotenv import load_dotenv
 from time import perf_counter
 
@@ -51,6 +52,10 @@ def _create_connection():
     return pika.BlockingConnection(param)
 
 
+def decode_dict(msg: dict, encoding_used='utf-8'):
+    return {k.decode(encoding_used): v.decode(encoding_used) if isinstance(v, bytes) else decode_dict(v, encoding_used) for k, v in msg.items()}
+
+
 def convert_to_voice(path):
     """
     Creates a new file with `opus` format using `libopus` plugin. The new file can be recognized as a voice message by
@@ -80,31 +85,35 @@ def push_amqp_message(payload):
     logging.debug(f"message {payload} sent to bot")
 
 
-async def reader(channel: aioredis.client.PubSub):
+async def reader(r):
     while True:
         try:
-            async with async_timeout.timeout(1):
-                message = await channel.get_message(ignore_subscribe_messages=True)
-                if message is not None:
-                    message = message.get("data").decode()
-                    payload = json.loads(message)
+            async with (async_timeout.timeout(1)):
+                stream_key = 'raw-data'
+                logging.info(f"stream length: {r.xlen(stream_key)}")
+                stream_message = r.xread(count=1, streams={stream_key: '$'}, block=0)
+                logging.info(f"{stream_message=}")
+                if stream_message:
+                    message_id = str(stream_message[0][0])
+                    message: dict = stream_message[0][1][0][1]
+                    payload: dict = decode_dict(message)
 
-                    voice_name = payload.get("voice_name")
-                    extension = payload.get("extension")
+                    logging.info(f"Got payload: {payload}")
+
+                    voice_name = payload.get('voice_name')
+                    extension = payload.get('extension')
                     voice_filename = voice_name + extension
                     voice_path = os.environ["USER_VOICES"] + "/" + voice_filename
 
-                    infer_parameters["model_name"] = payload.get("voice_model_pth")
-                    infer_parameters["feature_index_path"] = payload.get(
-                        "voice_model_index"
-                    )
+                    infer_parameters["model_name"] = payload.get('voice_model_pth')
+                    infer_parameters["feature_index_path"] = payload.get('voice_model_index')
                     infer_parameters["source_audio_path"] = voice_path
                     infer_parameters["output_file_name"] = (
                         voice_filename + ".tmp"
                         if extension == ".ogg"
                         else voice_filename
                     )
-                    infer_parameters["transposition"] = payload.get("pitch")
+                    infer_parameters["transposition"] = payload.get('pitch')
 
                     logging.debug(
                         f"infer parameters: {infer_parameters['model_name']=},\n"
@@ -124,28 +133,45 @@ async def reader(channel: aioredis.client.PubSub):
                             f"NN + Formatting finished for: {perf_counter() - start}"
                         )
 
+                    stream_key = 'processed-data'
+                    r.xadd(stream_key, {
+                            'complete_for': perf_counter() - start,
+                            'duration': payload.get('duration'),
+                            'count_task': r.xlen(stream_key)
+                        }
+                    )
+                    r.xdel('raw-data', ids=message_id)
+
                     payload["voice_filename"] = voice_filename
                     logging.debug(payload)
 
                     push_amqp_message(payload)
 
-                await asyncio.sleep(0.01)
-        except asyncio.TimeoutError:
-            pass
+        except asyncio.TimeoutError as e:
+            logging.error(e)
 
 
 async def main():
     try:
-        redis = aioredis.from_url(
-            url=f"redis://{os.environ.get('REDIS_HOST')}"
+        r = redis.Redis(
+            host=os.environ.get('REDIS_HOST'),
+            port=os.environ.get('REDIS_PORT'),
+            retry_on_timeout=True
         )
+    except ConnectionError as e:
+        logging.error(e)
+        sys.exit(1)
+    except ResponseError as e:
+        logging.error(e)
+        sys.exit(1)
+    except RedisError as e:
+        logging.error(e)
+        sys.exit(1)
     except Exception as e:
         logging.error(e)
         sys.exit(1)
 
-    pubsub = redis.pubsub()
-    await pubsub.subscribe("channel:raw-data")
-    await asyncio.create_task(reader(pubsub))
+    await asyncio.create_task(reader(r))
 
 
 if __name__ == "__main__":

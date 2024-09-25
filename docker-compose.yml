@@ -6,14 +6,13 @@ services:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
+    command: ['postgres', '-c', 'config_file=/etc/postgresql.conf']
     ports:
       - '5432:5432'
     restart: always
     volumes:
-      - /home/postgres/db_data:/var/lib/postgresql/data
       - /home/postgres/backups:/backups
-      - ${LOGS_PATH}:/var/lib/postgresql/data/logs
-      - ./postgres.conf:/var/lib/postgresql/data/postgresql.conf
+      - ./postgres.conf:/etc/postgresql.conf
 
   rabbitmq:
     image: rabbitmq:3.10.2-management
@@ -22,7 +21,6 @@ services:
     restart: always
     volumes:
       - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
-      - ${LOGS_PATH}:/logs:rw
     environment:
       - RABBITMQ_CONFIG_FILE=/etc/rabbitmq/rabbitmq.conf
       - RABBITMQ_DEFAULT_USER=${RABBIT_USER}
@@ -46,7 +44,6 @@ services:
       - "6379:6379"
     volumes:
       - ./redis.conf:/usr/local/etc/redis.conf
-      - ${LOGS_PATH}:/var/log/redis
     env_file:
       - .env
     restart:
@@ -123,9 +120,10 @@ services:
     container_name: django
     command: sh -c 'python manage.py migrate --noinput && 
                     python manage.py collectstatic --noinput --clear &&
-                    gunicorn config.asgi:application -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000'
+                    gunicorn config.asgi:application -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:80'
     expose:
       - 8000
+    network_mode: host
     depends_on:
       db:
         condition: service_started
@@ -206,8 +204,7 @@ services:
         condition: service_started
     restart:
       always
-    volumes:
-      - ${LOGS_PATH}:/logs
+
 
   celery-worker:
     container_name: celery-worker
@@ -224,7 +221,6 @@ services:
       - type: volume
         source: voices-volume
         target: ${USER_VOICES}
-      - ${LOGS_PATH}:/logs
 
   grafana-monitor:
     container_name: grafana-monitor
