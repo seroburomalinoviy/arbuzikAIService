@@ -121,8 +121,8 @@ services:
     command: sh -c 'python manage.py migrate --noinput && 
                     python manage.py collectstatic --noinput --clear &&
                     gunicorn config.asgi:application -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8092'
-    expose:
-      - 8092
+    ports:
+      - "8092:8092"
     network_mode: host
     depends_on:
       db:
