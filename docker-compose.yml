@@ -123,7 +123,7 @@ services:
                     gunicorn config.asgi:application -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8092'
     ports:
       - "8092:8092"
-    network_mode: host
+#    network_mode: host
     depends_on:
       db:
         condition: service_started
