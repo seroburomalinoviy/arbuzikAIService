@@ -140,7 +140,7 @@ async def reader(r):
                             'count_task': r.xlen(stream_key)
                         }
                     )
-                    r.xdel('raw-data', ids=message_id)
+                    r.xdel('raw-data', message_id)
 
                     payload["voice_filename"] = voice_filename
                     logging.debug(payload)
