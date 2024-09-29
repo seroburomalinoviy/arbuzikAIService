@@ -155,4 +155,5 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 # CSRF_USE_SESSIONS = True
 
-CSRF_TRUSTED_ORIGINS = ['http://http://95.31.211.45:8081', 'http://95.31.211.45']
+CSRF_TRUSTED_ORIGINS = ['http://http://95.31.211.45:8081']
+CSRF_COOKIE_DOMAIN = 'http://http://95.31.211.45:8081'
