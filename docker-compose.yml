@@ -11,7 +11,9 @@ services:
       - '5432:5432'
     restart: always
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - type: volume
+        source: postgres_data
+        target: /var/lib/postgresql/data
       - /home/postgres/backups:/backups
       - ./postgres.conf:/etc/postgresql.conf
 
