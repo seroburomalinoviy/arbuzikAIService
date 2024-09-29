@@ -121,6 +121,8 @@ services:
     command: sh -c 'python manage.py migrate --noinput && 
                     python manage.py collectstatic --noinput --clear &&
                     gunicorn config.asgi:application -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8081'
+    expose:
+      - 8081
     depends_on:
       db:
         condition: service_started
