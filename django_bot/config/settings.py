@@ -146,6 +146,7 @@ MEDIA_ROOT = BASE_DIR / "media"
 # ALLOWED_ORIGINS = ['http://*', 'https://*']
 # CSRF_TRUSTED_ORIGINS = ALLOWED_ORIGINS.copy()
 # CSRF_TRUSTED_ORIGINS = [f"http://{os.environ.get('HOST')}"]
+CSRF_TRUSTED_ORIGINS = ['http://*', 'https://*']
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_HTTPONLY = True
