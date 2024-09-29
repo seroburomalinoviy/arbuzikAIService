@@ -34,8 +34,8 @@ ALLOWED_HOSTS = [i for i in os.environ.get("DJANGO_ALLOWED_HOSTS").split(",")]
 # Application definition
 
 INSTALLED_APPS = [
-    "django.contrib.auth",
     "django.contrib.admin",
+    "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
@@ -50,7 +50,7 @@ MIDDLEWARE = [
     "django.contrib.sessions.middleware.SessionMiddleware",
 
 
-    #     "django.middleware.csrf.CsrfViewMiddleware",
+        "django.middleware.csrf.CsrfViewMiddleware",
     "django.middleware.common.CommonMiddleware",
     # "django.middleware.security.SecurityMiddleware",
 
@@ -153,6 +153,6 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 # CSRF_TRUSTED_ORIGINS = ['https://example.com']
 
-CSRF_USE_SESSIONS = True
+# CSRF_USE_SESSIONS = True
 
-CSRF_TRUSTED_ORIGINS = ['http://*']
+# CSRF_TRUSTED_ORIGINS = ['http://*']
