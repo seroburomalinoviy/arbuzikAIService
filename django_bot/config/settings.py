@@ -143,11 +143,12 @@ MEDIA_ROOT = BASE_DIR / "media"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 # DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
 # ALLOWED_ORIGINS = ['http://*', 'https://*']
 # CSRF_TRUSTED_ORIGINS = ALLOWED_ORIGINS.copy()
 # CSRF_TRUSTED_ORIGINS = [f"http://{os.environ.get('HOST')}"]
-CSRF_TRUSTED_ORIGINS = ['http://*', 'https://*']
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_HTTPONLY = True
+# CSRF_TRUSTED_ORIGINS = ['http://*', 'https://*']
+CSRF_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = False
+# CSRF_COOKIE_HTTPONLY = True
 # CSRF_COOKIE_DOMAIN = f"{os.environ.get('HOST')}"
