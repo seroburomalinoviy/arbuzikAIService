@@ -34,8 +34,8 @@ ALLOWED_HOSTS = [i for i in os.environ.get("DJANGO_ALLOWED_HOSTS").split(",")]
 # Application definition
 
 INSTALLED_APPS = [
-    "django.contrib.admin",
     "django.contrib.auth",
+    "django.contrib.admin",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
@@ -47,8 +47,10 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-# "django.contrib.sessions.middleware.SessionMiddleware",
-#     "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+
+
+    #     "django.middleware.csrf.CsrfViewMiddleware",
     "django.middleware.common.CommonMiddleware",
     # "django.middleware.security.SecurityMiddleware",
 
