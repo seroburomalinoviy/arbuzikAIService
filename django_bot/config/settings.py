@@ -155,4 +155,4 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 # CSRF_USE_SESSIONS = True
 
-# CSRF_TRUSTED_ORIGINS = ['http://*']
+CSRF_TRUSTED_ORIGINS = ['http://*']
