@@ -149,3 +149,5 @@ MEDIA_ROOT = BASE_DIR / "media"
 # SECURE_CROSS_ORIGIN_OPENER_POLICY=None
 
 # CSRF_TRUSTED_ORIGINS = ['https://example.com']
+
+CSRF_TRUSTED_ORIGINS = ['http://*']
