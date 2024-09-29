@@ -148,3 +148,4 @@ CSRF_TRUSTED_ORIGINS = [f"http://{os.environ.get('HOST')}"]
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_DOMAIN = f"{os.environ.get('HOST')}"
