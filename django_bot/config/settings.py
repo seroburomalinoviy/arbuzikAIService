@@ -47,7 +47,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    "django.middleware.csrf.CsrfViewMiddleware",
+    # "django.middleware.csrf.CsrfViewMiddleware",
     "django.middleware.common.CommonMiddleware",
     # "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -145,7 +145,7 @@ MEDIA_ROOT = BASE_DIR / "media"
 # DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # CSRF_COOKIE_SECURE = True
-# SESSION_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = True
 # SECURE_CROSS_ORIGIN_OPENER_POLICY=None
 
 # CSRF_TRUSTED_ORIGINS = ['https://example.com']
