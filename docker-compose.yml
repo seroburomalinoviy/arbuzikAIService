@@ -12,7 +12,9 @@ services:
       - '5432:5432'
     restart: always
     volumes:
-      - /home/postgres/pg_data:/var/lib/postgresql/data
+      - type: volume
+        source: pg_data
+        target: /var/lib/postgresql/data
       - /home/postgres/backups:/backups
       - ./postgres.conf:/etc/postgresql.conf
 
@@ -238,4 +240,5 @@ volumes:
   media-data-volume:
   voices-volume:
   grafana_storage: {}
+  pg_data:
 
