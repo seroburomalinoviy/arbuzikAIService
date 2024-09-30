@@ -137,7 +137,8 @@ async def reader(r):
                     r.xadd(stream_key, {
                             'complete_for': perf_counter() - start,
                             'duration': payload.get('duration'),
-                            'count_task': r.xlen(stream_key)
+                            'count_task': r.xlen(stream_key),
+                            'actual_count_tasks': r.xlen(stream_key) - r.xlen("raw-data")
                         }
                     )
                     # logging.info(message_id)
