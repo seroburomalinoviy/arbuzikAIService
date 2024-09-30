@@ -20,13 +20,12 @@ async def create_task(payload: str):
         retry_on_timeout=True
     )
     stream_key = "raw-data"
-    payload['count_tasks'] = r.xlen(stream_key)
+    payload['count_tasks'] = r.xlen("processed-data") - r.xlen("raw-data")
 
     resp = r.xadd(stream_key, payload)
-    logging.info(resp)
 
-    logging.info("message send to redis")
-    logging.info(f"stream length: {r.xlen(stream_key)}")
+    # logging.info(resp)
+    logging.info(f"The {stream_key} stream's length: {r.xlen(stream_key)}")
 
 
 async def task_listener():

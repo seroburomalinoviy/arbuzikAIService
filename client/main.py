@@ -90,7 +90,7 @@ async def reader(r):
         try:
             async with (async_timeout.timeout(1)):
                 stream_key = 'raw-data'
-                logging.info(f"stream length: {r.xlen(stream_key)}")
+                logging.info(f"The {stream_key} stream's length: {r.xlen(stream_key)}")
                 stream_message = r.xread(count=1, streams={stream_key: '$'}, block=0)
                 logging.info(f"{stream_message=}")
                 if stream_message:
@@ -140,8 +140,8 @@ async def reader(r):
                             'count_task': r.xlen(stream_key)
                         }
                     )
-                    logging.info(message_id)
-                    r.xdel('raw-data', message_id)
+                    # logging.info(message_id)
+                    # r.xdel('raw-data', message_id)
 
                     payload["voice_filename"] = voice_filename
                     logging.debug(payload)
