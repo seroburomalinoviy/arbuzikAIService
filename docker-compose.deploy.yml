@@ -557,9 +557,9 @@ services:
   celery-worker:
     image: localhost:5000/django:latest
     command: celery --app config worker --loglevel=info
-    depends_on:
-      celery-scheduler:
-        condition: service_started
+    # depends_on:
+    #   celery-scheduler:
+    #     condition: service_started
     env_file:
       - .env
     volumes:
