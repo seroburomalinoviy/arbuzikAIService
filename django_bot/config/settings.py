@@ -47,13 +47,13 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    "django.middleware.security.SecurityMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
+    # "django.middleware.security.SecurityMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
-    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    # "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -142,8 +142,15 @@ MEDIA_ROOT = BASE_DIR / "media"
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+# DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # CSRF_COOKIE_SECURE = True
 # SESSION_COOKIE_SECURE = True
-# CSRF_COOKIE_HTTPONLY = True
+# SECURE_CROSS_ORIGIN_OPENER_POLICY=None
+
+# CSRF_TRUSTED_ORIGINS = ['https://example.com']
+
+# CSRF_USE_SESSIONS = True
+
+CSRF_TRUSTED_ORIGINS = ['http://http://95.31.211.45:8081']
+CSRF_COOKIE_DOMAIN = 'http://95.31.211.45:8081'

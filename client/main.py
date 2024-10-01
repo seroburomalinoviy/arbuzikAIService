@@ -90,11 +90,11 @@ async def reader(r):
         try:
             async with (async_timeout.timeout(1)):
                 stream_key = 'raw-data'
-                logging.info(f"stream length: {r.xlen(stream_key)}")
+                logging.info(f"The {stream_key} stream's length: {r.xlen(stream_key)}")
                 stream_message = r.xread(count=1, streams={stream_key: '$'}, block=0)
                 logging.info(f"{stream_message=}")
                 if stream_message:
-                    message_id = str(stream_message[0][0])
+                    message_id = stream_message[0][1][0][0]
                     message: dict = stream_message[0][1][0][1]
                     payload: dict = decode_dict(message)
 
@@ -137,10 +137,14 @@ async def reader(r):
                     r.xadd(stream_key, {
                             'complete_for': perf_counter() - start,
                             'duration': payload.get('duration'),
-                            'count_task': r.xlen(stream_key)
+                            'count_task': r.xlen(stream_key),  # count of processed tasks
+                            # count of actual tasks also added one task to count the current element
+                            'actual_count_tasks': abs(r.xlen(stream_key)+1 - r.xlen("raw-data"))
+
                         }
                     )
-                    r.xdel('raw-data', ids=message_id)
+                    # logging.info(message_id)
+                    # r.xdel('raw-data', message_id)
 
                     payload["voice_filename"] = voice_filename
                     logging.debug(payload)
