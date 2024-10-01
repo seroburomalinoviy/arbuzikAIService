@@ -3,7 +3,8 @@ services:
     image: postgres:13
     # container_name: postgres
     command: ["postgres", "-c", "config_file=/etc/postgresql.conf"]
-    # environment:
+    environment:
+      PGDATA: /var/lib/postgresql/data/pgdata
     #     PGPASSFILE: /run/secrets/pgpass_secret
     #   POSTGRES_DB_FILE: /run/secrets/arbuzik
     #   POSTGRES_USER_FILE: /run/secrets/arbuzik
@@ -24,9 +25,10 @@ services:
       - '5432:5432'
     # restart: always
     volumes:
-      # - /home/postgres/db_data:/var/lib/postgresql/data
+      - type: volume
+        source: pg_data
+        target: /var/lib/postgresql/data
       - /home/postgres/backups:/backups
-      # - /home/u603202/logs:/var/lib/postgresql/data/logs
     deploy:
       mode: replicated
       replicas: 1
@@ -90,19 +92,19 @@ services:
         delay: 5s
         max_attempts: 5
         window: 50s
-      update_config:
-        parallelism: 1
-        delay: 10s
-        order: start-first
-        monitor: 10s
-        failure_action: pause
-      rollback_config:
-        parallelism: 1
-        delay: 20s
-        failure_action: pause
-        monitor: 0s 
-        max_failure_ratio: 0
-        order: start-first
+      # update_config:
+      #   parallelism: 1
+      #   delay: 10s
+      #   order: start-first
+      #   monitor: 10s
+      #   failure_action: pause
+      # rollback_config:
+      #   parallelism: 1
+      #   delay: 20s
+      #   failure_action: pause
+      #   monitor: 0s 
+      #   max_failure_ratio: 0
+      #   order: start-first
       # resources:
       #   limits:
       #     cpus: 2
@@ -318,9 +320,9 @@ services:
     # container_name: django
     command: sh -c 'python manage.py migrate --noinput && 
                     python manage.py collectstatic --noinput --clear &&
-                    gunicorn config.asgi:application -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000'
-    expose:
-      - 8000
+                    gunicorn config.asgi:application -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8081'
+    # expose:
+    #   - 8000
     # depends_on:
     #   db:
     #     condition: service_started
@@ -374,6 +376,8 @@ services:
     image: nginx:latest
     ports:
       - "80:80"
+      - "8001:8001"
+      - "3000:3000"
     env_file:
       - .env
     volumes:
@@ -397,19 +401,19 @@ services:
         delay: 30s
         max_attempts: 7
         window: 60s
-      update_config:
-        parallelism: 1
-        delay: 10s
-        order: start-first
-        monitor: 10s
-        failure_action: pause
-      rollback_config:
-        parallelism: 1
-        delay: 20s
-        failure_action: pause
-        monitor: 0s 
-        max_failure_ratio: 0
-        order: start-first
+      # update_config:
+      #   parallelism: 1
+      #   delay: 10s
+      #   order: start-first
+      #   monitor: 10s
+      #   failure_action: pause
+      # rollback_config:
+      #   parallelism: 1
+      #   delay: 20s
+      #   failure_action: pause
+      #   monitor: 0s 
+      #   max_failure_ratio: 0
+      #   order: start-first
       # resources:
       #   limits:
       #     cpus: 2
@@ -441,19 +445,19 @@ services:
         delay: 10s
         max_attempts: 3
         window: 60s
-      update_config:
-        parallelism: 1
-        delay: 10s
-        order: start-first
-        monitor: 10s
-        failure_action: pause
-      rollback_config:
-        parallelism: 1
-        delay: 20s
-        failure_action: pause
-        monitor: 0s 
-        max_failure_ratio: 0
-        order: start-first
+      # update_config:
+      #   parallelism: 1
+      #   delay: 10s
+      #   order: start-first
+      #   monitor: 10s
+      #   failure_action: pause
+      # rollback_config:
+      #   parallelism: 1
+      #   delay: 20s
+      #   failure_action: pause
+      #   monitor: 0s 
+      #   max_failure_ratio: 0
+      #   order: start-first
       # resources:
       # limits:
       #   cpus: 2
@@ -483,19 +487,19 @@ services:
         delay: 10s
         max_attempts: 3
         window: 60s
-      update_config:
-        parallelism: 1
-        delay: 10s
-        order: start-first
-        monitor: 10s
-        failure_action: pause
-      rollback_config:
-        parallelism: 1
-        delay: 20s
-        failure_action: pause
-        monitor: 0s 
-        max_failure_ratio: 0
-        order: start-first
+      # update_config:
+      #   parallelism: 1
+      #   delay: 10s
+      #   order: start-first
+      #   monitor: 10s
+      #   failure_action: pause
+      # rollback_config:
+      #   parallelism: 1
+      #   delay: 20s
+      #   failure_action: pause
+      #   monitor: 0s 
+      #   max_failure_ratio: 0
+      #   order: start-first
       # resources:
       #   limits:
       #     cpus: 2
@@ -504,10 +508,10 @@ services:
       #     cpus: 1
       #     memory: 256M
 
-  scheduler:
+  celery-scheduler:
     # container_name: scheduler
     image: localhost:5000/django:latest
-    command: celery -A config beat -l info -S django_celery_beat.schedulers:DatabaseScheduler
+    command: celery --app config beat --loglevel=info --scheduler django_celery_beat.schedulers:DatabaseScheduler
     # depends_on:
     #   redis:
     #     condition: service_started
@@ -529,19 +533,19 @@ services:
         delay: 10s
         max_attempts: 3
         window: 60s
-      update_config:
-        parallelism: 1
-        delay: 10s
-        order: start-first
-        monitor: 10s
-        failure_action: pause
-      rollback_config:
-        parallelism: 1
-        delay: 20s
-        failure_action: pause
-        monitor: 0s 
-        max_failure_ratio: 0
-        order: start-first
+      # update_config:
+      #   parallelism: 1
+      #   delay: 10s
+      #   order: start-first
+      #   monitor: 10s
+      #   failure_action: pause
+      # rollback_config:
+      #   parallelism: 1
+      #   delay: 20s
+      #   failure_action: pause
+      #   monitor: 0s 
+      #   max_failure_ratio: 0
+      #   order: start-first
       # resources:
       #   limits:
       #     cpus: 2
@@ -550,6 +554,45 @@ services:
       #     cpus: 1
       #     memory: 256M
 
+  celery-worker:
+    image: localhost:5000/django:latest
+    command: celery --app config worker --loglevel=info
+    depends_on:
+      celery-scheduler:
+        condition: service_started
+    env_file:
+      - .env
+    volumes:
+      - type: volume
+        source: voices-volume
+        target: /app/media/user-voices
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: any
+        delay: 10s
+        max_attempts: 3
+        window: 60s
+
+  grafana-monitor:
+    image: grafana/grafana-oss
+    restart: unless-stopped
+    environment:
+      - GF_LOG_LEVEL=info
+      - GF_INSTALL_PLUGINS=redis-datasource
+    expose:
+      - 3000
+    volumes:
+      - grafana_storage:/var/lib/grafana
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: any
+        delay: 10s
+        max_attempts: 3
+        window: 60s
 
 configs:
   arb_config:
@@ -573,4 +616,6 @@ volumes:
   static_volume:
   media-data-volume:
   voices-volume:
+  grafana_storage: {}
+  pg_data:
 
