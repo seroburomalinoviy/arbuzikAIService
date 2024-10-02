@@ -21,8 +21,8 @@ services:
         # uid: "1002"
         # gid: "1002"
         # mode: 0777
-    ports:
-      - '5432:5432'
+    # ports:
+    #   - '5432:5432'
     # restart: always
     volumes:
       - type: volume
@@ -77,7 +77,7 @@ services:
         target: /etc/rabbitmq/rabbitmq.conf
     ports:
       - "15672:15672"
-      - "5672:5672"
+      # - "5672:5672"
     healthcheck:
       test: rabbitmq-diagnostics check_port_connectivity
       interval: 10s
@@ -124,8 +124,8 @@ services:
       # # - The ${variable:?message} syntax causes shell to exit with a non-zero
       # #   code and print a message, when the variable is not set or empty
       # - redis-server /usr/local/etc/redis.conf --requirepass "$${REDIS_PASSWORD:?REDIS_PASSWORD variable is not set}"
-    ports:
-      - "6379:6379"
+    # ports:
+    #   - "6379:6379"
     # volumes:
       # - ./redis.conf:/usr/local/etc/redis/redis.conf
       # - /home/u603202/logs:/var/log/redis
