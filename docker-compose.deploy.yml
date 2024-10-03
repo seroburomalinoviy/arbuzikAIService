@@ -644,6 +644,7 @@ configs:
 networks:
   everywhere_overlay:
     driver: overlay
+    attachable: true
 
 volumes:
   static_volume:
