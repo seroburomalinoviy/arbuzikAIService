@@ -284,6 +284,8 @@ services:
     image: localhost:5000/bot:latest
     # container_name: bot
     command: ["python", "start_bot.py"]
+    environment:
+      POSTGRES_HOST: db
     env_file:
       - .env
     volumes:
