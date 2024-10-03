@@ -30,7 +30,6 @@ services:
         target: /var/lib/postgresql/data
       - /home/postgres/backups:/backups
     networks:
-      - everywhere
       - everywhere_overlay
     deploy:
       mode: replicated
@@ -88,7 +87,6 @@ services:
       retries: 3
       start_period: 10s
     networks:
-      - everywhere
       - everywhere_overlay
     deploy:
       mode: replicated
@@ -149,7 +147,6 @@ services:
       timeout: 10s
       retries: 5
     networks:
-      - everywhere
       - everywhere_overlay
     # restart:
     #   always
@@ -190,7 +187,6 @@ services:
     env_file:
       - .env
     networks:
-      - everywhere
       - everywhere_overlay
     # volumes:
       # - /home/u603202/logs:/logs
@@ -252,7 +248,6 @@ services:
         source: voices-volume
         target: /app/media/user-voices
     networks:
-      - everywhere
       - everywhere_overlay
     deploy:
       mode: replicated
@@ -299,7 +294,6 @@ services:
         source: media-data-volume
         target: /app/media/data/
     networks:
-      - everywhere
       - everywhere_overlay
     deploy:
       mode: replicated
@@ -362,7 +356,6 @@ services:
         source: static_volume
         target: /app/static
     networks:
-      - everywhere
       - everywhere_overlay
     deploy:
       mode: replicated
@@ -415,7 +408,6 @@ services:
      - source: nginx_config
        target: /etc/nginx/conf.d/default.conf:ro
     networks:
-      - everywhere
       - everywhere_overlay
     deploy:
       mode: replicated
@@ -455,7 +447,6 @@ services:
     env_file:
       - .env
     networks:
-      - everywhere
       - everywhere_overlay
     # restart:
     #   always
@@ -500,7 +491,6 @@ services:
     env_file:
       - .env
     networks:
-      - everywhere
       - everywhere_overlay
     # restart:
     #   always
@@ -550,7 +540,6 @@ services:
     env_file:
       - .env
     networks:
-      - everywhere
       - everywhere_overlay
     # restart:
     #   always
@@ -608,7 +597,6 @@ services:
         max_attempts: 3
         window: 60s
     networks:
-      - everywhere
       - everywhere_overlay
 
   grafana-monitor:
@@ -630,7 +618,6 @@ services:
         max_attempts: 3
         window: 60s
     networks:
-      - everywhere
       - everywhere_overlay
 
 configs:
@@ -651,8 +638,6 @@ configs:
 #   pgpass_secret:
 #     file: ./pgpass.conf
 networks:
-  everywhere:
-    driver: bridge
   everywhere_overlay:
     driver: overlay
 
