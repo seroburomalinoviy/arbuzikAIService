@@ -410,7 +410,7 @@ services:
     #   - django
     configs:
      - source: nginx_config
-       target: /etc/nginx/conf.d/default.conf:ro
+       target: /etc/nginx/conf.d/default.conf
     networks:
       - everywhere_overlay
     deploy:
