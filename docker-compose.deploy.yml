@@ -338,6 +338,8 @@ services:
       POSTGRES_HOST: db
     # expose:
     #   - 8000
+    ports:
+      - "5000:8081"
     # depends_on:
     #   db:
     #     condition: service_started
