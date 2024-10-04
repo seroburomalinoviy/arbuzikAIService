@@ -8,6 +8,8 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       PGDATA: /var/lib/postgresql/data/pgdata
     command: ['postgres', '-c', 'config_file=/etc/postgresql.conf']
+    expose:
+      - 5432
     # ports:
     #   - '5432:5432'
     restart: always
@@ -30,9 +32,10 @@ services:
       - RABBITMQ_DEFAULT_USER=${RABBIT_USER}
       - RABBITMQ_DEFAULT_PASS=${RABBIT_PASSWORD}
       - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit disk_free_limit 2147483648
+    expose:
+      - 5672
     ports:
       - "15672:15672"
-      # - "5672:5672"
     healthcheck:
       test: rabbitmq-diagnostics check_port_connectivity
       interval: 10s
@@ -44,8 +47,8 @@ services:
     container_name: redis
     image: redis
     command: ["redis-server", "/usr/local/etc/redis.conf"]
-    # ports:
-    #   - "6379:6379"
+    expose:
+      - 6379
     volumes:
       - ./redis.conf:/usr/local/etc/redis.conf
     env_file:
@@ -125,6 +128,8 @@ services:
     command: sh -c 'python manage.py migrate --noinput && 
                     python manage.py collectstatic --noinput --clear &&
                     gunicorn config.asgi:application -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8081'
+    expose:
+      - 8081
     depends_on:
       db:
         condition: service_started
