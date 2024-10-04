@@ -1,29 +1,14 @@
 services:
   db:
     image: postgres:13
-    # container_name: postgres
     command: ["postgres", "-c", "config_file=/etc/postgresql.conf"]
     environment:
       PGDATA: /var/lib/postgresql/data/pgdata
-    #     PGPASSFILE: /run/secrets/pgpass_secret
-    #   POSTGRES_DB_FILE: /run/secrets/arbuzik
-    #   POSTGRES_USER_FILE: /run/secrets/arbuzik
-    #   POSTGRES_PASSWORD_FILE: /run/secrets/arbuzik
-    # secrets:
-    #     - pgpass_secret
-    #   - arbuzik
     env_file:
       - .env
     configs:
       - source: postgres_config
         target: /etc/postgresql.conf
-        # target: /var/lib/postgresql/data/postgresql.conf
-        # uid: "1002"
-        # gid: "1002"
-        # mode: 0777
-    # ports:
-    #   - '5432:5432'
-    # restart: always
     volumes:
       - type: volume
         source: pg_data
@@ -180,23 +165,15 @@ services:
       #   order: start-first
 
   preclient:
-    # container_name: preclient
     image: localhost:5000/preclient:latest
-    # build: ./preclient
     command: ["python", "main.py"]
     env_file:
       - .env
     networks:
       - everywhere_overlay
-    # volumes:
-      # - /home/u603202/logs:/logs
-    # restart:
-    #   always
-    # depends_on:
-    #   redis:
-    #     condition: service_started
-    #   rabbitmq:
-    #     condition: service_healthy
+    depends_on:
+      - rabbitmq
+      - redis
     deploy:
       mode: replicated
       replicas: 1
@@ -227,19 +204,13 @@ services:
       #     memory: 256M
 
   client:
-    # container_name: client
     image: localhost:5000/client:latest
-    # build: ./client
     command: ["python", "main.py"]
     env_file:
       - .env
-    # restart:
-    #   always
-    # depends_on:
-    #   rabbitmq:
-    #     condition: service_healthy
-    #   redis:
-    #     condition: service_started
+    depends_on:
+      - rabbitmq
+      - redis
     volumes:
       - type: volume
         source: media-data-volume
@@ -280,9 +251,7 @@ services:
 
 
   bot:
-    # build: ./django_bot
     image: localhost:5000/bot:latest
-    # container_name: bot
     command: ["python", "start_bot.py"]
     environment:
       POSTGRES_HOST: db
@@ -297,6 +266,9 @@ services:
         target: /app/media/data/
     networks:
       - everywhere_overlay
+    depends_on:
+      - db
+      - rabbitmq
     deploy:
       mode: replicated
       replicas: 1
@@ -345,6 +317,8 @@ services:
         target: /app/static
     networks:
       - everywhere_overlay
+    depends_on:
+      - db
     deploy:
       mode: replicated
       replicas: 1
@@ -391,7 +365,6 @@ services:
       #     memory: 256M
 
   proxy-server:
-    # container_name: nginx
     image: nginx:latest
     ports:
       - "80:80"
@@ -400,14 +373,12 @@ services:
     env_file:
       - .env
     volumes:
-      # - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
       - type: volume
         source: static_volume
         target: /app/static
-    # restart:
-    #   always
-    # depends_on:
-    #   - django
+    depends_on:
+      - payment-api
+      - django
     configs:
      - source: nginx_config
        target: /etc/nginx/conf.d/default.conf
@@ -443,7 +414,6 @@ services:
       #     memory: 256M
 
   payment-api:
-    # container_name: payment-api
     image: localhost:5000/payment-api
     command: sh -c 'uvicorn api:app --host 0.0.0.0 --port 8001 --proxy-headers'
     expose:
@@ -452,13 +422,8 @@ services:
       - .env
     networks:
       - everywhere_overlay
-    # restart:
-    #   always
-    # volumes:
-      # - /home/u603202/logs:/logs
-    # depends_on:
-    #   bot:
-    #     condition: service_started
+    depends_on:
+      - bot
     deploy:
       mode: replicated
       replicas: 1
@@ -496,13 +461,10 @@ services:
       - .env
     networks:
       - everywhere_overlay
-    # restart:
-    #   always
-    # volumes:
-      # - /home/u603202/logs:/logs
-    # depends_on:
-    #   payment-api:
-    #     condition: service_started
+    depends_on:
+      - payment-api
+      - rabbitmq
+      - db
     deploy:
       mode: replicated
       replicas: 1
@@ -533,25 +495,18 @@ services:
       #     memory: 256M
 
   celery-scheduler:
-    # container_name: scheduler
     image: localhost:5000/django:latest
     command: celery --app config beat --loglevel=info --scheduler django_celery_beat.schedulers:DatabaseScheduler
     depends_on:
       - redis
       - bot
       - db
-    #   redis:
-    #     condition: service_started
-    #   bot:
-    #     condition: service_started
     environment:
       POSTGRES_HOST: db
     env_file:
       - .env
     networks:
       - everywhere_overlay
-    # restart:
-    #   always
     volumes:
       - type: volume
         source: voices-volume
@@ -588,9 +543,8 @@ services:
   celery-worker:
     image: localhost:5000/django:latest
     command: celery --app config worker --loglevel=info
-    # depends_on:
-    #   celery-scheduler:
-    #     condition: service_started
+    depends_on:
+      - celery-scheduler
     env_file:
       - .env
     volumes:
@@ -641,11 +595,6 @@ configs:
   redis_config:
     file: ./redis.conf
 
-# secrets:
-#   # arbuzik:
-#   #   file: .secrets
-#   pgpass_secret:
-#     file: ./pgpass.conf
 networks:
   everywhere_overlay:
     driver: overlay
