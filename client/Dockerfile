@@ -10,7 +10,7 @@ WORKDIR /app
 COPY ./requirements.txt /app
 RUN pip install --no-cache-dir --upgrade setuptools wheel \
 # && pip install  pip \
-&& pip install faiss-gpu fairseq gradio ffmpeg ffmpeg-python praat-parselmouth pyworld numpy==1.23.5 numba==0.56.4 librosa==0.9.1 \
+&& pip install --no-cache-dir faiss-gpu fairseq gradio ffmpeg ffmpeg-python praat-parselmouth pyworld numpy==1.23.5 numba==0.56.4 librosa==0.9.1 \
 # && pip install pip==23 \
 && pip install --no-cache-dir --no-deps -r requirements.txt \
 && pip install --no-cache-dir -v "torch==2.0.0" \
