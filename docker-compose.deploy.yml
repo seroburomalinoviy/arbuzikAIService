@@ -303,7 +303,7 @@ services:
     image: localhost:5000/django:latest
     command: sh -c 'python manage.py migrate --noinput && 
                     python manage.py collectstatic --noinput --clear &&
-                    gunicorn config.asgi:application -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8081'
+                    gunicorn config.asgi:application -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:80'
     environment:
       POSTGRES_HOST: db
     env_file:
@@ -564,7 +564,7 @@ services:
 
   grafana-monitor:
     image: grafana/grafana-oss
-    restart: unless-stopped
+    # restart: unless-stopped
     environment:
       - GF_LOG_LEVEL=info
       - GF_INSTALL_PLUGINS=redis-datasource
