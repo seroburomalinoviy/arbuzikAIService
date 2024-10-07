@@ -222,7 +222,7 @@ services:
       - everywhere_overlay
     deploy:
       mode: replicated
-      replicas: 2
+      replicas: 1
       restart_policy:
         condition: any
         delay: 50s
