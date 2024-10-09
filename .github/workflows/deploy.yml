@@ -22,10 +22,10 @@ jobs:
           cd arbuzikAIService/
           git switch main
           git pull origin main
-#          docker compose down
-#          docker compose build
-#          docker compose up -d
-#          docker system prune --volumes --force
+          docker compose down
+          docker compose build
+          docker compose up -d
+          docker system prune --volumes --force
 
     - name: Deploy dev branch
       if: github.ref == 'refs/heads/dev'
