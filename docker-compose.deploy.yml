@@ -24,26 +24,6 @@ services:
         delay: 5s
         max_attempts: 7
         window: 51s
-      # resources:
-      #   limits:
-      #     cpus: 1
-      #     memory: 512M
-      #   reservations:
-      #     cpus: 0.5
-      #     memory: 256M
-      # update_config:
-      #   parallelism: 1
-      #   delay: 10s
-      #   order: start-first
-      #   monitor: 10s
-      #   failure_action: pause
-      # rollback_config:
-      #   parallelism: 1
-      #   delay: 20s
-      #   failure_action: pause
-      #   monitor: 0s 
-      #   max_failure_ratio: 0
-      #   order: start-first
 
   rabbitmq:
     image: rabbitmq:3.10.7-management
@@ -81,26 +61,6 @@ services:
         delay: 5s
         max_attempts: 5
         window: 50s
-      # update_config:
-      #   parallelism: 1
-      #   delay: 10s
-      #   order: start-first
-      #   monitor: 10s
-      #   failure_action: pause
-      # rollback_config:
-      #   parallelism: 1
-      #   delay: 20s
-      #   failure_action: pause
-      #   monitor: 0s 
-      #   max_failure_ratio: 0
-      #   order: start-first
-      # resources:
-      #   limits:
-      #     cpus: 2
-      #     memory: 512M
-      #   reservations:
-      #     cpus: 1
-      #     memory: 256M
 
   redis:
     # container_name: redis
@@ -143,26 +103,6 @@ services:
         delay: 5s
         max_attempts: 5
         window: 10s
-      # resources:
-      #   limits:
-      #     cpus: 2
-      #     memory: 512M
-      #   reservations:
-      #     cpus: 1
-      #     memory: 256M
-      # update_config:
-      #   parallelism: 1
-      #   delay: 10s
-      #   order: start-first
-      #   monitor: 10s
-      #   failure_action: pause
-      # rollback_config:
-      #   parallelism: 1
-      #   delay: 20s
-      #   failure_action: pause
-      #   monitor: 0s 
-      #   max_failure_ratio: 0
-      #   order: start-first
 
   preclient:
     image: localhost:5000/preclient:latest
@@ -195,13 +135,6 @@ services:
         monitor: 0s 
         max_failure_ratio: 0
         order: start-first
-      # resources:
-      #   limits:
-      #     cpus: 2
-      #     memory: 512M
-      #   reservations:
-      #     cpus: 1
-      #     memory: 256M
 
   client:
     image: localhost:5000/client:latest
@@ -241,13 +174,6 @@ services:
         monitor: 0s 
         max_failure_ratio: 0
         order: start-first
-      # resources:
-      #   limits:
-      #     cpus: 7
-      #     memory: 8G
-      #   reservations:
-      #     cpus: 3
-      #     memory: 4G
 
 
   bot:
@@ -290,14 +216,6 @@ services:
         monitor: 0s 
         max_failure_ratio: 0
         order: start-first
-      # resources:
-      #   limits:
-      #     cpus: 2
-      #     memory: 512M
-      #   reservations:
-      #     cpus: 1
-      #     memory: 256M
-
 
   django:
     image: localhost:5000/django:latest
@@ -340,29 +258,6 @@ services:
         monitor: 0s 
         max_failure_ratio: 0
         order: start-first
-    # expose:
-    #   - 8000
-    # ports:
-    #   - "5001:8081"
-    # depends_on:
-    #   db:
-    #     condition: service_started
-    # restart:
-    #   always
-    # env_file:
-    #   - .env
-    # secrets:
-    #   - arbuzik
-    # configs:
-    #   - source: arb_config
-    #     target: .env
-      # resources:
-      #   limits:
-      #     cpus: 2
-      #     memory: 512M
-      #   reservations:
-      #     cpus: 1
-      #     memory: 256M
 
   proxy-server:
     image: nginx:latest
@@ -392,26 +287,6 @@ services:
         delay: 30s
         max_attempts: 7
         window: 60s
-      # update_config:
-      #   parallelism: 1
-      #   delay: 10s
-      #   order: start-first
-      #   monitor: 10s
-      #   failure_action: pause
-      # rollback_config:
-      #   parallelism: 1
-      #   delay: 20s
-      #   failure_action: pause
-      #   monitor: 0s 
-      #   max_failure_ratio: 0
-      #   order: start-first
-      # resources:
-      #   limits:
-      #     cpus: 2
-      #     memory: 512M
-      #   reservations:
-      #     cpus: 1
-      #     memory: 256M
 
   payment-api:
     image: localhost:5000/payment-api
@@ -432,26 +307,6 @@ services:
         delay: 10s
         max_attempts: 3
         window: 60s
-      # update_config:
-      #   parallelism: 1
-      #   delay: 10s
-      #   order: start-first
-      #   monitor: 10s
-      #   failure_action: pause
-      # rollback_config:
-      #   parallelism: 1
-      #   delay: 20s
-      #   failure_action: pause
-      #   monitor: 0s 
-      #   max_failure_ratio: 0
-      #   order: start-first
-      # resources:
-      # limits:
-      #   cpus: 2
-      #   memory: 512M
-      # reservations:
-      #   cpus: 1
-      #   memory: 256M
 
   payment-listener:
     # container_name: payment-listener
@@ -473,26 +328,6 @@ services:
         delay: 10s
         max_attempts: 3
         window: 60s
-      # update_config:
-      #   parallelism: 1
-      #   delay: 10s
-      #   order: start-first
-      #   monitor: 10s
-      #   failure_action: pause
-      # rollback_config:
-      #   parallelism: 1
-      #   delay: 20s
-      #   failure_action: pause
-      #   monitor: 0s 
-      #   max_failure_ratio: 0
-      #   order: start-first
-      # resources:
-      #   limits:
-      #     cpus: 2
-      #     memory: 512M
-      #   reservations:
-      #     cpus: 1
-      #     memory: 256M
 
   celery-scheduler:
     image: localhost:5000/django:latest
@@ -519,26 +354,6 @@ services:
         delay: 10s
         max_attempts: 3
         window: 60s
-      # update_config:
-      #   parallelism: 1
-      #   delay: 10s
-      #   order: start-first
-      #   monitor: 10s
-      #   failure_action: pause
-      # rollback_config:
-      #   parallelism: 1
-      #   delay: 20s
-      #   failure_action: pause
-      #   monitor: 0s 
-      #   max_failure_ratio: 0
-      #   order: start-first
-      # resources:
-      #   limits:
-      #     cpus: 2
-      #     memory: 512M
-      #   reservations:
-      #     cpus: 1
-      #     memory: 256M
 
   celery-worker:
     image: localhost:5000/django:latest
