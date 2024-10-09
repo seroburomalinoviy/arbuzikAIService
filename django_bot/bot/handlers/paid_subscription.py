@@ -31,6 +31,8 @@ async def show_paid_subscriptions(update: Update, context: ContextTypes.DEFAULT_
     :param context:
     :return:
     """
+    await update.callback_query.answer()
+
     if offer:
         button_text = "⏩ Вернуться в меню"
         message = message_text.offer_subscription_text
@@ -77,7 +79,6 @@ async def show_paid_subscriptions(update: Update, context: ContextTypes.DEFAULT_
         reply_markup=InlineKeyboardMarkup(keyboard),
     )
 
-    await update.callback_query.answer()
     return BASE_STATES
 
 
@@ -93,6 +94,8 @@ async def preview_paid_subscription(update: Update, context: ContextTypes.DEFAUL
     :param subscription_title:
     :return:
     """
+    await update.callback_query.answer()
+
     if offer:
         title = subscription_title
         message = message_text.offer_vip_subscription_text
@@ -129,7 +132,6 @@ async def preview_paid_subscription(update: Update, context: ContextTypes.DEFAUL
             ]
         ),
     )
-    await update.callback_query.answer()
 
     return BASE_STATES
 
