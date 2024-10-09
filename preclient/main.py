@@ -33,6 +33,7 @@ async def process_the_message(message: AbstractIncomingMessage):
 
     await create_task(message.body.decode())
 
+
 async def task_listener():
     logging.debug("Start task listener")
     connection = await aio_pika.connect_robust(

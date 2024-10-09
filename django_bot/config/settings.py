@@ -97,10 +97,11 @@ DATABASES = {
         "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
         "HOST": os.environ.get("POSTGRES_HOST", "127.0.0.1"),
         "PORT": os.environ.get("POSTGRES_PORT", 5432),
-        'POOL_OPTIONS': {
-            'POOL_SIZE': 10,
-            'MAX_OVERFLOW': 10,
-            'RECYCLE': 24 * 60 * 60
+        "CONN_MAX_AGE": None,
+        "POOL_OPTIONS": {
+            "POOL_SIZE": 10,
+            "MAX_OVERFLOW": 10,
+            "RECYCLE": 24 * 60 * 60
         },
     }
 }
