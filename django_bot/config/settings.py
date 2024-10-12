@@ -102,7 +102,7 @@ DATABASES = {
         "POOL_OPTIONS": {
             "POOL_SIZE": 10,
             "MAX_OVERFLOW": 10,
-            "RECYCLE": 24 * 60 * 60
+            "RECYCLE": 10 * 60
         },
     }
 }
