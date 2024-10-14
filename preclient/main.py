@@ -14,18 +14,19 @@ load_dotenv()
 
 
 async def create_task(payload: str):
-    payload: dict = json.loads(payload)
+    # payload: dict = json.loads(payload)
     r = redis.Redis(
         host=os.environ.get('REDIS_HOST'),
         port=os.environ.get('REDIS_PORT'),
         retry_on_timeout=True
     )
-    stream_key = "raw-data"
-    payload['count_tasks'] = r.xlen("raw-data")
-    resp = r.xadd(stream_key, payload)
-
+    # stream_key = "raw-data"
+    # payload['count_tasks'] = r.xlen("raw-data")
+    # resp = r.xadd(stream_key, payload)
+    name_of_list = "raw-data"
+    resp = r.lpush(name_of_list, payload)
     logging.info(resp)
-    logging.info(f"The {stream_key} stream's length: {r.xlen(stream_key)}")
+    # logging.info(f"The {stream_key} stream's length: {r.xlen(stream_key)}")
 
 
 async def process_the_message(message: AbstractIncomingMessage):
