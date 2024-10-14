@@ -99,7 +99,7 @@ async def reader(r: redis.Redis):
                     # message_id = stream_message[0][1][0][0]
                     # message: dict = stream_message[0][1][0][1]
                     # payload: dict = decode_dict(message)
-                    payload: dict = json.loads(message_from_list)
+                    payload: dict = json.loads(message_from_list[1])
 
                     logging.info(f"Got payload: {payload}")
 
