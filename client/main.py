@@ -52,8 +52,8 @@ def _create_connection():
     return pika.BlockingConnection(param)
 
 
-def decode_dict(msg: dict, encoding_used='utf-8'):
-    return {k.decode(encoding_used): v.decode(encoding_used) if isinstance(v, bytes) else decode_dict(v, encoding_used) for k, v in msg.items()}
+# def decode_dict(msg: dict, encoding_used='utf-8'):
+#     return {k.decode(encoding_used): v.decode(encoding_used) if isinstance(v, bytes) else decode_dict(v, encoding_used) for k, v in msg.items()}
 
 
 def convert_to_voice(path):
@@ -85,18 +85,21 @@ def push_amqp_message(payload):
     logging.debug(f"message {payload} sent to bot")
 
 
-async def reader(r):
+async def reader(r: redis.Redis):
     while True:
         try:
             async with (async_timeout.timeout(1)):
-                stream_key = 'raw-data'
-                logging.info(f"The {stream_key} stream's length: {r.xlen(stream_key)}")
-                stream_message = r.xread(count=1, streams={stream_key: '$'}, block=0)
-                logging.info(f"{stream_message=}")
-                if stream_message:
-                    message_id = stream_message[0][1][0][0]
-                    message: dict = stream_message[0][1][0][1]
-                    payload: dict = decode_dict(message)
+                # stream_key = 'raw-data'
+                name_of_list = "raw-data"
+                # logging.info(f"The {stream_key} stream's length: {r.xlen(stream_key)}")
+                # stream_message = r.xread(count=1, streams={stream_key: '$'}, block=0)
+                message_from_list = r.blpop(name_of_list)
+                logging.info(f"{message_from_list=}")
+                if message_from_list:
+                    # message_id = stream_message[0][1][0][0]
+                    # message: dict = stream_message[0][1][0][1]
+                    # payload: dict = decode_dict(message)
+                    payload: dict = json.loads(message_from_list)
 
                     logging.info(f"Got payload: {payload}")
 
@@ -133,16 +136,16 @@ async def reader(r):
                             f"NN + Formatting finished for: {perf_counter() - start}"
                         )
 
-                    stream_key = 'processed-data'
-                    r.xadd(stream_key, {
-                            'complete_for': perf_counter() - start,
-                            'duration': payload.get('duration'),
-                            'count_task': r.xlen(stream_key),  # count of processed tasks
-                            # count of actual tasks also added one task to count the current element
-                            'actual_count_tasks': abs(r.xlen(stream_key)+1 - r.xlen("raw-data"))
+                    # stream_key = 'processed-data'
+                    # r.xadd(stream_key, {
+                    #         'complete_for': perf_counter() - start,
+                    #         'duration': payload.get('duration'),
+                    #         'count_task': r.xlen(stream_key),  # count of processed tasks
+                    #         # count of actual tasks also added one task to count the current element
+                    #         'actual_count_tasks': abs(r.xlen(stream_key)+1 - r.xlen("raw-data"))
 
-                        }
-                    )
+                    #     }
+                    # )
                     # logging.info(message_id)
                     # r.xdel('raw-data', message_id)
 
