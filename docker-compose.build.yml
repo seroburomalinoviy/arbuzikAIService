@@ -5,7 +5,9 @@ services:
     pull_policy: build
     
   client:
-    build: ./client
+    build:
+      context: ./client
+      dockerfile: Dockerfile.gpu
     image: localhost:5000/client:latest
     pull_policy: build
 
