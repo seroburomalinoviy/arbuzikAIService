@@ -2,6 +2,7 @@ import asyncio
 import json
 
 import redis
+from redis.exceptions import ConnectionError, DataError, NoScriptError, RedisError, ResponseError
 import logging
 from logging.handlers import RotatingFileHandler
 import os
@@ -13,15 +14,17 @@ load_dotenv()
 
 
 async def create_task(payload: str):
+    # payload: dict = json.loads(payload)
+
     r = redis.Redis(
         host=os.environ.get('REDIS_HOST'),
         port=os.environ.get('REDIS_PORT'),
         retry_on_timeout=True
     )
-    # stream_key = "raw-data"
-    # payload['count_tasks'] = r.xlen("raw-data")
-    # resp = r.xadd(stream_key, payload)
     name_of_list = "raw-data"
+    # payload['count_tasks'] = r.llen(name_of_list)
+
+    # resp = r.lpush(name_of_list, json.dumps(payload).encode())
     resp = r.lpush(name_of_list, payload)
     logging.info(resp)
 

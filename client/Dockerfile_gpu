@@ -1,0 +1,27 @@
+FROM python:3.10-bullseye as builder
+
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+
+RUN mkdir /app
+WORKDIR /app
+COPY ./requirements.txt /app
+RUN pip install --no-cache-dir --upgrade --ignore-installed setuptools wheel \
+&& pip install --no-cache-dir --ignore-installed faiss-gpu fairseq gradio ffmpeg ffmpeg-python praat-parselmouth pyworld numpy==1.23.5 numba==0.56.4 librosa==0.9.1 \
+&& pip install --no-cache-dir --no-deps -r requirements.txt \
+&& pip install --no-cache-dir -v "torch==2.0.0" \
+&& pip install --upgrade pip \
+&& pip install --upgrade --no-cache-dir lxml \
+&& pip install --no-cache-dir --upgrade ffmpy
+
+COPY . /app
+
+
+
+FROM nvidia/cuda:12.6.0-cudnn-runtime-ubuntu24.04
+
+RUN apt-get update && apt-get --no-install-recommends -y install build-essential  software-properties-common \
+&& add-apt-repository -y ppa:deadsnakes/ppa \
+&& apt install --no-install-recommends -y python3-pip python3-setuptools python3-dev ffmpeg \
+&& rm -rf /var/cache/apt  && apt clean && rm -rf /var/lib/apt/lists/*
+
