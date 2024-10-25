@@ -2,6 +2,8 @@ FROM nvidia/cuda:12.6.0-cudnn-runtime-ubuntu24.04
 
 # FROM python:3.10-bullseye
 
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
 
 
 RUN apt-get update && apt-get --no-install-recommends -y install build-essential  software-properties-common \
