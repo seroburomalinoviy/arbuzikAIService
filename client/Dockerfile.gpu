@@ -4,6 +4,7 @@ FROM nvidia/cuda:12.6.0-cudnn-runtime-ubuntu24.04
 
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
+ENV PIP_BREAK_SYSTEM_PACKAGES=1
 
 
 RUN apt-get update && apt-get --no-install-recommends -y install build-essential  software-properties-common \
@@ -11,8 +12,6 @@ RUN apt-get update && apt-get --no-install-recommends -y install build-essential
 && apt install --no-install-recommends -y python3.10 python3-pip python3-setuptools python3-dev ffmpeg \
 && rm -rf /var/cache/apt  && apt clean && rm -rf /var/lib/apt/lists/*
 
-ENV PYTHONUNBUFFERED=1
-ENV PYTHONDONTWRITEBYTECODE=1
 
 RUN mkdir /app
 WORKDIR /app
