@@ -14,8 +14,6 @@ RUN pip install --no-cache-dir --upgrade --ignore-installed setuptools wheel \
 && pip install --upgrade --no-cache-dir lxml \
 && pip install --no-cache-dir --upgrade ffmpy
 
-COPY . /app
-
 
 
 FROM nvidia/cuda:12.6.0-cudnn-runtime-ubuntu24.04
@@ -25,3 +23,5 @@ RUN apt-get update && apt-get --no-install-recommends -y install build-essential
 && apt install --no-install-recommends -y python3-pip python3-setuptools python3-dev ffmpeg \
 && rm -rf /var/cache/apt  && apt clean && rm -rf /var/lib/apt/lists/*
 
+COPY --from=builder /root/.local/lib/python3.10/site-packages /usr/local/lib/python3.10/dist-packages
+COPY . /app
