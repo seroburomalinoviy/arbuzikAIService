@@ -176,9 +176,9 @@ services:
         order: start-first
       resources:
         reservations:
-          device:
+          devices:
             - driver: nvidia
-              count: all
+              count: 1
               capabilities: [ gpu ]
 
 
