@@ -138,7 +138,7 @@ services:
 
   client:
     image: localhost:5000/client:latest
-    command: ["python3", "/app/main.py"]
+    command: ["python3", "main.py"]
     env_file:
       - .env
     depends_on:
