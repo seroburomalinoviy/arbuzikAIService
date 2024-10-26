@@ -174,12 +174,12 @@ services:
         monitor: 0s 
         max_failure_ratio: 0
         order: start-first
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [ gpu ]
+#      resources:
+#        reservations:
+#          devices:
+#            - driver: nvidia
+#              count: 1
+#              capabilities: [ gpu ]
 
 
   bot:
