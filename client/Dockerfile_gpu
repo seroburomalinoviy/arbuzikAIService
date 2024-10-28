@@ -27,4 +27,5 @@ RUN apt-get update && apt-get --no-install-recommends -y install build-essential
 && rm -rf /var/cache/apt  && apt clean && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /root/.local/lib/python3.10/site-packages /usr/local/lib/python3.10/dist-packages
+WORKDIR /app
 COPY . /app
