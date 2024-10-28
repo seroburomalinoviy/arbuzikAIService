@@ -30,7 +30,6 @@ ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV NVIDIA_DISABLE_REQUIRE=1
 
-RUN mkdir /app
 WORKDIR /app
 COPY --from=builder /root/.local/lib/python3.10/site-packages /usr/local/lib/python3.10/dist-packages
 COPY . /app
