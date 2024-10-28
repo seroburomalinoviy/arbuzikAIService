@@ -139,12 +139,12 @@ services:
   client:
     image: localhost:5000/client:latest
     command: ["python3", "main.py"]
+    runtime: nvidia
     env_file:
       - .env
     depends_on:
       - rabbitmq
       - redis
-    runtime: nvidia
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=all
