@@ -144,6 +144,10 @@ services:
     depends_on:
       - rabbitmq
       - redis
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
     volumes:
       - type: volume
         source: media-data-volume
