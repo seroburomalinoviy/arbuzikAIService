@@ -30,8 +30,12 @@ RUN apt-get update && apt-get --no-install-recommends -y install build-essential
 
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
-ENV NVIDIA_DISABLE_REQUIRE=1
+#ENV NVIDIA_DISABLE_REQUIRE=1
 
 WORKDIR /app
-COPY --from=builder /root/.local/lib/python3.10/site-packages /usr/local/lib/python3.10/dist-packages
+#COPY --from=builder /root/.local/lib/python3.10/site-packages /root/.local/lib/python3.10/dist-packages
+COPY --from=builder /root/.local /root/.local
+
+ENV PATH=/root/.local/bin:$PATH
+
 COPY . /app
