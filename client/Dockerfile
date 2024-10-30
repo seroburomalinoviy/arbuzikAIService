@@ -28,11 +28,16 @@ RUN pip install --upgrade ffmpy
 
 
 FROM nvidia/cuda:12.6.0-cudnn-runtime-ubuntu24.04
-RUN apt-get -y install build-essential python3-dev ffmpeg
 
+ENV NVIDIA_VISIBLE_DEVICES all
+ENV NVIDIA_DRIVER_CAPABILITIES compute,utility
+
+RUN apt-get -y install build-essential python3-dev ffmpeg
+RUN apt-get update
+RUN apt -y install -qq aria2
 
 COPY --from=builder /root/.local/lib/python3.10/site-packages /root/.local/lib/python3.10/site-packages
 
 
-RUN apt-get update
-RUN apt -y install -qq aria2
+
+

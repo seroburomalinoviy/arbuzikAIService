@@ -2,7 +2,8 @@ FROM python:3.10-bullseye AS builder
 
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
-ENV NVIDIA_DISABLE_REQUIRE=1
+ENV NVIDIA_VISIBLE_DEVICES all
+ENV NVIDIA_DRIVER_CAPABILITIES compute,utility
 
 RUN mkdir /app
 WORKDIR /app
@@ -30,7 +31,9 @@ RUN apt-get update && apt-get --no-install-recommends -y install build-essential
 
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
-#ENV NVIDIA_DISABLE_REQUIRE=1
+
+ENV NVIDIA_VISIBLE_DEVICES all
+ENV NVIDIA_DRIVER_CAPABILITIES compute,utility
 
 WORKDIR /app
 COPY --from=builder /root/.local/lib/python3.10/site-packages /root/.local/lib/python3.10/site-packages
