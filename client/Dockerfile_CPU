@@ -26,5 +26,6 @@ RUN pip install --no-cache-dir --upgrade setuptools wheel \
 # RUN pip install --upgrade pip && pip install --no-cache-dir --upgrade setuptools wheel && \
 # pip install --upgrade --no-cache-dir lxml && pip install --no-cache-dir --upgrade ffmpy
 # RUN pip install --upgrade lxml && pip install --upgrade ffmpy
+RUN python3 -m pip install nvidia-pyindex
 RUN python3 -m pip install nvidia-cuda-runtime-cu12
 COPY . /app
