@@ -17,7 +17,7 @@ RUN pip install --no-cache-dir --upgrade setuptools wheel \
 # && pip install pip==23 \
 && pip install --no-cache-dir --no-deps -r requirements.txt \
 && pip install --no-cache-dir -v "torch==2.0.0" \
-&& pip install --upgrade pip \
+#&& pip install --upgrade pip \
 # && pip install --no-cache-dir --upgrade setuptools wheel \
 && pip install --upgrade --no-cache-dir lxml \
 && pip install --no-cache-dir --upgrade ffmpy
