@@ -33,7 +33,7 @@ WORKDIR /app
 
 COPY --from=builder /app/reqs /app/reqs
 ENV PYTHONPATH=/app/reqs:$PYTHONPATH
-#COPY --from=builder /root/.local/lib/python3.10/site-packages /root/.local/lib/python3.10/site-packages
+COPY --from=builder /root/.local/lib/python3.10/site-packages /root/.local/lib/python3.10/site-packages
 #COPY --from=builder /root/.local /root/.local
 
 #ENV PATH=/root/.local/bin:$PATH
