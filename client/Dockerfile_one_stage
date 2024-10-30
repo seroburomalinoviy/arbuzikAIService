@@ -6,6 +6,7 @@ ENV NVIDIA_DRIVER_CAPABILITIES compute,utility
 WORKDIR /app
 COPY ./requirements.txt /app
 
+RUN apt-get update
 RUN apt-get -y install build-essential python3-dev ffmpeg
 RUN pip install --upgrade setuptools wheel
 RUN pip install --upgrade pip
