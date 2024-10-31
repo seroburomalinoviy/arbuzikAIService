@@ -34,6 +34,13 @@ WORKDIR /app
 
 COPY --from=builder /app/reqs /app/reqs
 ENV PYTHONPATH=/app/reqs:$PYTHONPATH
+
+RUN echo ls -al /root/
+RUN echo ls -al /root/.local
+RUN echo ls -al /root/.local/lib
+RUN echo ls -al /root/.local/lib
+RUN echo ls -al /root/.local/lib/python3.10/
+
 COPY --from=builder /root/.local/lib/python3.10/site-packages /root/.local/lib/python3.10/site-packages
 #COPY --from=builder /root/.local /root/.local
 
