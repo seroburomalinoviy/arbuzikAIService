@@ -36,13 +36,13 @@ WORKDIR /app
 COPY --from=builder /app/reqs /app/reqs
 ENV PYTHONPATH=/app/reqs:$PYTHONPATH
 
-RUN ls -al /root/
-RUN ls -al /root/.local
-RUN ls -al /root/.local/lib
-RUN ls -al /root/.local/lib
-RUN ls -al /root/.local/lib/python3.10/
+# RUN ls -al /root/
+# RUN ls -al /root/.local
+# RUN ls -al /root/.local/lib
+# RUN ls -al /root/.local/lib
+# RUN ls -al /root/.local/lib/python3.10/
 
-RUN python3 --version
+# RUN python3 --version
 
 #COPY --from=builder /root/.local/lib/python3.10/site-packages /root/.local/lib/python3.10/site-packages
 #COPY --from=builder /root/.local /root/.local
