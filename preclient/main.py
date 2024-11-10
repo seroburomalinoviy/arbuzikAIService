@@ -21,10 +21,10 @@ async def create_task(payload: str):
         db=0,
         retry_on_timeout=True
     )
-    # stream_name = "raw-data"
+    stream_name = "raw-data"
     # tasks = r.xlen(stream_name)
-    # r.xadd(stream_name, {"tasks": tasks})
-    # logging.info(f"Stream pushed with task, count: {tasks}")
+    r.xadd(stream_name, {"tasks": 1})
+    logging.info(f"Stream pushed with task, count: {r.xlen(stream_name)}")
 
     name_of_list = "raw-data"
     resp = r.lpush(name_of_list, payload)
@@ -53,18 +53,18 @@ async def task_listener():
         channel = await connection.channel()
         await channel.set_qos(prefetch_count=10)
         queue = await channel.declare_queue(queue_name, durable=True, auto_delete=True)
-        await queue.consume(process_the_message, no_ack=True)
-        await asyncio.Future()
-        # async with queue.iterator() as queue_iter:
-        #     async for message in queue_iter:
-        #         async with message.process():
+        # await queue.consume(process_the_message, no_ack=True)
+        # await asyncio.Future()
+        async with queue.iterator() as queue_iter:
+            async for message in queue_iter:
+                async with message.process():
 
-        #             logging.info(f"preclient get message {queue_name=}: {message.body.decode()}")
+                    logging.info(f"preclient get message {queue_name=}: {message.body.decode()}")
 
-        #             await create_task(message.body.decode())
+                    await create_task(message.body.decode())
 
-        #             if queue.name in message.body.decode():
-        #                 break
+                    if queue.name in message.body.decode():
+                        break
 
 
 if __name__ == "__main__":
