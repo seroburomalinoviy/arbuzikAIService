@@ -27,8 +27,8 @@ async def create_task(payload: str):
     logging.info(f"Stream pushed with task, count: {r.xlen(stream_name)}")
 
     name_of_list = "raw-data"
-    resp = r.lpush(name_of_list, payload)
-    logging.info(resp)
+    r.lpush(name_of_list, payload)
+    logging.info("List pushed with task")
 
 
 async def process_the_message(message: AbstractIncomingMessage):
