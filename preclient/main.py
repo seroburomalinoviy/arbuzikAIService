@@ -28,7 +28,7 @@ async def create_task(payload: str):
 
     name_of_list = "raw-data"
     resp = r.lpush(name_of_list, payload)
-    logging.info(f"List pushed with task")
+    logging.info(resp)
 
 
 async def process_the_message(message: AbstractIncomingMessage):
