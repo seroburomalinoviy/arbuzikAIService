@@ -14,7 +14,7 @@ RUN pip install --no-cache-dir --upgrade setuptools wheel \
 # && pip install pip==23 \
 && pip install --no-cache-dir --no-deps -r requirements.txt \
 && pip install --no-cache-dir -v "torch==2.0.0" \
-&& pip install --upgrade pip \
+#&& pip install --upgrade pip \
 # && pip install --no-cache-dir --upgrade setuptools wheel \
 && pip install --upgrade --no-cache-dir lxml \
 && pip install --no-cache-dir --upgrade ffmpy
@@ -23,4 +23,7 @@ RUN pip install --no-cache-dir --upgrade setuptools wheel \
 # RUN pip install --upgrade pip && pip install --no-cache-dir --upgrade setuptools wheel && \
 # pip install --upgrade --no-cache-dir lxml && pip install --no-cache-dir --upgrade ffmpy
 # RUN pip install --upgrade lxml && pip install --upgrade ffmpy
+RUN python3 -m pip install nvidia-pyindex
+RUN python3 -m pip install nvidia-cuda-runtime-cu12
 COPY . /app
+
