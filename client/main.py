@@ -131,7 +131,7 @@ async def reader(r: redis.Redis):
                     logging.info(f"NN finished for: {perf_counter() - start}")
 
                     if extension == ".ogg":
-                        convert_to_voice(voice_path)
+                        convert_to_voice(voice_path + extension)
                         logging.info(
                             f"NN + Formatting finished for: {perf_counter() - start}"
                         )
