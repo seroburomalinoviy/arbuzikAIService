@@ -1,10 +1,7 @@
 import asyncio
 import json
 
-import aioredis as redis
-
-# import redis
-# from redis.exceptions import ConnectionError, DataError, NoScriptError, RedisError, ResponseError
+import redis
 import logging
 from logging.handlers import RotatingFileHandler
 import os
@@ -17,19 +14,21 @@ load_dotenv()
 
 async def create_task(payload: str):
     # payload: dict = json.loads(payload)
-    r = await redis.from_url(f"redis://{os.environ.get('REDIS_HOST')}:{os.environ.get('REDIS_PORT')}", db=0)
-    # r = redis.Redis(
-    #     host=os.environ.get('REDIS_HOST'),
-    #     port=os.environ.get('REDIS_PORT'),
-    #     retry_on_timeout=True
-    # )
+
+    r = redis.Redis(
+        host=os.environ.get('REDIS_HOST'),
+        port=int(os.environ.get('REDIS_PORT')),
+        db=0,
+        retry_on_timeout=True
+    )
     stream_name = "raw-data"
     await r.xadd(stream_name, json.loads(payload))
     logging.info(f"Stream pushed with task, count: {await r.xlen(stream_name)}")
 
     name_of_list = "raw-data"
-    resp = r.lpush(name_of_list, payload)
-    logging.info(resp)
+    # resp = r.lpush(name_of_list, payload)
+    await r.lpush(name_of_list, payload)
+    logging.info(f"List pushed with task")
 
 
 async def process_the_message(message: AbstractIncomingMessage):

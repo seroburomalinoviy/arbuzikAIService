@@ -2,4 +2,3 @@ aio-pika==9.4.0
 python-dotenv==1.0.1
 redis==5.0.2
 sentry-sdk==1.41.0
-aioredis
