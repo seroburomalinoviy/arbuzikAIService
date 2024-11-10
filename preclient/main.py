@@ -22,13 +22,12 @@ async def create_task(payload: str):
         retry_on_timeout=True
     )
     stream_name = "raw-data"
-    tasks = await r.xlen(stream_name)
-    await r.xadd(stream_name, {"tasks": tasks})
+    tasks = r.xlen(stream_name)
+    r.xadd(stream_name, {"tasks": tasks})
     logging.info(f"Stream pushed with task, count: {tasks}")
 
     name_of_list = "raw-data"
-    # resp = r.lpush(name_of_list, payload)
-    await r.lpush(name_of_list, payload)
+    resp = r.lpush(name_of_list, payload)
     logging.info(f"List pushed with task")
 
 
