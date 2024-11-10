@@ -111,11 +111,7 @@ async def reader(r: redis.Redis):
                     infer_parameters["model_name"] = payload.get('voice_model_pth')
                     infer_parameters["feature_index_path"] = payload.get('voice_model_index')
                     infer_parameters["source_audio_path"] = voice_path
-                    infer_parameters["output_file_name"] = (
-                        voice_filename + ".tmp"
-                        if extension == ".ogg"
-                        else voice_filename
-                    )
+                    infer_parameters["output_file_name"] = voice_filename + ".tmp" if extension == ".ogg" else voice_filename
                     infer_parameters["transposition"] = payload.get('pitch')
 
                     logging.debug(
@@ -131,7 +127,7 @@ async def reader(r: redis.Redis):
                     logging.info(f"NN finished for: {perf_counter() - start}")
 
                     if extension == ".ogg":
-                        convert_to_voice(voice_path + extension)
+                        convert_to_voice(voice_path)
                         logging.info(
                             f"NN + Formatting finished for: {perf_counter() - start}"
                         )
