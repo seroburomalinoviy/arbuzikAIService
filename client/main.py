@@ -114,7 +114,7 @@ async def reader(r: redis.Redis):
                     infer_parameters["output_file_name"] = voice_filename + ".tmp" if extension == ".ogg" else voice_filename
                     infer_parameters["transposition"] = payload.get('pitch')
 
-                    logging.debug(
+                    logging.info(
                         f"infer parameters: {infer_parameters['model_name']=},\n"
                         f" {infer_parameters['source_audio_path']=},\n"
                         f"{infer_parameters['output_file_name']=}\n"
@@ -183,7 +183,7 @@ if __name__ == "__main__":
     log_format = "%(asctime)s - %(levelname)s - %(name)s - %(message)s >>> %(funcName)s(%(lineno)d)"
     formatter = logging.Formatter(log_format)
     rotating_handler.setFormatter(formatter)
-    logging.basicConfig(level=logging.DEBUG, format=log_format, datefmt="%Y-%m-%d %H:%M:%S")
+    logging.basicConfig(level=logging.INFO, format=log_format, datefmt="%Y-%m-%d %H:%M:%S")
     logging.getLogger('').addHandler(rotating_handler)
 
     asyncio.run(main())
