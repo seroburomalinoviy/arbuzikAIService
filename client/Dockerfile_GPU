@@ -38,3 +38,5 @@ ENV PYTHONPATH=/app/reqs:$PYTHONPATH
 
 RUN cd reqs && rm -r -f pathlib*
 RUN cd ..
+
+COPY . /app
