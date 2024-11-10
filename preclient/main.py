@@ -23,9 +23,9 @@ async def create_task(payload: str):
         port=os.environ.get('REDIS_PORT'),
         retry_on_timeout=True
     )
-    stream_name = "raw-data"
-    await r.xadd(stream_name, json.loads(payload))
-    logging.info(f"Stream pushed with task, count: {await r.xlen(stream_name)}")
+    # stream_name = "raw-data"
+    # await r.xadd(stream_name, json.loads(payload))
+    # logging.info(f"Stream pushed with task, count: {await r.xlen(stream_name)}")
 
     name_of_list = "raw-data"
     resp = r.lpush(name_of_list, payload)
