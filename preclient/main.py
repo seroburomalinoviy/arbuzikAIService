@@ -22,11 +22,11 @@ async def create_task(payload: str):
         db=0,
         retry_on_timeout=True
     )
-    g_raw = Gauge('Raw-Tasks', 'Description of gauge')
+    g_raw = Gauge('raw_tasks', 'Description of gauge')
     g_raw.inc()
 
     name_of_list = "raw-data"
-    resp = r.lpush(name_of_list, str(payload))
+    resp = r.lpush(name_of_list, payload)
     logging.info(resp)
 
 
