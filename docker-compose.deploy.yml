@@ -403,10 +403,13 @@ services:
       - everywhere_overlay
 
   prometheus-server:
-    image: localhost:5000/preclient:latest
-    command: [ "python", "prometheus_server.py" ]
+    image: prom/prometheus:latest
+    container_name: prometheus-server
+    restart: unless-stopped
     expose:
-      - 8010
+      - 9090
+    volumes:
+      - prometheus:/etc/prometheus/
     deploy:
       mode: replicated
       replicas: 1
