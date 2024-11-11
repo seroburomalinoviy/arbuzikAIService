@@ -401,6 +401,22 @@ services:
     networks:
       - everywhere_overlay
 
+  prometheus-server:
+    image: localhost:5000/preclient:latest
+    command: [ "python", "prometheus_server.py" ]
+    expose:
+      - 8010
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: any
+        delay: 10s
+        max_attempts: 3
+        window: 60s
+    networks:
+      - everywhere_overlay
+
 configs:
   arb_config:
     external: true
