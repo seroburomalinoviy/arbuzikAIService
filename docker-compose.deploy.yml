@@ -444,4 +444,5 @@ volumes:
   voices-volume:
   grafana_storage: {}
   pg_data:
+  prometheus:
 
