@@ -405,9 +405,15 @@ services:
   prometheus-server:
     image: prom/prometheus:latest
     container_name: prometheus-server
+    hostname: prometheus-server
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
     restart: unless-stopped
     expose:
       - 9090
+    configs:
+      - source: prometheus_config
+        target: /etc/prometheus/prometheus.yml
     volumes:
       - prometheus:/etc/prometheus/
     deploy:
@@ -432,6 +438,8 @@ configs:
     file: ./postgres.conf
   redis_config:
     file: ./redis.conf
+  prometheus_config:
+    file: ./prometheus.yml
 
 networks:
   everywhere_overlay:
