@@ -407,13 +407,13 @@ services:
     container_name: prometheus-server
     hostname: prometheus-server
     command:
-      - --config.file=/etc/prometheus/prometheus_upd.yml
+      - --config.file=/etc/prometheus/prometheus.yml
     restart: unless-stopped
     expose:
       - 9090
     configs:
       - source: prometheus_config
-        target: /etc/prometheus/prometheus_upd.yml
+        target: /etc/prometheus/prometheus.yml
     volumes:
       - prometheus:/etc/prometheus/
     deploy:
@@ -439,7 +439,7 @@ configs:
   redis_config:
     file: ./redis.conf
   prometheus_config:
-    file: ./prometheus_upd.yml
+    file: ./prometheus.yml
 
 networks:
   everywhere_overlay:
