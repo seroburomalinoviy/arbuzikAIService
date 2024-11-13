@@ -10,5 +10,5 @@ RAW_TASKS = Gauge('raw_tasks', 'Description of gauge')
 
 @app.get('/metrics')
 def hello():
-    return f'hello world {RAW_TASKS=}'
+    return RAW_TASKS
 
