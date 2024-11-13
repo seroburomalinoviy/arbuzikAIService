@@ -429,7 +429,7 @@ services:
 
   prometheus-server:
     image: localhost:5000/preclient:latest
-    command: [ "python", "prometheus_server.py" ]
+    command: uwsgi --http 127.0.0.1:9090 --wsgi-file prometheus_server.py --callable app
     env_file:
       - .env
     networks:
