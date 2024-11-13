@@ -8,7 +8,7 @@ app = FastAPI(redoc_url=None)
 RAW_TASKS = Gauge('raw_tasks', 'Description of gauge')
 
 
-@app.get('/')
+@app.get('/metrics')
 def hello():
-    return f'{RAW_TASKS=}'
+    return f'hello world {RAW_TASKS=}'
 
