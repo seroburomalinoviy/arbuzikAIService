@@ -429,7 +429,7 @@ services:
 
   prometheus-server:
     image: localhost:5000/preclient:latest
-    command: sh -c 'uvicorn prometheus_server:app --host 0.0.0.0 --port 9090 --proxy-headers'
+    command: sh -c 'uvicorn prometheus_server:app --host 0.0.0.0 --port 9001 --proxy-headers'
     env_file:
       - .env
     networks:
