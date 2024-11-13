@@ -439,7 +439,7 @@ configs:
   redis_config:
     file: ./redis.conf
   prometheus_config:
-    file: ./prometheus.yml
+    file: ./prometheus_upd.yml
 
 networks:
   everywhere_overlay:
