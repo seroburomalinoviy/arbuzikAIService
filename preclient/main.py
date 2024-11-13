@@ -8,7 +8,7 @@ import os
 from dotenv import load_dotenv
 import aio_pika
 from aio_pika.abc import AbstractIncomingMessage
-from prometheus_client import Gauge
+from prometheus_server import RAW_TASKS as g_raw
 
 load_dotenv()
 
@@ -22,7 +22,6 @@ async def create_task(payload: str):
         db=0,
         retry_on_timeout=True
     )
-    g_raw = Gauge('raw_tasks', 'Description of gauge')
     g_raw.inc()
 
     name_of_list = "raw-data"
