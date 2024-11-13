@@ -23,6 +23,7 @@ async def create_task(payload: str):
         retry_on_timeout=True
     )
     g_raw.inc()
+    logging.info(f"Guage of task: {g_raw.}")
 
     name_of_list = "raw-data"
     resp = r.lpush(name_of_list, payload)
