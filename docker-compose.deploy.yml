@@ -402,30 +402,60 @@ services:
     networks:
       - everywhere_overlay
 
+#  prometheus-server:
+#    image: prom/prometheus:latest
+#    container_name: prometheus-server
+#    hostname: prometheus-server
+#    command:
+#      - --config.file=/etc/prometheus/prometheus.yml
+#    restart: unless-stopped
+#    expose:
+#      - 9090
+#    configs:
+#      - source: prometheus_config
+#        target: /etc/prometheus/prometheus.yml
+#    volumes:
+#      - prometheus:/etc/prometheus/
+#    deploy:
+#      mode: replicated
+#      replicas: 1
+#      restart_policy:
+#        condition: any
+#        delay: 10s
+#        max_attempts: 3
+#        window: 60s
+#    networks:
+#      - everywhere_overlay
+
   prometheus-server:
-    image: prom/prometheus:latest
-    container_name: prometheus-server
-    hostname: prometheus-server
-    command:
-      - --config.file=/etc/prometheus/prometheus.yml
-    restart: unless-stopped
-    expose:
-      - 9090
-    configs:
-      - source: prometheus_config
-        target: /etc/prometheus/prometheus.yml
-    volumes:
-      - prometheus:/etc/prometheus/
+    image: localhost:5000/preclient:latest
+    command: [ "python", "prometheus_server.py" ]
+    env_file:
+      - .env
+    networks:
+      - everywhere_overlay
     deploy:
       mode: replicated
       replicas: 1
       restart_policy:
         condition: any
-        delay: 10s
-        max_attempts: 3
+        delay: 50s
+        max_attempts: 7
         window: 60s
-    networks:
-      - everywhere_overlay
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+        monitor: 10s
+        failure_action: pause
+      rollback_config:
+        parallelism: 1
+        delay: 20s
+        failure_action: pause
+        monitor: 0s
+        max_failure_ratio: 0
+        order: start-first
+
 
 configs:
   arb_config:
