@@ -1,8 +1,8 @@
 from fastapi import FastAPI, status
 from prometheus_client import Gauge, make_asgi_app
 
-TASKS = Gauge('tasks', 'Amount of created tasks of the ArbuzikAiBot')
-COMPLETE_TASKS = Gauge('complete_tasks', 'Amount of completed tasks of the ArbuzikAiBot')
+TASKS = Gauge('tasks', 'Created tasks of the ArbuzikAiBot')
+COMPLETE_TASKS = Gauge('complete_tasks', 'Completed tasks of the ArbuzikAiBot')
 
 app = FastAPI(debug=False, redoc_url=None)
 

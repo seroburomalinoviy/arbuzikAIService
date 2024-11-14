@@ -456,6 +456,46 @@ services:
         max_failure_ratio: 0
         order: start-first
 
+  node-exporter:
+    image: prom/node-exporter
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    container_name: exporter
+    hostname: exporter
+    command:
+      - --path.procfs=/host/proc
+      - --path.sysfs=/host/sys
+      - --collector.filesystem.ignored-mount-points
+      - ^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)
+    expose:
+      - 9100
+    restart: unless-stopped
+    networks:
+      - everywhere_overlay
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: any
+        delay: 50s
+        max_attempts: 7
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+        monitor: 10s
+        failure_action: pause
+      rollback_config:
+        parallelism: 1
+        delay: 20s
+        failure_action: pause
+        monitor: 0s
+        max_failure_ratio: 0
+        order: start-first
+
 
 configs:
   arb_config:
