@@ -16,6 +16,6 @@ def add_task():
 
 
 @app.get('/api/complete_task')
-def add_task():
+def complete_task():
     RAW_TASKS.dec()
     return status.HTTP_200_OK
