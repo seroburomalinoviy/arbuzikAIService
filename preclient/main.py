@@ -8,9 +8,7 @@ import os
 from dotenv import load_dotenv
 import aio_pika
 from aio_pika.abc import AbstractIncomingMessage
-from prometheus_client import Gauge
-
-# RAW_TASKS = Gauge('raw_tasks', 'Description of gauge')
+import httpx
 
 load_dotenv()
 
@@ -24,8 +22,9 @@ async def create_task(payload: str):
         db=0,
         retry_on_timeout=True
     )
-    # RAW_TASKS.inc()
-    # logging.info(f"Guage of task: {g_raw}")
+    async with httpx.AsyncClient() as client:
+        r = await client.get('prometheus-server:9001/add_task')
+    logging.info(f"Response from prometheus-server: {r.status_code}")
 
     name_of_list = "raw-data"
     resp = r.lpush(name_of_list, payload)

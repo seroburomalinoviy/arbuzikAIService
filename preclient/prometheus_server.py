@@ -1,15 +1,5 @@
-from fastapi import FastAPI
-from prometheus_client import make_asgi_app
-
-# REQUEST_COUNT = Counter('app_requests_total', 'Total request count')
-# CURRENT_REQUESTS = Gauge('app_requests_inprogress', 'Requests currently in progress')
-
-# app = FastAPI(debug=False)
-# # Add prometheus asgi middleware to route /metrics requests
-
-
 from fastapi import FastAPI, status
-from prometheus_client import generate_latest, Gauge
+from prometheus_client import Gauge, make_asgi_app
 
 RAW_TASKS = Gauge('raw_tasks', 'Description of gauge')
 
@@ -19,10 +9,13 @@ metrics_app = make_asgi_app()
 app.mount("/metrics", metrics_app)
 
 
-@app.get('/api/new_raw_task')
-def new_raw_task():
+@app.get('/api/add_task')
+def add_task():
     RAW_TASKS.inc()
-    try:
-        return int(RAW_TASKS)
-    except:
-        return status.HTTP_202_ACCEPTED
+    return status.HTTP_200_OK
+
+
+@app.get('/api/complete_task')
+def add_task():
+    RAW_TASKS.dec()
+    return status.HTTP_200_OK
