@@ -22,4 +22,7 @@ app.mount("/metrics", metrics_app)
 @app.get('/api/new_raw_task')
 def new_raw_task():
     RAW_TASKS.inc(1)
-    return status.HTTP_200_OK
+    try:
+        return int(RAW_TASKS)
+    except:
+        return status.HTTP_202_ACCEPTED
