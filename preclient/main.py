@@ -10,7 +10,7 @@ import aio_pika
 from aio_pika.abc import AbstractIncomingMessage
 from prometheus_client import Gauge
 
-RAW_TASKS = Gauge('raw_tasks', 'Description of gauge')
+# RAW_TASKS = Gauge('raw_tasks', 'Description of gauge')
 
 load_dotenv()
 
@@ -24,7 +24,7 @@ async def create_task(payload: str):
         db=0,
         retry_on_timeout=True
     )
-    RAW_TASKS.inc()
+    # RAW_TASKS.inc()
     # logging.info(f"Guage of task: {g_raw}")
 
     name_of_list = "raw-data"
@@ -76,5 +76,5 @@ if __name__ == "__main__":
     handler.setFormatter(formatter)
     logging.basicConfig(level=logging.INFO, format=log_format, datefmt="%Y-%m-%d %H:%M:%S")
     logging.getLogger('').addHandler(handler)
-    
+
     asyncio.run(task_listener())
