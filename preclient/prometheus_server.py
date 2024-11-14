@@ -1,7 +1,8 @@
 from fastapi import FastAPI, status
 from prometheus_client import Gauge, make_asgi_app
 
-RAW_TASKS = Gauge('raw_tasks', 'Description of gauge')
+TASKS = Gauge('tasks', 'Amount of created tasks of the ArbuzikAiBot')
+COMPLETE_TASKS = Gauge('complete_tasks', 'Amount of completed tasks of the ArbuzikAiBot')
 
 app = FastAPI(debug=False, redoc_url=None)
 
@@ -11,11 +12,11 @@ app.mount("/metrics", metrics_app)
 
 @app.get('/api/add_task')
 def add_task():
-    RAW_TASKS.inc()
+    TASKS.inc()
     return status.HTTP_200_OK
 
 
 @app.get('/api/complete_task')
 def complete_task():
-    RAW_TASKS.dec()
+    COMPLETE_TASKS.inc()
     return status.HTTP_200_OK

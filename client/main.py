@@ -8,6 +8,7 @@ import pika
 
 import async_timeout
 import redis
+import requests
 from redis.exceptions import ConnectionError, DataError, NoScriptError, RedisError, ResponseError
 from dotenv import load_dotenv
 from time import perf_counter
@@ -89,16 +90,12 @@ async def reader(r: redis.Redis):
     while True:
         try:
             async with (async_timeout.timeout(1)):
-                # stream_key = 'raw-data'
                 name_of_list = "raw-data"
-                # logging.info(f"The {stream_key} stream's length: {r.xlen(stream_key)}")
-                # stream_message = r.xread(count=1, streams={stream_key: '$'}, block=0)
+
                 message_from_list = r.blpop(name_of_list)
                 logging.info(f"{message_from_list=}")
                 if message_from_list:
-                    # message_id = stream_message[0][1][0][0]
-                    # message: dict = stream_message[0][1][0][1]
-                    # payload: dict = decode_dict(message)
+
                     payload: dict = json.loads(message_from_list[1])
 
                     logging.info(f"Got payload: {payload}")
@@ -132,18 +129,8 @@ async def reader(r: redis.Redis):
                             f"NN + Formatting finished for: {perf_counter() - start}"
                         )
 
-                    # stream_key = 'processed-data'
-                    # r.xadd(stream_key, {
-                    #         'complete_for': perf_counter() - start,
-                    #         'duration': payload.get('duration'),
-                    #         'count_task': r.xlen(stream_key),  # count of processed tasks
-                    #         # count of actual tasks also added one task to count the current element
-                    #         'actual_count_tasks': abs(r.xlen(stream_key)+1 - r.xlen("raw-data"))
-
-                    #     }
-                    # )
-                    # logging.info(message_id)
-                    # r.xdel('raw-data', message_id)
+                    response = requests.get('http://prometheus-server:9001/api/complete_task')
+                    logging.info(f"Response from prometheus-server: {response.status_code}")
 
                     payload["voice_filename"] = voice_filename
                     logging.debug(payload)
