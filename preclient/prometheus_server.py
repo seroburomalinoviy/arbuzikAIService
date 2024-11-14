@@ -20,7 +20,6 @@ app.mount("/metrics", metrics_app)
 
 
 @app.get('/api/new_raw_task')
-@RAW_TASKS.time()
 def new_raw_task():
-    RAW_TASKS.inc()
+    RAW_TASKS.inc(1)
     return status.HTTP_200_OK
