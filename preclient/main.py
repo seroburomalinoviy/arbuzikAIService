@@ -23,7 +23,7 @@ async def create_task(payload: str):
         retry_on_timeout=True
     )
     async with httpx.AsyncClient() as client:
-        r = await client.get('prometheus-server:9001/add_task')
+        r = await client.get('http://prometheus-server:9001/add_task')
     logging.info(f"Response from prometheus-server: {r.status_code}")
 
     name_of_list = "raw-data"
