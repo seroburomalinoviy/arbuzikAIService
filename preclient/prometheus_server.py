@@ -1,6 +1,11 @@
 from fastapi import FastAPI, status
 from prometheus_client import Gauge, make_asgi_app
 from pydantic import BaseModel
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
+
+logger = logging.getLogger(__name__)
 
 
 class SpeedModel(BaseModel):
@@ -31,5 +36,6 @@ async def complete_task():
 
 @app.post('/api/add_speed')
 async def add_speed(data: SpeedModel):
+    logger.info(f"{data=}")
     SPEED.set(data.speed)
     return status.HTTP_201_CREATED
