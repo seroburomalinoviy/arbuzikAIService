@@ -41,7 +41,7 @@ async def complete_task():
 
 
 @app.post('/api/add_speed')
-async def add_speed(data: SpeedModel):
+async def add_speed(data):
     logger.info(f"{data=}")
-    SPEED.set(data.speed)
+    SPEED.set(data.get("speed"))
     return status.HTTP_201_CREATED
