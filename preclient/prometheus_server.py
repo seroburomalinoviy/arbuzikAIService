@@ -40,7 +40,7 @@ async def complete_task():
     return status.HTTP_200_OK
 
 
-@app.post('/api/add_speed')
+@app.post('/api/add_speed/')
 async def add_speed(data):
     print(data)
     logger.info(f"{data=}")
