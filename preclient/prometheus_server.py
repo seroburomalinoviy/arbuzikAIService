@@ -2,11 +2,16 @@ from fastapi import FastAPI, status
 from prometheus_client import Gauge, make_asgi_app
 from pydantic import BaseModel
 import logging
+from fastapi.logger import logger
 
-log_format = "%(asctime)s - %(levelname)s - %(name)s - %(message)s >>> %(funcName)s(%(lineno)d)"
-logging.basicConfig(level=logging.DEBUG, format=log_format, datefmt="%Y-%m-%d %H:%M:%S")
+gunicorn_logger = logging.getLogger('gunicorn.error')
+logger.handlers = gunicorn_logger.handlers
+logger.setLevel(level=gunicorn_logger.level)
 
-logger = logging.getLogger(__name__)
+# log_format = "%(asctime)s - %(levelname)s - %(name)s - %(message)s >>> %(funcName)s(%(lineno)d)"
+# logging.basicConfig(level=logging.DEBUG, format=log_format, datefmt="%Y-%m-%d %H:%M:%S")
+#
+# logger = logging.getLogger(__name__)
 
 
 class SpeedModel(BaseModel):
