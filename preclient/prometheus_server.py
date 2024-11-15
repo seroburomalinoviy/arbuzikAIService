@@ -14,8 +14,8 @@ logger.setLevel(level=gunicorn_logger.level)
 # logger = logging.getLogger(__name__)
 
 
-class SpeedModel(BaseModel):
-    speed: float
+# class SpeedModel(BaseModel):
+#     speed: float
 
 
 TASKS = Gauge('tasks', 'Created tasks of the ArbuzikAiBot')
@@ -44,4 +44,4 @@ async def complete_task():
 async def add_speed(data):
     logger.info(f"{data=}")
     SPEED.set(data.get("speed"))
-    return status.HTTP_201_CREATED
+    return data
