@@ -6,3 +6,4 @@ prometheus-client
 fastapi==0.112.0
 uvicorn==0.30.5
 httpx
+pydantic
