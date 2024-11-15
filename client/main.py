@@ -129,8 +129,11 @@ async def reader(r: redis.Redis):
                             f"NN + Formatting finished for: {perf_counter() - start}"
                         )
 
+                    response = requests.post('http://prometheus-server:9001/api/add_speed', data={"speed": perf_counter() - start})
+                    logging.info(f"Response from prometheus-server [add_speed]: {response.status_code}")
+
                     response = requests.get('http://prometheus-server:9001/api/complete_task')
-                    logging.info(f"Response from prometheus-server: {response.status_code}")
+                    logging.info(f"Response from prometheus-server [complete_task]: {response.status_code}")
 
                     payload["voice_filename"] = voice_filename
                     logging.debug(payload)
