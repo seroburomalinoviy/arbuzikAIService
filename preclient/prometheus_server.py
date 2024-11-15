@@ -3,7 +3,8 @@ from prometheus_client import Gauge, make_asgi_app
 from pydantic import BaseModel
 import logging
 
-logging.basicConfig(level=logging.DEBUG)
+log_format = "%(asctime)s - %(levelname)s - %(name)s - %(message)s >>> %(funcName)s(%(lineno)d)"
+logging.basicConfig(level=logging.DEBUG, format=log_format, datefmt="%Y-%m-%d %H:%M:%S")
 
 logger = logging.getLogger(__name__)
 
