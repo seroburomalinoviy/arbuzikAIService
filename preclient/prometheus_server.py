@@ -42,6 +42,7 @@ async def complete_task():
 
 @app.post('/api/add_speed')
 async def add_speed(data):
+    print(data)
     logger.info(f"{data=}")
     SPEED.set(data.get("speed"))
     return data
