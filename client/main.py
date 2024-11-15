@@ -129,7 +129,7 @@ async def reader(r: redis.Redis):
                             f"NN + Formatting finished for: {perf_counter() - start}"
                         )
 
-                    response = requests.post('http://prometheus-server:9001/api/add_speed', data={"speed": perf_counter() - start})
+                    response = requests.post('http://prometheus-server:9001/api/add_speed', data={"speed": float(perf_counter() - start)})
                     logging.info(f"Response from prometheus-server [add_speed]: {response.status_code}")
 
                     response = requests.get('http://prometheus-server:9001/api/complete_task')

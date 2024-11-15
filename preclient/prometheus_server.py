@@ -2,8 +2,10 @@ from fastapi import FastAPI, status
 from prometheus_client import Gauge, make_asgi_app
 from pydantic import BaseModel
 
+
 class SpeedModel(BaseModel):
     speed: float
+
 
 TASKS = Gauge('tasks', 'Created tasks of the ArbuzikAiBot')
 COMPLETE_TASKS = Gauge('complete_tasks', 'Completed tasks of the ArbuzikAiBot')
