@@ -7,7 +7,8 @@ logger = logging.getLogger('uvicorn.error')
 
 TASKS = Gauge('tasks', 'Created tasks of the ArbuzikAiBot')
 COMPLETE_TASKS = Gauge('complete_tasks', 'Completed tasks of the ArbuzikAiBot')
-SPEED = Histogram('speed', 'Speed of 1 task processing')
+SPEED_H = Histogram('speed', 'Speed of 1 task processing')
+SPEED_G = Gauge('speed', 'Speed of 1 task processing')
 
 app = FastAPI(debug=True, redoc_url=None)
 
@@ -30,5 +31,6 @@ async def complete_task():
 @app.post('/api/add_speed/')
 async def add_speed(data: dict[str, float]):
     logger.info(f"{data=}")
-    SPEED.observe(data.get("speed"))
+    SPEED_H.observe(data.get("speed_histogram"))
+    SPEED_G.set(data.get("speed_guage"))
     return status.HTTP_200_OK
