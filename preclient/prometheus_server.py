@@ -1,4 +1,4 @@
-from fastapi import FastAPI, status
+from fastapi import FastAPI, status, Body
 from prometheus_client import Gauge, make_asgi_app
 from pydantic import BaseModel
 import logging
@@ -41,7 +41,7 @@ async def complete_task():
 
 
 @app.post('/api/add_speed/')
-async def add_speed(data):
+async def add_speed(data: dict[str, float]):
     print(data)
     logger.info(f"{data=}")
     SPEED.set(data.get("speed"))
