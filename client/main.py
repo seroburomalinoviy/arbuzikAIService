@@ -125,11 +125,12 @@ async def reader(r: redis.Redis):
 
                     if extension == ".ogg":
                         convert_to_voice(voice_path)
+                        time_per_task = float(perf_counter() - start)
                         logging.info(
-                            f"NN + Formatting finished for: {perf_counter() - start}"
+                            f"NN + Formatting finished for: {time_per_task}"
                         )
 
-                    response = requests.post('http://prometheus-server:9001/api/add_speed', json={"speed": float(perf_counter() - start)})
+                    response = requests.post('http://prometheus-server:9001/api/add_speed', json={"speed": time_per_task})
                     logging.info(f"Response from prometheus-server [add_speed]: {response.status_code}")
 
                     response = requests.get('http://prometheus-server:9001/api/complete_task')
