@@ -9,10 +9,10 @@ import logging
 # logger.handlers = gunicorn_logger.handlers
 # logger.setLevel(level=gunicorn_logger.level)
 
-log_format = "%(asctime)s - %(levelname)s - %(name)s - %(message)s >>> %(funcName)s(%(lineno)d)"
-logging.basicConfig(level=logging.DEBUG, format=log_format, datefmt="%Y-%m-%d %H:%M:%S")
+# log_format = "%(asctime)s - %(levelname)s - %(name)s - %(message)s >>> %(funcName)s(%(lineno)d)"
+# logging.basicConfig(level=logging.DEBUG, format=log_format, datefmt="%Y-%m-%d %H:%M:%S")
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('uvicorn.error')
 
 
 # class MyUvicornWorker(UvicornWorker):
@@ -50,6 +50,6 @@ async def complete_task():
 @app.post('/api/add_speed/')
 async def add_speed(data: dict[str, float]):
     print(data)
-    logger.info(f"{data=}")
+    logger.debug(f"{data=}")
     SPEED.set(data.get("speed"))
     return data
