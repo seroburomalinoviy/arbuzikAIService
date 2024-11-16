@@ -1,4 +1,7 @@
 # Custom
+hubert_base.pt
+rmvpe.pt
+
 client/hubert_base.pt
 client/rmvpe.pt
 *.env
