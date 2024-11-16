@@ -29,3 +29,8 @@ scrape_configs:
     scrape_interval: 5s
     static_configs:
       - targets: ['node-exporter:9100']
+
+  - job_name: 'gpu'
+    scrape_interval: 5s
+    static_configs:
+      - targets: [ 'localhost:9400' ]
