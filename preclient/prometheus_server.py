@@ -7,8 +7,8 @@ logger = logging.getLogger('uvicorn.error')
 
 TASKS = Gauge('tasks', 'Created tasks of the ArbuzikAiBot')
 COMPLETE_TASKS = Gauge('complete_tasks', 'Completed tasks of the ArbuzikAiBot')
-SPEED_H = Histogram('speed', 'Speed of 1 task processing')
-SPEED_G = Gauge('speed', 'Speed of 1 task processing')
+SPEED_H = Histogram('speed_h', 'Speed of 1 task processing')
+SPEED_G = Gauge('speed_g', 'Speed of 1 task processing')
 
 app = FastAPI(debug=True, redoc_url=None)
 
