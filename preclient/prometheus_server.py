@@ -1,5 +1,5 @@
 from fastapi import FastAPI, status
-from prometheus_client import Gauge, make_asgi_app
+from prometheus_client import Gauge, make_asgi_app, Histogram
 import logging
 
 logger = logging.getLogger('uvicorn.error')
@@ -7,7 +7,7 @@ logger = logging.getLogger('uvicorn.error')
 
 TASKS = Gauge('tasks', 'Created tasks of the ArbuzikAiBot')
 COMPLETE_TASKS = Gauge('complete_tasks', 'Completed tasks of the ArbuzikAiBot')
-SPEED = Gauge('speed', 'Time of 1 task processing')
+SPEED = Histogram('speed', 'Speed of 1 task processing')
 
 app = FastAPI(debug=True, redoc_url=None)
 
@@ -30,5 +30,5 @@ async def complete_task():
 @app.post('/api/add_speed/')
 async def add_speed(data: dict[str, float]):
     logger.info(f"{data=}")
-    SPEED.set(data.get("speed"))
+    SPEED.observe(data.get("speed"))
     return status.HTTP_200_OK
