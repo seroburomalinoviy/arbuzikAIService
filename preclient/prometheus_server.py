@@ -1,27 +1,8 @@
 from fastapi import FastAPI, status
 from prometheus_client import Gauge, make_asgi_app
-from pydantic import BaseModel
 import logging
-# from fastapi.logger import logger
-# from uvicorn import UvicornWorker
-
-# gunicorn_logger = logging.getLogger('gunicorn.error')
-# logger.handlers = gunicorn_logger.handlers
-# logger.setLevel(level=gunicorn_logger.level)
-
-# log_format = "%(asctime)s - %(levelname)s - %(name)s - %(message)s >>> %(funcName)s(%(lineno)d)"
-# logging.basicConfig(level=logging.DEBUG, format=log_format, datefmt="%Y-%m-%d %H:%M:%S")
 
 logger = logging.getLogger('uvicorn.error')
-
-
-# class MyUvicornWorker(UvicornWorker):
-#     CONFIG_KWARGS = {
-#         "log_config": "/app/uvicorn_logger.yaml",
-#     }
-
-# class SpeedModel(BaseModel):
-#     speed: float
 
 
 TASKS = Gauge('tasks', 'Created tasks of the ArbuzikAiBot')
@@ -36,7 +17,6 @@ app.mount("/metrics", metrics_app)
 
 @app.get('/api/add_task')
 async def add_task():
-    logger.info('KONNICHIVA')
     TASKS.inc()
     return status.HTTP_200_OK
 
@@ -49,7 +29,6 @@ async def complete_task():
 
 @app.post('/api/add_speed/')
 async def add_speed(data: dict[str, float]):
-    print(data)
-    logger.debug(f"{data=}")
+    logger.info(f"{data=}")
     SPEED.set(data.get("speed"))
-    return data
+    return status.HTTP_200_OK
