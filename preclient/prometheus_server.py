@@ -31,4 +31,5 @@ async def complete_task():
 async def add_speed(data: dict[str, float]):
     logger.info(f"{data=}")
     SPEED.set(data.get("speed"))
+    SPEED.set(0)
     return status.HTTP_200_OK
