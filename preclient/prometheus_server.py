@@ -31,6 +31,6 @@ async def complete_task():
 @app.post('/api/add_speed/')
 async def add_speed(data: dict[str, float]):
     logger.info(f"{data=}")
-    SPEED_H.observe(data.get("speed_histogram"))
-    SPEED_G.set(data.get("speed_guage"))
+    SPEED_H.observe(data.get("speed"))
+    SPEED_G.set(data.get("speed"))
     return status.HTTP_200_OK
