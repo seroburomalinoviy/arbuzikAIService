@@ -516,6 +516,12 @@ services:
     networks:
       - everywhere_overlay
     deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [ gpu ]
       mode: replicated
       replicas: 1
       restart_policy:

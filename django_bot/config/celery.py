@@ -8,7 +8,8 @@ from celery.schedules import crontab
 logger = logging.getLogger(__name__)
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
-redis_for_celery = f"redis://{os.environ.get('REDIS_HOST')}:{os.environ.get('REDIS_PORT')}/1"
+# redis_for_celery = f"redis://{os.environ.get('REDIS_HOST')}:{os.environ.get('REDIS_PORT')}/1"
+redis_for_celery = f"redis://redis:{os.environ.get('REDIS_PORT')}/1"
 
 app = Celery("django_bot", broker=redis_for_celery)
 app.conf.update(
