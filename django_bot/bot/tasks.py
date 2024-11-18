@@ -6,6 +6,7 @@ from requests.exceptions import ConnectTimeout, ReadTimeout
 import json
 import amqp
 from dotenv import load_dotenv
+import os
 
 load_dotenv()
 
@@ -20,7 +21,6 @@ logger = logging.getLogger(__name__)
 
 @app.task(ignore_result=True)
 def clean_user_voices():
-    import os
     os.system(f'rm -rf {os.environ.get("USER_VOICES")}/*')
     logger.info('User voices was cleaned up')
     return True

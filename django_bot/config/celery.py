@@ -27,20 +27,20 @@ app.conf.update(
 app.autodiscover_tasks()
 
 
-# @after_setup_logger.connect
-# def setup_loggers(logger, *args, **kwargs):
-#     handler = RotatingFileHandler('/logs/celery-worker.log', backupCount=5, maxBytes=512 * 1024)
-#     log_format = "%(asctime)s - %(levelname)s - %(name)s - %(message)s >>> %(funcName)s(%(lineno)d)"
-#     formatter = logging.Formatter(log_format)
-#     handler.setFormatter(formatter)
-#     logging.basicConfig(level=logging.INFO, format=log_format, datefmt="%Y-%m-%d %H:%M:%S")
-#     logger.addHandler(handler)
+@after_setup_logger.connect
+def setup_loggers(logger, *args, **kwargs):
+    # handler = RotatingFileHandler('/logs/celery-worker.log', backupCount=5, maxBytes=512 * 1024)
+    log_format = "%(asctime)s - %(levelname)s - %(name)s - %(message)s >>> %(funcName)s(%(lineno)d)"
+    # formatter = logging.Formatter(log_format)
+    # handler.setFormatter(formatter)
+    logging.basicConfig(level=logging.INFO, format=log_format, datefmt="%Y-%m-%d %H:%M:%S")
+    # logger.addHandler(handler)
 
 
 app.conf.beat_schedule = {
     'clean_user_voices': {
         'task': 'bot.logic.celery_tasks.clean_user_voices',  # path to task
-        'schedule': crontab(minute='0', hour='3'),  # How often the task should run
+        'schedule': crontab(minute='1', hour='0'),  # How often the task should run
         # 'schedule': 60.0,  # каждую минуту
         # 'args': (arg1, arg2),  # Positional arguments for the task (optional)
         # 'kwargs': {'keyword_arg': 'value'},  # Keyword arguments for the task (optional)
