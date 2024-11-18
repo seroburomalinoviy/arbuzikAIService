@@ -39,7 +39,7 @@ def setup_loggers(logger, *args, **kwargs):
 
 app.conf.beat_schedule = {
     'clean_user_voices': {
-        'task': 'bot.logic.celery_tasks.clean_user_voices',  # path to task
+        'task': 'bot.tasks.clean_user_voices',  # path to task
         # 'schedule': crontab(minute='1', hour='0'),  # How often the task should run
         'schedule': 60.0,  # каждую минуту
         # 'args': (arg1, arg2),  # Positional arguments for the task (optional)
