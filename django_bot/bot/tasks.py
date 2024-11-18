@@ -5,11 +5,14 @@ import requests
 from requests.exceptions import ConnectTimeout, ReadTimeout
 import json
 import amqp
-from config.celery import app
+from dotenv import load_dotenv
+
+load_dotenv()
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 django.setup()
 
+from config.celery import app
 from user.models import Order
 
 logger = logging.getLogger(__name__)
@@ -17,6 +20,7 @@ logger = logging.getLogger(__name__)
 
 @app.task(ignore_result=True)
 def clean_user_voices():
+    import os
     os.system(f'rm -rf {os.environ.get("USER_VOICES")}/*')
     logger.info('User voices was cleaned up')
     return True
