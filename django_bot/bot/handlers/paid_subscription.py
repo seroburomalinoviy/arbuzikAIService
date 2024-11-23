@@ -4,6 +4,7 @@ from telegram.constants import ParseMode
 
 import os
 import logging
+from dotenv import load_dotenv
 
 from bot.logic.utils import log_journal
 from bot.logic import message_text
@@ -16,6 +17,7 @@ import django
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 django.setup()
+load_dotenv()
 
 from bot.models import Subscription
 from user.models import User, Order
