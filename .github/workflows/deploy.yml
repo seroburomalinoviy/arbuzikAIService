@@ -1,31 +1,33 @@
-#name: ArbuzikAI deploy
-#on:
-#  push:
-#    branches:
-#      - main
-#      - dev
-#jobs:
-#
-#  deploy:
-#    name: deployment
-#    runs-on: ubuntu-latest
-#    steps:
-#    - name: Deploy main branch
-#      if: github.ref == 'refs/heads/main'
-#      uses: appleboy/ssh-action@master
-#      with:
-#        host: ${{ secrets.SSH_HOST_PROD }}
-#        username: ${{ secrets.SSH_USER_PROD }}
-#        key: ${{ secrets.SSH_KEY_PROD }}
-#        port: ${{ secrets.SSH_PORT_PROD }}
-#        script: |
-#          cd arbuzikAIService/
-#          git switch main
-#          git pull origin main
-##          docker compose down
-##          docker compose build
-##          docker compose up -d
-##          docker system prune --volumes --force
+name: ArbuzikAI deploy
+on:
+  push:
+    branches:
+      - main
+      - dev
+jobs:
+
+  deploy:
+    name: deployment
+    runs-on: ubuntu-latest
+    steps:
+    - name: Deploy main branch
+      if: github.ref == 'refs/heads/main'
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SSH_HOST_PROD }}
+        username: ${{ secrets.SSH_USER_PROD }}
+        key: ${{ secrets.SSH_KEY_PROD }}
+        port: ${{ secrets.SSH_PORT_PROD }}
+        script: |
+          cd arbuzikAIService/
+          git switch main
+          git pull origin main
+          docker compose -f docker-compose.build.yml build
+          docker push localhost:5000/preclient
+          docker push localhost:5000/client
+          docker push localhost:5000/django
+          docker push localhost:5000/payment-api
+          docker system prune --force
 #
 #    - name: Deploy dev branch
 #      if: github.ref == 'refs/heads/dev'
