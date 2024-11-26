@@ -180,7 +180,7 @@ services:
 
 
   bot:
-    image: localhost:5000/bot:latest
+    image: localhost:5000/djangobot:latest
     command: ["python", "start_bot.py"]
     environment:
       POSTGRES_HOST: db
