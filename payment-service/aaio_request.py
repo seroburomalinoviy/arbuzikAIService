@@ -11,6 +11,8 @@ from schemas import Order
 
 load_dotenv()
 
+AAIO_CREATE_ORDER = os.environ.get("AAIO_CREATE_ORDER")
+
 
 async def create_hash(key: str):
     sign = hashlib.sha256()
@@ -49,10 +51,11 @@ async def get_payment_url(data: str) -> dict:
     key = f'{str(merchant_id)}:{order.amount}:{currency}:{secret_key_1}:{order.order_id}'
     body["sign"] = await create_hash(key)
 
+    logging.info(f"Create order in aaio: url={AAIO_CREATE_ORDER}, {body=}")
     client = httpx.AsyncClient()
     try:
         response = await client.post(
-            "https://aaio.so/merchant/get_pay_url",
+            url=AAIO_CREATE_ORDER,
             data=urlencode(body),
             headers=headers,
         )
