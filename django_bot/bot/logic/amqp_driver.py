@@ -87,7 +87,7 @@ async def send_payment_url(data):
         parse_mode=ParseMode.MARKDOWN,
         reply_markup=InlineKeyboardMarkup(
             [
-                [InlineKeyboardButton("Оплатить подписку", url=payment_page.url)]
+                [InlineKeyboardButton("Оплатить Crypto", url=payment_page.url)]
             ]
         )
     )
