@@ -167,7 +167,7 @@ async def buy_subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await push_amqp_message(data, routing_key='bot-to-payment')
 
-    # проверка оплаты через 20 минут
+    # проверка оплаты через 30 минут
     time_waiting = 60 * int(os.environ.get('TIME_WAITING_PAYMENT_MIN', 30))
     check_payment_api.apply_async(args=[str(order.id)], countdown=time_waiting)
 
