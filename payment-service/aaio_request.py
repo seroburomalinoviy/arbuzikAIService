@@ -19,6 +19,12 @@ async def create_hash(key: str):
 
 
 async def get_payment_url(data: str) -> dict:
+    """
+    Создание заказа
+
+    :param data:
+    :return:
+    """
     order = Order(data)
     headers = {
         "Accept": "application/json",
@@ -27,6 +33,7 @@ async def get_payment_url(data: str) -> dict:
 
     merchant_id = uuid.UUID(os.environ.get("MERCHANT_ID"))
     currency = "RUB"
+    method = "bitcoin"
 
     body = {
         "merchant_id": merchant_id,
@@ -35,6 +42,7 @@ async def get_payment_url(data: str) -> dict:
         "currency": currency,
         "desc": order.subscription_title,
         "lang": "ru",
+        "method": method
     }
 
     secret_key_1 = os.environ.get("SECRET_KEY_1")
