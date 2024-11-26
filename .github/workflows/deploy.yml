@@ -25,7 +25,7 @@ jobs:
           docker compose -f docker-compose.build.yml build
           docker push localhost:5000/preclient
           docker push localhost:5000/client
-          docker push localhost:5000/django
+          docker push localhost:5000/djangobot
           docker push localhost:5000/payment-api
           docker system prune --force
 #
