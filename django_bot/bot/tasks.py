@@ -26,7 +26,7 @@ def clean_user_voices():
     return True
 
 
-@app.task(ignore_result=True)
+@app.task(ignore_result=False)
 def check_payment_api(order_id: str):
 
     order = Order.objects.get(id=order_id)

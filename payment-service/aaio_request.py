@@ -43,8 +43,7 @@ async def get_payment_url(data: str) -> dict:
         "order_id": order.order_id,
         "currency": currency,
         "desc": order.subscription_title,
-        "lang": "ru",
-        "method": method
+        "lang": "ru"
     }
 
     secret_key_1 = os.environ.get("SECRET_KEY_1")
