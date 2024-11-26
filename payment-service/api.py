@@ -15,7 +15,7 @@ log_format = "%(asctime)s - %(levelname)s - %(name)s - %(message)s >>> %(funcNam
 formatter = logging.Formatter(log_format)
 rotating_handler.setFormatter(formatter)
 logging.basicConfig(level=logging.INFO, format=log_format, datefmt="%Y-%m-%d %H:%M:%S")
-logging.getLogger('').addHandler(rotating_handler)
+logging.getLogger('uvicorn.error').addHandler(rotating_handler)
 
 app = FastAPI(redoc_url=None)
 
