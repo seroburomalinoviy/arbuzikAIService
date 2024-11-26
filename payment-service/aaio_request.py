@@ -35,7 +35,6 @@ async def get_payment_url(data: str) -> dict:
 
     merchant_id = uuid.UUID(os.environ.get("MERCHANT_ID"))
     currency = "RUB"
-    method = "bitcoin"
 
     body = {
         "merchant_id": merchant_id,
@@ -43,8 +42,7 @@ async def get_payment_url(data: str) -> dict:
         "order_id": order.order_id,
         "currency": currency,
         "desc": order.subscription_title,
-        "lang": "ru",
-        "method": method
+        "lang": "ru"
     }
 
     secret_key_1 = os.environ.get("SECRET_KEY_1")
