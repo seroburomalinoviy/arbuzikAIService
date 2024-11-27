@@ -12,9 +12,9 @@ services:
     image: localhost:5000/client:latest
     pull_policy: build
 
-  djangobot:
+  django:
     build: ./django_bot
-    image: localhost:5000/djangobot:latest
+    image: localhost:5000/django:latest
     pull_policy: build
 
   payment-api:
