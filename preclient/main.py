@@ -14,7 +14,6 @@ load_dotenv()
 
 
 async def create_task(payload: str):
-    # payload: dict = json.loads(payload)
 
     r = redis.StrictRedis(
         host=os.environ.get('REDIS_HOST'),

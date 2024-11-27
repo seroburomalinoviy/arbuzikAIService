@@ -42,7 +42,7 @@ class PikaConnector:
 
 
 async def send_payment_answer(data):
-    payment = Payment(json.loads(data))
+    payment = Payment(**json.loads(data))
     order = await Order.objects.select_related("user", "subscription").aget(id=payment.order_id)
 
     # if payment.service == "aaio":
@@ -78,7 +78,7 @@ async def send_payment_answer(data):
 
 
 async def send_payment_url(data):
-    payment_page = PayUrl(json.loads(data))
+    payment_page = PayUrl(**json.loads(data))
 
     logging.info(f'Sent payment url to {payment_page.chat_id}')
 
@@ -94,11 +94,11 @@ async def send_payment_url(data):
     )
 
 
-async def send_rvc_answer(data):
+async def send_rvc_answer(data: str):
     """
     Send voice to user from RVC-NN
     """
-    audio = RVCData(json.loads(data))
+    audio = RVCData(**json.loads(data))
 
     file_path = os.environ.get("USER_VOICES") + "/" + audio.voice_filename
 
