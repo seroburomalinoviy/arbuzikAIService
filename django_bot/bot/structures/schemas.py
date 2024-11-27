@@ -1,5 +1,4 @@
-import json
-import os
+from os import getenv
 from telegram import Bot
 from pydantic import BaseModel
 from typing import ClassVar
@@ -17,7 +16,7 @@ class RVCData(BaseModel):
     voice_title: str = ''
     duration: int
     message_id: int
-    bot: ClassVar = Bot(token=os.environ.get("BOT_TOKEN"))
+    bot: ClassVar = Bot(token=getenv("BOT_TOKEN"))
 
 
 class Payment(BaseModel):
@@ -28,7 +27,7 @@ class Payment(BaseModel):
     order_id: int
     status: bool
     service: str
-    bot: ClassVar = Bot(token=os.environ.get("BOT_TOKEN"))
+    bot: ClassVar = Bot(token=getenv("BOT_TOKEN"))
 
 
 class PayUrl(BaseModel):
@@ -38,5 +37,5 @@ class PayUrl(BaseModel):
     order_id: int
     amount: int
     chat_id: str = ''
-    bot: ClassVar = Bot(token=os.environ.get("BOT_TOKEN"))
+    bot: ClassVar = Bot(token=getenv("BOT_TOKEN"))
 

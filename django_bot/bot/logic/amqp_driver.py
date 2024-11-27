@@ -78,7 +78,7 @@ async def send_payment_answer(data):
 
 
 async def send_payment_url(data):
-    payment_page = PayUrl(data)
+    payment_page = PayUrl(json.loads(data))
 
     logging.info(f'Sent payment url to {payment_page.chat_id}')
 
