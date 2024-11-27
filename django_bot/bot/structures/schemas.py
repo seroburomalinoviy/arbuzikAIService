@@ -7,7 +7,7 @@ from typing import ClassVar
 class RVCData(BaseModel):
     voice_model_index: str = ''
     voice_model_pth: str = ''
-    pitch: str = ''
+    pitch: int
     extension: str = ''
     voice_name: str = ''
     voice_filename: str = ''
