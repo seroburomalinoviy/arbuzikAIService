@@ -7,11 +7,12 @@ from dotenv import load_dotenv
 import os
 import json
 
-from schemas import Order
+from schemas import PayUrl
 
 load_dotenv()
 
 AAIO_CREATE_ORDER = os.environ.get("AAIO_CREATE_ORDER")
+AAIO_IPS = os.environ.get("AAIO_IPS")
 
 
 async def create_hash(key: str):
@@ -27,7 +28,7 @@ async def get_payment_url(data: str) -> dict:
     :param data:
     :return:
     """
-    order = Order(data)
+    order = PayUrl(**json.loads(data))
     headers = {
         "Accept": "application/json",
         "Content-Type": "application/x-www-form-urlencoded",
@@ -72,7 +73,7 @@ async def get_actual_ips() -> list:
     client = httpx.AsyncClient()
 
     try:
-        response = await client.get('https://aaio.so/api/public/ips')
+        response = await client.get(url=AAIO_IPS)
     except Exception as e:
         logging.error(e)
         raise Exception('cant get actual ips')

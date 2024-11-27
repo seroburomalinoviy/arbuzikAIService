@@ -1,13 +1,24 @@
 import json
+from pydantic import BaseModel
+from typing import ClassVar
 
 
-class Order:
-    def __init__(self, arg: str):
-        data = json.loads(arg)
-        self.subscription_title: str = data['subscription_title']
-        self.order_id: str = data['order_id']
-        self.amount: str = data['amount']
-        self.chat_id: str = data['chat_id']
+class PayUrl(BaseModel):
+    type: str | None
+    url: str | None
+    subscription_title: str
+    order_id: str
+    amount: str
+    chat_id: int
+
+
+# class Order:
+#     def __init__(self, arg: str):
+#         data = json.loads(arg)
+#         self.subscription_title: str = data['subscription_title']
+#         self.order_id: str = data['order_id']
+#         self.amount: str = data['amount']
+#         self.chat_id: str = data['chat_id']
 
 
 class ApiPayment:
