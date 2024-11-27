@@ -2,6 +2,7 @@ import json
 import os
 from telegram import Bot
 from pydantic import BaseModel, Field
+from typing import ClassVar
 
 
 class RVCData:
@@ -30,7 +31,7 @@ class Payment(BaseModel):
     order_id: int
     status: bool
     service: str
-    bot = Bot(token=os.environ.get("BOT_TOKEN"))
+    bot: ClassVar = Bot(token=os.environ.get("BOT_TOKEN"))
 
 # class Payment:
 #     def __init__(self, arg):
