@@ -10,6 +10,8 @@ import os
 
 load_dotenv()
 
+AAIO_INFO = os.environ.get("AAIO_INFO")
+
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 django.setup()
 
@@ -29,14 +31,16 @@ def clean_user_voices():
 @app.task(ignore_result=False)
 def check_payment_api(order_id: str):
 
+    SERVICE = 'aaio'
     order = Order.objects.get(id=order_id)
     if order.status:
-        order.comment = 'Заказ оплачен'
+        msg = f'{SERVICE}: Заказ оплачен'
+        order.comment = msg
         order.save()
-        logger.info('Заказ был оплачен')
+        logger.info(msg)
         return True
 
-    url = 'https://aaio.so/api/info-pay'
+    url = AAIO_INFO
     api_key = os.environ.get('AAIO_API_KEY')
     merchant_id = os.environ.get('MERCHANT_ID')
     params = {
@@ -69,19 +73,19 @@ def check_payment_api(order_id: str):
             return True
         else:
             if response_json['status'] == 'expired':
-                msg = 'Не оплачено, время заказа истекло в сервисе оплаты'
+                msg = f'{SERVICE}: Не оплачено, время заказа истекло в сервисе оплаты'
                 order.comment = msg
                 order.save()
                 logger.info(msg)
                 return True
             elif response_json['status'] == 'in_process':
-                msg = 'Заказ в процессе оплаты, потребуется ручное подтверждение в сервисе оплаты aaio'
+                msg = f'{SERVICE}: Заказ в процессе оплаты, потребуется ручное подтверждение в сервисе оплаты aaio'
                 order.comment = msg
                 order.save()
                 logger.info(msg)
                 return True
             elif response_json['status'] == 'success' or response_json['status'] == 'hold':
-                msg = 'Заказ оплачен'
+                msg = f'{SERVICE}: Заказ оплачен'
                 order.comment = msg
                 order.save()
                 logger.info(msg)
@@ -90,7 +94,8 @@ def check_payment_api(order_id: str):
                     'amount': response_json['amount'],
                     'currency': response_json['currency'],
                     'merchant_id': response_json['merchant_id'],
-                    'status': True
+                    'status': True,
+                    'service': SERVICE
                 }
 
                 payload = json.dumps(data)
