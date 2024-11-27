@@ -20,7 +20,7 @@ class MainConversationHandler(BaseConversationHandler):
             CommandHandler("help", HelpHandler()),
             CommandHandler("menu", main.category_menu),
             MessageHandler(
-                (filters.AUDIO | filters.VOICE | filters.Document) & ~filters.COMMAND,
+                (filters.AUDIO | filters.VOICE | filters.ATTACHMENT) & ~filters.COMMAND,
                 main.voice_audio_process,
             ),
             MessageHandler(filters.TEXT, main.voice_preview)
