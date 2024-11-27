@@ -70,6 +70,8 @@ async def get_payment_url(data: str) -> dict:
     order.type = ans.get("type")
     order.url = ans.get("url")
 
+    logging.info(f"created order data: {order.model_dump()}")
+
     return order.model_dump()
 
 
