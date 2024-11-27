@@ -11,6 +11,7 @@ from bot.logic import message_text
 from bot.logic.constants import *
 from bot.logic.amqp_driver import push_amqp_message
 from bot.tasks import check_payment_api
+from bot.structures.schemas import PayUrl
 
 from django.conf import settings
 import django
@@ -155,17 +156,17 @@ async def buy_subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
         status=False,
         user=user,
         subscription=subscription,
-        comment=f'Заказ создан, ожидается оплата'
+        comment=f'aaio: Заказ создан, ожидается оплата'
     )
 
-    data = {
-        'subscription_title': subscription.telegram_title,
-        'order_id': str(order.id),
-        'amount': amount,
-        'chat_id': chat_id
-    }
+    data = PayUrl(
+        subscription_title=subscription.telegram_title,
+        order_id=str(order.id),
+        amount=amount,
+        chat_id=chat_id
+    )
 
-    await push_amqp_message(data, routing_key='bot-to-payment')
+    await push_amqp_message(data.model_dump(), routing_key='bot-to-payment')
 
     # проверка оплаты через 30 минут
     time_waiting = 60 * int(os.environ.get('TIME_WAITING_PAYMENT_MIN', 30))
