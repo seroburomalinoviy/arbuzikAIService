@@ -12,14 +12,14 @@ class PayUrl(BaseModel):
     chat_id: int
 
 
-class ApiPayment:
-    def __init__(self, data: json):
-        self.status: str = data['status']
-        self.merchant_id: str = data['merchant_id']
-        self.invoice_id: str = data['invoice_id']
-        self.order_id: str = data['order_id']
-        self.amount: str = data['amount']
-        self.currency: str = data['currency']
-        self.sign: str = data['sign']
+class Payment(BaseModel):
+    status: str
+    merchant_id: str
+    invoice_id: str
+    order_id: str
+    amount: str
+    currency: str
+    sign: str
+
 
 

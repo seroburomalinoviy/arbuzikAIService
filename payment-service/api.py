@@ -1,3 +1,5 @@
+import json
+
 from ampq_driver import push_amqp_message
 from aaio_request import get_actual_ips, create_hash
 
@@ -29,7 +31,7 @@ async def check():
 async def get_payment(request: Request, remote_ip: str = Header(None, alias='X-Real-IP')) -> Response:
     f = await request.form()
     json_f = await jsonable_encoder(f)
-    payment = ApiPayment(json_f)
+    payment = ApiPayment(**json.loads(json_f))
 
     logging.info(f'{json_f=}')
 
@@ -48,13 +50,5 @@ async def get_payment(request: Request, remote_ip: str = Header(None, alias='X-R
         logging.warning('No appropriated sign!')
         return Response(status_code=400)
 
-    data = {
-        'order_id': payment.order_id,
-        'amount': payment.amount,
-        'currency': payment.currency,
-        'merchant_id': payment.merchant_id,
-        'status': True
-    }
-
-    await push_amqp_message(data, routing_key='payment-to-bot')
+    await push_amqp_message(payment.model_dump(), routing_key='payment-to-bot')
     return Response(status_code=200)

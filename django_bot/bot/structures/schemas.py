@@ -20,13 +20,14 @@ class RVCData(BaseModel):
 
 
 class Payment(BaseModel):
-    order_id: int
-    amount: int
+    status: str
+    merchant_id: str
+    invoice_id: str
+    order_id: str
+    amount: str
     currency: str
-    merchant_id: int
-    order_id: int
-    status: bool
-    service: str
+    sign: str
+    service: str = ''
     bot: ClassVar = Bot(token=getenv("BOT_TOKEN"))
 
 
