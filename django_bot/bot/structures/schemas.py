@@ -31,8 +31,8 @@ class Payment(BaseModel):
 
 
 class PayUrl(BaseModel):
-    type: str | None
-    url: str | None
+    type: str
+    url: str = ''
     subscription_title: str
     order_id: str
     amount: int
