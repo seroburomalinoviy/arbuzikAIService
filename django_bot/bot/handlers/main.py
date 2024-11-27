@@ -550,8 +550,7 @@ async def voice_audio_process(update: Update, context: ContextTypes.DEFAULT_TYPE
     logging.info(input_obj.file_size)
     if input_obj.file_size >= 20_000_000:
         await update.message.reply_text(
-            message_text.too_heavy_file,
-            reply_markup=InlineKeyboardMarkup(keyboards.is_subscribed),
+            message_text.too_heavy_file
         )
         return BASE_STATES
 
