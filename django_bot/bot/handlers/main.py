@@ -13,6 +13,7 @@ from bot.logic.amqp_driver import push_amqp_message
 from bot.logic.constants import *
 from bot.logic.utils import get_moscow_time, log_journal
 from bot.handlers.paid_subscription import preview_paid_subscription, show_paid_subscriptions
+from bot.structures.schemas import RVCData
 
 from telegram import Voice as TelegramVoice
 from telegram import Audio as TelegramAudio
@@ -582,21 +583,20 @@ async def voice_audio_process(update: Update, context: ContextTypes.DEFAULT_TYPE
         message_text.conversation_end,
         reply_markup=InlineKeyboardMarkup(keyboards.check_status),
     )
+    payload = RVCData(
+        duration=duration,
+        voice_title=voice.title,
+        user_id=user_id,
+        chat_id=chat_id,
+        voice_name=voice_name,
+        extension=extension,
+        pitch=pitch,
+        voice_model_index=voice_model_index,
+        voice_model_pth=voice_model_pth,
+        message_id=message.id
+    )
 
-    payload = {
-        "duration": duration,
-        "voice_title": voice.title,
-        "user_id": user_id,
-        "chat_id": chat_id,
-        "voice_name": voice_name,
-        "extension": extension,
-        "pitch": pitch,
-        "voice_model_pth": voice_model_pth,
-        "voice_model_index": voice_model_index,
-        "message_id": message.id,
-    }
-
-    await push_amqp_message(payload, routing_key="bot-to-rvc")
+    await push_amqp_message(payload.model_dump(), routing_key="bot-to-rvc")
 
     await update_subscription(user)
 

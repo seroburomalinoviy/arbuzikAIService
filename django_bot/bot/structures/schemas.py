@@ -5,22 +5,37 @@ from pydantic import BaseModel, Field
 from typing import ClassVar
 
 
-class RVCData:
-    def __init__(self, arg):
-        data = json.loads(arg)
-        self.voice_model_index = data['voice_model_index']
-        self.voice_model_pth = data['voice_model_pth']
-        self.pitch = data['pitch']
-        self.extension = data['extension']
-        self.voice_name = data['voice_name']
-        self.chat_id = data['chat_id']
-        self.user_id = data['user_id']
-        self.voice_title = data['voice_title']
-        self.duration = data['duration']
-        self.voice_filename = data['voice_filename']
-        self.message_id = data['message_id']
-        self.image = data.get("image")
-        self.bot = Bot(token=os.environ.get("BOT_TOKEN"))
+class RVCData(BaseModel):
+    voice_model_index: str = ''
+    voice_model_pth: str = ''
+    pitch: str = ''
+    extension: str = ''
+    voice_name: str = ''
+    voice_filename: str = ''
+    chat_id: str = ''
+    user_id: str = ''
+    voice_title: str = ''
+    duration: int
+    message_id: int
+    bot: ClassVar = Bot(token=os.environ.get("BOT_TOKEN"))
+
+
+# class RVCData:
+#     def __init__(self, arg):
+#         data = json.loads(arg)
+#         self.voice_model_index = data['voice_model_index']
+#         self.voice_model_pth = data['voice_model_pth']
+#         self.pitch = data['pitch']
+#         self.extension = data['extension']
+#         self.voice_name = data['voice_name']
+#         self.chat_id = data['chat_id']
+#         self.user_id = data['user_id']
+#         self.voice_title = data['voice_title']
+#         self.duration = data['duration']
+#         self.voice_filename = data['voice_filename']
+#         self.message_id = data['message_id']
+#         self.image = data.get("image")
+#         self.bot = Bot(token=os.environ.get("BOT_TOKEN"))
 
 
 class Payment(BaseModel):

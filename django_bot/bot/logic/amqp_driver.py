@@ -98,7 +98,7 @@ async def send_rvc_answer(data):
     """
     Send voice to user from RVC-NN
     """
-    audio = RVCData(data)
+    audio = RVCData(json.loads(data))
 
     file_path = os.environ.get("USER_VOICES") + "/" + audio.voice_filename
 
