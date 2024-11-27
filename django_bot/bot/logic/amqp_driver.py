@@ -42,13 +42,14 @@ class PikaConnector:
 
 
 async def send_payment_answer(data):
-    payment = Payment(data)
+    payment = Payment(json.loads(data))
     order = await Order.objects.select_related("user", "subscription").aget(id=payment.order_id)
 
+    # if payment.service == "aaio":
     order.status = payment.status
     order.currency = payment.currency
     order.amount = payment.amount
-    order.comment = f'Заказ оплачен через сервис aaio'
+    order.comment = f'Заказ оплачен через сервис {payment.service}'
     await order.asave()
     chat_id = order.user.telegram_id
 

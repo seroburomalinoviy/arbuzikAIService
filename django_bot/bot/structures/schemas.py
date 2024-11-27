@@ -1,6 +1,7 @@
 import json
 import os
 from telegram import Bot
+from pydantic import BaseModel
 
 
 class RVCData:
@@ -21,16 +22,27 @@ class RVCData:
         self.bot = Bot(token=os.environ.get("BOT_TOKEN"))
 
 
-class Payment:
-    def __init__(self, arg):
-        data = json.loads(arg)
-        self.order_id = data['order_id']
-        self.amount = data['amount']
-        self.currency = data['currency']
-        self.merchant_id = data['merchant_id']
-        self.order_id = data['order_id']
-        self.status = data['status']
-        self.bot = Bot(token=os.environ.get("BOT_TOKEN"))
+class Payment(BaseModel):
+    order_id: int
+    amount: int
+    currency: str
+    merchant_id: int
+    order_id: int
+    status: bool
+    service: str
+    bot: str = Bot(token=os.environ.get("BOT_TOKEN"))
+
+# class Payment:
+#     def __init__(self, arg):
+#         data = json.loads(arg)
+#         self.order_id = data['order_id']
+#         self.amount = data['amount']
+#         self.currency = data['currency']
+#         self.merchant_id = data['merchant_id']
+#         self.order_id = data['order_id']
+#         self.status = data['status']
+#         self.service = data['service']
+#         self.bot = Bot(token=os.environ.get("BOT_TOKEN"))
 
 
 class PayUrl:
