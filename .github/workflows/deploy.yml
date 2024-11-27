@@ -27,7 +27,6 @@ jobs:
           docker push localhost:5000/client:latest
           docker push localhost:5000/django:latest
           docker push localhost:5000/payment-api:latest
-          docker system prune --force
           docker service update --image localhost:5000/payment-api:latest arb_payment-api
           docker service update --image localhost:5000/payment-api:latest arb_payment-listener
           docker service update --image localhost:5000/django:latest arb_bot
@@ -37,6 +36,7 @@ jobs:
           docker service update --image localhost:5000/client:latest arb_client
           docker service update --image localhost:5000/preclient:latest arb_preclient
           docker service update --image localhost:5000/preclient:latest arb_prometheus-server
+          docker system prune --force
 
 #
 #    - name: Deploy dev branch
