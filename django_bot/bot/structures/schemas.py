@@ -30,7 +30,7 @@ class Payment(BaseModel):
     order_id: int
     status: bool
     service: str
-    bot: str = Field(default=Bot(token=os.environ.get("BOT_TOKEN")))
+    bot = Bot(token=os.environ.get("BOT_TOKEN"))
 
 # class Payment:
 #     def __init__(self, arg):
