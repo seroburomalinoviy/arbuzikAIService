@@ -70,7 +70,7 @@ async def get_payment_url(data: str) -> dict:
     order.type = ans.get("type")
     order.url = ans.get("url")
 
-    return response.json() | json.loads(data)
+    return order.model_dump()
 
 
 async def get_actual_ips() -> list:
