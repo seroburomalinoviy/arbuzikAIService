@@ -23,10 +23,10 @@ jobs:
           git switch main
           git pull origin main
           docker compose -f docker-compose.build.yml build
-          docker push localhost:5000/preclient
-          docker push localhost:5000/client
-          docker push localhost:5000/django
-          docker push localhost:5000/payment-api
+          docker push localhost:5000/preclient:latest
+          docker push localhost:5000/client:latest
+          docker push localhost:5000/django:latest
+          docker push localhost:5000/payment-api:latest
           docker system prune --force
 #
 #    - name: Deploy dev branch

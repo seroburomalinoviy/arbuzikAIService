@@ -31,10 +31,10 @@ class Payment(BaseModel):
 
 
 class PayUrl(BaseModel):
-    type: str = ''
-    url: str = ''
-    subscription_title: str = ''
-    order_id: str = ''
+    type: str
+    url: str
+    subscription_title: str
+    order_id: str
     amount: int
     chat_id: int
     bot: ClassVar = Bot(token=getenv("BOT_TOKEN"))
