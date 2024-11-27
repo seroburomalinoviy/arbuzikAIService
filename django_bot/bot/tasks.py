@@ -75,7 +75,7 @@ def check_payment_api(order_id: str):
                 logger.info(msg)
                 return True
             elif response_json['status'] == 'in_process':
-                msg = 'Заказ в процессе оплаты, потребуется ручное подтверждение оплаты в сервисе оплаты'
+                msg = 'Заказ в процессе оплаты, потребуется ручное подтверждение в сервисе оплаты aaio'
                 order.comment = msg
                 order.save()
                 logger.info(msg)
