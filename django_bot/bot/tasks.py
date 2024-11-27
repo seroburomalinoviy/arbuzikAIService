@@ -10,8 +10,6 @@ import os
 
 load_dotenv()
 
-AAIO_INFO = os.environ.get("AAIO_INFO")
-
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 django.setup()
 
@@ -30,6 +28,7 @@ def clean_user_voices():
 
 @app.task(ignore_result=False)
 def check_payment_api(order_id: str):
+    AAIO_INFO = os.environ.get("AAIO_INFO")
 
     SERVICE = 'aaio'
     order = Order.objects.get(id=order_id)
