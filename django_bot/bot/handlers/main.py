@@ -547,6 +547,14 @@ async def voice_audio_process(update: Update, context: ContextTypes.DEFAULT_TYPE
         update.message.voice if update.message.voice else update.message.audio
     )
 
+    logging.info(input_obj.file_size)
+    if input_obj.file_size >= 20_000_000:
+        await update.message.reply_text(
+            message_text.too_heavy_file,
+            reply_markup=InlineKeyboardMarkup(keyboards.is_subscribed),
+        )
+        return BASE_STATES
+
     extension = "." + input_obj.mime_type.split("/")[-1]  # .ogg .mp3 .wav etc
     voice_file = await input_obj.get_file()  # get voice file from user
     slug_voice = context.user_data.get("slug_voice")
