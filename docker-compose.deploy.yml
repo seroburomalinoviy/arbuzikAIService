@@ -294,7 +294,7 @@ services:
 
   payment-api:
     image: localhost:5000/payment-api
-    command: sh -c 'uvicorn api:app --host 0.0.0.0 --port 8001 --proxy-headers --log-level info'
+    command: sh -c 'uvicorn api:app --host 0.0.0.0 --port 8001 --proxy-headers'
     expose:
       - 8001
     env_file:
