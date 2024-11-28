@@ -40,6 +40,7 @@ class BaseConversationHandler(ABC):
 
 class PreparedFile:
     def __init__(self, update: Update, context, user: User, uuid):
+        self.uuid = uuid
         self.user = user
         self.context = context
         self.duration: float = 0.0
@@ -88,7 +89,7 @@ class PreparedFile:
 
     @property
     def name(self):
-        return self.context.user_data.get("slug_voice") + "_" + str(uuid)
+        return self.context.user_data.get("slug_voice") + "_" + str(self.uuid)
 
     @property
     def path(self):
