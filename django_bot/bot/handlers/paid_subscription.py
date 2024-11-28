@@ -123,10 +123,18 @@ async def preview_paid_subscription(update: Update, context: ContextTypes.DEFAUL
             [
                 [
                     InlineKeyboardButton(
-                        f" 💵 Разовый платёж - {subscription.price} руб",
-                        callback_data=f"payment_{subscription.price}_{title}",
+                        f" 💵 aaio Разовый платёж - {subscription.price} руб",
+                        callback_data=f"payment_aaio_{subscription.price}_{title}",
                     )
                 ],
+
+                [
+                    InlineKeyboardButton(
+                        f" 💵 ukassa Разовый платёж - {subscription.price} руб",
+                        callback_data=f"payment_ukassa_{subscription.price}_{title}",
+                    )
+                ],          
+
                 [
                     InlineKeyboardButton(
                         "▶️ Другие подписки", callback_data="paid_subscriptions"
@@ -146,8 +154,9 @@ async def buy_subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     chat_id = query.from_user.id
 
-    amount = query.data.split("_")[1]
-    sub_title = query.data.split("_")[2]
+    payment_service = query.data.split("_")[1]
+    amount = query.data.split("_")[2]
+    sub_title = query.data.split("_")[3]
 
     user = await User.objects.aget(telegram_id=chat_id)
     subscription = await Subscription.objects.aget(title=sub_title)
@@ -156,7 +165,7 @@ async def buy_subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
         status=False,
         user=user,
         subscription=subscription,
-        comment=f'aaio: Заказ создан, ожидается оплата'
+        comment=f'{payment_service}: Заказ создан, ожидается оплата'
     )
 
     data = PayUrl(
