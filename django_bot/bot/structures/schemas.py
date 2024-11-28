@@ -14,7 +14,7 @@ class RVCData(BaseModel):
     chat_id: str = ''
     user_id: str = ''
     voice_title: str = ''
-    duration: int
+    duration: float
     message_id: int
     bot: ClassVar = Bot(token=getenv("BOT_TOKEN"))
 
