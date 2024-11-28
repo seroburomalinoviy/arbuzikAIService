@@ -531,9 +531,9 @@ async def voice_audio_process(update: Update, context: ContextTypes.DEFAULT_TYPE
     file = PreparedFile(update, context, user)
 
     if file is None:
-        logging.error(f"неизвестный тип входного файла: {update.message.to_dict(recursive=True)}")
+        logging.error(f"file is none: {update.message.to_dict(recursive=True)}")
         await update.message.reply_text(
-            text="Неизвестный тип входного файла. Попробуйте еще раз"
+            message_text.undefined_type
         )
         return BASE_STATES
 
