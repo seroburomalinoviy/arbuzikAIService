@@ -567,6 +567,7 @@ async def voice_audio_process(update: Update, context: ContextTypes.DEFAULT_TYPE
 
     extension = "." + input_obj.mime_type.split("/")[-1]  # .ogg .mp3 .wav etc
     voice_file = await input_obj.get_file()  # get voice file from user
+    logging.info(f"voice_file: {voice_file.to_dict(recursive=True)}")
     slug_voice = context.user_data.get("slug_voice")
     voice_name = slug_voice + "_" + str(uuid4())  # raw voice file name
     voice_path = Path(os.environ.get("USER_VOICES") + "/" + voice_name + extension)
