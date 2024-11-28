@@ -545,9 +545,9 @@ async def voice_audio_process(update: Update, context: ContextTypes.DEFAULT_TYPE
         await show_paid_subscriptions(update, context, offer=True)
         return BASE_STATES
 
-    class PreparedFile:
-        def  __init__(self, telegram_obj: TelegramDocument | TelegramAudio | TelegramVoice, update: Update):
-            obj = telegram_obj
+    # class PreparedFile:
+    #     def  __init__(self, telegram_obj: TelegramDocument | TelegramAudio | TelegramVoice, update: Update):
+    #         obj = telegram_obj
 
     if update.message.document:
         input_obj: TelegramDocument = update.message.document

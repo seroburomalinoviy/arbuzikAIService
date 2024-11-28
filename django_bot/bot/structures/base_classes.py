@@ -26,3 +26,4 @@ class BaseConversationHandler(ABC):
 
 class PreparedFile:
     def  __init__(self, update):
+        ...
