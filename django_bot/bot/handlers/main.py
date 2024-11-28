@@ -1,6 +1,5 @@
 from dotenv import load_dotenv
 import os
-from uuid import uuid4
 from asgiref.sync import sync_to_async
 import django
 import logging
