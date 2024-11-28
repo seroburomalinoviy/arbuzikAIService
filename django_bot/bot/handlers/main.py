@@ -545,6 +545,10 @@ async def voice_audio_process(update: Update, context: ContextTypes.DEFAULT_TYPE
         await show_paid_subscriptions(update, context, offer=True)
         return BASE_STATES
 
+    class PreparedFile:
+        def  __init__(self, telegram_obj: TelegramDocument | TelegramAudio | TelegramVoice, update: Update):
+            obj = telegram_obj
+
     if update.message.document:
         input_obj: TelegramDocument = update.message.document
         logging.info(f"document object: {input_obj.to_dict(recursive=True)}")
@@ -555,6 +559,7 @@ async def voice_audio_process(update: Update, context: ContextTypes.DEFAULT_TYPE
         input_obj: TelegramVoice | TelegramAudio = (
             update.message.voice if update.message.voice else update.message.audio
         )
+        logging.info(f"document object: {input_obj.to_dict(recursive=True)}")
     else:
         logging.error(f"неизвестный тип входного файла: {update.message.to_dict(recursive=True)}")
 

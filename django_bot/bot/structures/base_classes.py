@@ -22,3 +22,7 @@ class BaseConversationHandler(ABC):
     @abstractmethod
     def fallbacks(self):
         pass
+
+
+class PreparedFile:
+    def  __init__(self, update):
