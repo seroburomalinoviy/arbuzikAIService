@@ -1,10 +1,8 @@
-from pathlib import Path
 from dotenv import load_dotenv
 import os
 from uuid import uuid4
 from asgiref.sync import sync_to_async
 import django
-from pydub import AudioSegment
 import logging
 
 from bot.logic import message_text, keyboards
@@ -13,11 +11,9 @@ from bot.logic.constants import *
 from bot.logic.utils import get_moscow_time, log_journal
 from bot.handlers.paid_subscription import preview_paid_subscription, show_paid_subscriptions
 from bot.structures.schemas import RVCData
-from bot.structures.base_classed import FileWithType
+from bot.structures.base_classes import PreparedFile
 
-from telegram import Voice as TelegramVoice
-from telegram import Audio as TelegramAudio
-from telegram import Document as TelegramDocument
+
 from telegram.constants import ParseMode
 from telegram.ext import ContextTypes, ConversationHandler, ApplicationHandlerStop
 from telegram import (
@@ -38,19 +34,6 @@ load_dotenv()
 
 allowed_user_statuses = ["member", "creator", "administrator"]
 unresolved_user_statuses = ["kicked", "restricted", "left"]
-
-
-@sync_to_async
-def cut_audio(path, time_limit):
-    logging.info(path)
-    obj = AudioSegment.from_file(path)
-    obj[: time_limit * 1001].export(path)
-
-
-# def is_valid_duration(duration, time_voice_limit) -> bool:
-#     if duration > time_voice_limit:
-#         return False
-#     return True
 
 
 async def set_demo_to_user(user: User, update: Update) -> None:
@@ -545,102 +528,23 @@ async def voice_audio_process(update: Update, context: ContextTypes.DEFAULT_TYPE
         await show_paid_subscriptions(update, context, offer=True)
         return BASE_STATES
 
+    file = PreparedFile(update, context, user)
 
-    class PreparedFile:
-        def __init__(self, update: Update, context, user: User):
-            self.user = user
-            self.context = context
-            if update.message.document:
-                self.obj: TelegramDocument = update.message.document
-            elif update.message.voice:
-                self.obj: TelegramVoice = update.message.voice
-            elif update.message.audio:
-                self.obj: TelegramAudio = update.message.audio
-            else:
-                logging.error(f"неизвестный тип входного файла: {update.message.to_dict(recursive=True)}")
-                self.obj = None
-
-        async def validate(self):
-            if self.obj is None:
-                return False
-            return True
-
-        async def check_size(self):
-            if self.obj.file_size >= 20_000_000:
-                return False
-            return True
-
-        @sync_to_async
-        def normalize_duration(self):
-            if self.obj.duration > self.user.subscription.time_voice_limit:
-                obj = AudioSegment.from_file(self.path)
-                obj[: self.user.subscription.time_voice_limit * 1001].export(self.path)
-                self.obj.duration = self.user.subscription.time_voice_limit
-
-        async def download(self):
-            """
-            download voice file to host
-            :return:
-            """
-            await self.obj.get_file().download_to_drive(
-                custom_path=self.path
-            )
-
-        @property
-        def extension(self):
-            return "." + self.obj.mime_type.split("/")[-1]
-
-        @property
-        def duration(self):
-            if isinstance(self.obj, TelegramDocument):
-                ...
-            elif isinstance(self.obj, TelegramAudio):
-                return self.obj.duration
-            elif isinstance(self.obj, TelegramVoice):
-                return self.obj.duration
-
-        @property
-        def name(self):
-            return self.context.user_data.get("slug_voice") + "_" + str(uuid4())
-
-        @property
-        def path(self):
-            return Path(os.getenv("USER_VOICES") + "/" + self.name + self.extension)
-
-
-    # logging.info(input_obj.file_size)
-    # if input_obj.file_size >= 20_000_000:
-    #     await update.message.reply_text(
-    #         message_text.too_heavy_file
-    #     )
-    #     return BASE_STATES
-
-    # extension = "." + input_obj.mime_type.split("/")[-1]  # .ogg .mp3 .wav etc
-    # voice_file = await input_obj.get_file()  # get voice file from user
-    # logging.info(f"voice_file: {voice_file.to_dict(recursive=True)}")
-    if self.obj is None:
+    if file is None:
+        logging.error(f"неизвестный тип входного файла: {update.message.to_dict(recursive=True)}")
         await update.message.reply_text(
             text="Неизвестный тип входного файла. Попробуйте еще раз"
         )
         return BASE_STATES
 
-    logging.info(self.obj.file_size)
-    if self.obj.file_size >= 20_000_000:
+    if await file.check_size():
         await update.message.reply_text(
             message_text.too_heavy_file
         )
         return BASE_STATES
 
-    voice_file = await input_obj.get_file()
-    await voice_file.download_to_drive(
-        custom_path=voice_path
-    )  # download voice file to host
-
-    # time_voice_limit = user.subscription.time_voice_limit
-    # duration = input_obj.duration
-    # if not is_valid_duration(duration, time_voice_limit):
-    #     await cut_audio(voice_path, time_voice_limit)
-    #     duration = time_voice_limit
+    await file.calculate_duration()
+    await file.download()
 
     slug_voice = context.user_data.get("slug_voice")
     voice = await Voice.objects.aget(slug=slug_voice)
@@ -656,12 +560,12 @@ async def voice_audio_process(update: Update, context: ContextTypes.DEFAULT_TYPE
         reply_markup=InlineKeyboardMarkup(keyboards.check_status),
     )
     payload = RVCData(
-        duration=duration,
+        duration=file.duration,
         voice_title=voice.title,
         user_id=user_id,
         chat_id=chat_id,
-        voice_name=voice_name,
-        extension=extension,
+        voice_name=file.name,
+        extension=file.extension,
         pitch=pitch,
         voice_model_index=voice_model_index,
         voice_model_pth=voice_model_pth,
