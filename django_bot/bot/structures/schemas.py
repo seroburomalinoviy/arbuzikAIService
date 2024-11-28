@@ -38,4 +38,5 @@ class PayUrl(BaseModel):
     order_id: str
     amount: int
     chat_id: int
+    service: str
     bot: ClassVar = Bot(token=getenv("BOT_TOKEN"))

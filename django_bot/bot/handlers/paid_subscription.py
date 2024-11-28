@@ -172,7 +172,8 @@ async def buy_subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
         subscription_title=subscription.telegram_title,
         order_id=str(order.id),
         amount=amount,
-        chat_id=chat_id
+        chat_id=chat_id,
+        service=payment_service
     )
 
     await push_amqp_message(data.model_dump(), routing_key='bot-to-payment')
