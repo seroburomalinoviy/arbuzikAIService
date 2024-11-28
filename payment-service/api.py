@@ -6,7 +6,7 @@ from aaio_request import get_actual_ips, create_hash
 import os
 import logging
 from logging.handlers import RotatingFileHandler
-from schemas import ApiPayment
+from schemas import Payment
 from fastapi import FastAPI, Request, Header
 from fastapi.responses import Response, HTMLResponse
 from fastapi.encoders import jsonable_encoder
@@ -31,7 +31,7 @@ async def check():
 async def get_payment(request: Request, remote_ip: str = Header(None, alias='X-Real-IP')) -> Response:
     f = await request.form()
     json_f = await jsonable_encoder(f)
-    payment = ApiPayment(**json.loads(json_f))
+    payment = Payment(**json.loads(json_f))
 
     logging.info(f'{json_f=}')
 
