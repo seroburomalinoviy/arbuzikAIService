@@ -10,6 +10,7 @@ class PayUrl(BaseModel):
     order_id: str
     amount: int
     chat_id: int
+    service: str
 
 
 class Payment(BaseModel):

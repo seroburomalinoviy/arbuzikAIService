@@ -20,15 +20,25 @@ async def create_hash(key: str):
     sign.update(key.encode())
     return sign.hexdigest()
 
+async def get_ukassa_url(oeder: PayUrl):...
 
-async def get_payment_url(data: str) -> json:
+
+async def get_payment_url(data: str):
+    order = PayUrl(**json.loads(data))
+    if order.service == 'aaio':
+        return await get_aaio_url(order)
+    elif order.service == 'ukassa':
+        return await get_ukassa_url(order)
+    else:
+        return None
+
+async def get_aaio_url(order: PayUrl) -> json:
     """
     Создание заказа
 
     :param data:
     :return:
     """
-    order = PayUrl(**json.loads(data))
     headers = {
         "Accept": "application/json",
         "Content-Type": "application/x-www-form-urlencoded",
