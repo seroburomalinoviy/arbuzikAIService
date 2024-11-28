@@ -53,7 +53,7 @@ class PreparedFile:
         else:
             self.obj = None
 
-    async def check_size(self):
+    async def is_valid_size(self):
         if self.obj.file_size >= 20_000_000:
             return False
         return True
