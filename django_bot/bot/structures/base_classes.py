@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from collections import namedtuple
 
 from telegram.ext import ContextTypes
 from telegram import Update
@@ -27,3 +28,8 @@ class BaseConversationHandler(ABC):
 class PreparedFile:
     def  __init__(self, update):
         ...
+
+
+FileWithType = namedtuple('FileWithType', 'type file')
+
+
