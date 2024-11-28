@@ -548,7 +548,8 @@ async def voice_audio_process(update: Update, context: ContextTypes.DEFAULT_TYPE
     if update.message.document:
         input_obj: TelegramDocument = update.message.document
         logging.info(f"document object: {input_obj.to_dict(recursive=True)}")
-        # input_obj = TelegramAudio(input_obj)
+        input_obj_1 = await input_obj.get_file()
+        logging.info(f"file object: {input_obj_1.to_dict(recursive=True)}")
 
     elif update.message.voice or update.message.audio:
         input_obj: TelegramVoice | TelegramAudio = (
