@@ -528,7 +528,7 @@ async def voice_audio_process(update: Update, context: ContextTypes.DEFAULT_TYPE
         await show_paid_subscriptions(update, context, offer=True)
         return BASE_STATES
 
-    file = PreparedFile(update, context, user)
+    file = PreparedFile(update, context, user, uuid4())
 
     if file is None:
         logging.error(f"file is none: {update.message.to_dict(recursive=True)}")
