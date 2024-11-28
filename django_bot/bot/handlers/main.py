@@ -545,12 +545,15 @@ async def voice_audio_process(update: Update, context: ContextTypes.DEFAULT_TYPE
         await show_paid_subscriptions(update, context, offer=True)
         return BASE_STATES
 
-    if update.message.voice or update.message.audio:
+    if update.message.document:
+        input_obj: TelegramDocument = update.message.document
+        logging.info(f"document object: {input_obj.to_dict(recursive=True)}")
+        # input_obj = TelegramAudio(input_obj)
+
+    elif update.message.voice or update.message.audio:
         input_obj: TelegramVoice | TelegramAudio = (
             update.message.voice if update.message.voice else update.message.audio
         )
-    elif update.message.document:
-        input_obj: TelegramDocument = update.message.document
     else:
         logging.error(f"неизвестный тип входного файла: {update.message.to_dict(recursive=True)}")
 
