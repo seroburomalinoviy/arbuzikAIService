@@ -2,7 +2,6 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 import os
 from pydub import AudioSegment
-from uuid import uuid4
 from asgiref.sync import sync_to_async
 
 import django
@@ -40,7 +39,7 @@ class BaseConversationHandler(ABC):
 
 
 class PreparedFile:
-    def __init__(self, update: Update, context, user: User):
+    def __init__(self, update: Update, context, user: User, uuid):
         self.user = user
         self.context = context
         self.duration: float = 0.0
@@ -89,7 +88,7 @@ class PreparedFile:
 
     @property
     def name(self):
-        return self.context.user_data.get("slug_voice") + "_" + str(uuid4())
+        return self.context.user_data.get("slug_voice") + "_" + str(uuid)
 
     @property
     def path(self):
