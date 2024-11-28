@@ -63,7 +63,8 @@ class PreparedFile:
         download voice file to host
         :return:
         """
-        await self.obj.get_file().download_to_drive(
+        q = await self.obj.get_file()
+        await q.download_to_drive(
             custom_path=self.path
         )
 
