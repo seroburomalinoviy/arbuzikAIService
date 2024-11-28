@@ -537,7 +537,7 @@ async def voice_audio_process(update: Update, context: ContextTypes.DEFAULT_TYPE
         )
         return BASE_STATES
 
-    if await file.check_size():
+    if not await file.is_valid_size():
         await update.message.reply_text(
             message_text.too_heavy_file
         )
