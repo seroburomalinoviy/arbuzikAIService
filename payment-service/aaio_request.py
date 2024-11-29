@@ -52,7 +52,8 @@ async def get_ukassa_url(order: PayUrl) -> json:
         "description": order.subscription_title
       }
 
-    client = httpx.AsyncClient(auth=httpx.BasicAuth(username=UKASSA_SHOP_ID, password=UKASSA_SECRET_KEY))
+    auth = httpx.BasicAuth(username=UKASSA_SHOP_ID, password=UKASSA_SECRET_KEY)
+    client = httpx.AsyncClient(auth=auth)
     try:
         response = await client.post(
             url=UKASSA_API_URL,
