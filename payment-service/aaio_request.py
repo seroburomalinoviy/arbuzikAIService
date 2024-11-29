@@ -44,6 +44,22 @@ async def get_ukassa_url(order: PayUrl) -> json:
           "value": str(order.amount),
           "currency": currency
         },
+        "receipt": {
+            "customer": {
+                "email": "glifgun@gmail.com"
+            },
+            "items": [
+                {
+                    "description": "test",
+                    "quantity": 1,
+                    "vat_code": 1,
+                    "amount": {
+                        "value": str(order.amount),
+                        "currency": currency
+                    }
+                }
+            ]
+        }
         "capture": True,
         "confirmation": {
           "type": "redirect",
@@ -58,7 +74,7 @@ async def get_ukassa_url(order: PayUrl) -> json:
         response = await client.post(
             url=UKASSA_API_URL,
             headers=header,
-            json=data
+            data=data
         )
     except Exception as e:
         logging.error(f"Ukassa request error: {e}")
