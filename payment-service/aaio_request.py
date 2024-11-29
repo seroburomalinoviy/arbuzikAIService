@@ -50,7 +50,7 @@ async def get_ukassa_url(order: PayUrl) -> json:
             },
             "items": [
                 {
-                    "description": "test",
+                    "description": order.subscription_title,
                     "quantity": 1,
                     "vat_code": 1,
                     "amount": {
