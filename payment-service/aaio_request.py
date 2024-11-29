@@ -59,7 +59,7 @@ async def get_ukassa_url(order: PayUrl) -> json:
                     }
                 }
             ]
-        }
+        },
         "capture": True,
         "confirmation": {
           "type": "redirect",
