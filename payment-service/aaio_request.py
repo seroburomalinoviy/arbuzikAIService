@@ -51,8 +51,8 @@ async def get_ukassa_url(order: PayUrl) -> json:
         },
         "description": order.subscription_title
       }
+    logging.info(f"{order.model_dump()=}")
     client = httpx.AsyncClient()
-
     try:
         response = await client.post(
             url=UKASSA_API_URL,
