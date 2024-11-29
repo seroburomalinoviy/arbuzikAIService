@@ -36,7 +36,7 @@ async def get_ukassa_url(order: PayUrl) -> json:
 
     currency = "RUB"
     header = {
-        "Idempotence-Key": uuid.UUID(str(uuid.uuid4())),
+        "Idempotence-Key": str(uuid.uuid4()),
         "Content-Type": "application/json"
     }
     data = {
