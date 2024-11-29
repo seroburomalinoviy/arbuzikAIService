@@ -51,14 +51,13 @@ async def get_ukassa_url(order: PayUrl) -> json:
         },
         "description": order.subscription_title
       }
-    logging.info(f"{order.model_dump()=}")
-    client = httpx.AsyncClient()
+
+    client = httpx.AsyncClient(auth=httpx.BasicAuth(username=UKASSA_SHOP_ID, password=UKASSA_SECRET_KEY))
     try:
         response = await client.post(
             url=UKASSA_API_URL,
             headers=header,
             data=data,
-            auth=httpx.BasicAuth(username=UKASSA_SHOP_ID, password=UKASSA_SECRET_KEY)
         )
     except Exception as e:
         logging.error(f"Ukassa request error: {e}")
