@@ -36,7 +36,7 @@ async def get_ukassa_url(order: PayUrl) -> json:
 
     currency = "RUB"
     header = {
-        "Idempotence-Key": uuid.UUID(str(uuid.uuid4())),
+        "Idempotence-Key": str(uuid.uuid4()).encode(),
         "Content-Type": "application/json"
     }
     data = {
@@ -57,7 +57,7 @@ async def get_ukassa_url(order: PayUrl) -> json:
     try:
         response = await client.post(
             url=UKASSA_API_URL,
-            headers=urlencode(header),
+            headers=header,
             data=urlencode(data),
         )
     except Exception as e:
