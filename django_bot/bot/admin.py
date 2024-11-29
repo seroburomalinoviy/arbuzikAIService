@@ -1,6 +1,10 @@
 from django.contrib import admin
 from .models import Category, Voice, Subcategory, Subscription
 
+admin.site.site_header = "ArbuzikAIBot Admin Site"
+admin.site.site_title = "ArbuzikAIBot Admin Portal"
+admin.site.index_title = "Welcome to ArbuzikAIBot"
+
 
 class SubcategoryInline(admin.TabularInline):
     model = Subcategory
