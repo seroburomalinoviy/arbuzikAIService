@@ -123,14 +123,14 @@ async def preview_paid_subscription(update: Update, context: ContextTypes.DEFAUL
             [
                 [
                     InlineKeyboardButton(
-                        f" 💵 aaio Разовый платёж - {subscription.price} руб",
+                        f" 💵 crypto: Разовый платёж - {subscription.price} руб",
                         callback_data=f"payment_aaio_{subscription.price}_{title}",
                     )
                 ],
 
                 [
                     InlineKeyboardButton(
-                        f" 💵 ukassa Разовый платёж - {subscription.price} руб",
+                        f" 💵 картой: Разовый платёж - {subscription.price} руб",
                         callback_data=f"payment_ukassa_{subscription.price}_{title}",
                     )
                 ],          
