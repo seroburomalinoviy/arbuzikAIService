@@ -58,7 +58,7 @@ async def get_ukassa_url(order: PayUrl) -> json:
         response = await client.post(
             url=UKASSA_API_URL,
             headers=header,
-            data=data,
+            data=urlencode(data),
         )
     except Exception as e:
         logging.error(f"Ukassa request error: {e}")
