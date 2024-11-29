@@ -66,7 +66,7 @@ async def get_ukassa_url(order: PayUrl) -> json:
     await client.aclose()
 
     if response.status_code != 200:
-        logging.warning(f'Error during request to  ukassa status_code: {response.status_code}')
+        logging.warning(f'Error during request to  ukassa status_code: {response.status_code}\n{response.json()=}')
 
     ans = response.json()
     order.url = ans['confirmation']['confirmation_url']
