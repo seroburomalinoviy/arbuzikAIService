@@ -4,8 +4,6 @@ import uuid
 from urllib.parse import urlencode
 import logging
 
-import requests
-from requests.auth import HTTPBasicAuth
 from dotenv import load_dotenv
 import os
 import json
