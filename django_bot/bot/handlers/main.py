@@ -543,8 +543,8 @@ async def voice_audio_process(update: Update, context: ContextTypes.DEFAULT_TYPE
         )
         return BASE_STATES
 
-    await file.calculate_duration()
     await file.download()
+    await file.calculate_duration()
 
     slug_voice = context.user_data.get("slug_voice")
     voice = await Voice.objects.aget(slug=slug_voice)
