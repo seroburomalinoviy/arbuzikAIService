@@ -33,6 +33,8 @@ async def get_ukassa_url(order: PayUrl) -> json:
     UKASSA_API_URL = os.getenv("UKASSA_API_URL")
     UKASSA_SHOP_ID = os.getenv("UKASSA_SHOP_ID")
     UKASSA_SECRET_KEY = os.getenv("UKASSA_SECRET_KEY")
+    UKASSA_CUSTOMER_EMAIL = os.getenv("UKASSA_CUSTOMER_EMAIL")
+    UKASSA_REDIRECT_URL = os.getenv("UKASSA_REDIRECT_URL")
 
     currency = "RUB"
     header = {
@@ -46,7 +48,7 @@ async def get_ukassa_url(order: PayUrl) -> json:
         },
         "receipt": {
             "customer": {
-                "email": "glifgun@gmail.com"
+                "email": UKASSA_CUSTOMER_EMAIL
             },
             "items": [
                 {
@@ -63,7 +65,7 @@ async def get_ukassa_url(order: PayUrl) -> json:
         "capture": True,
         "confirmation": {
           "type": "redirect",
-          "return_url": "https://t.me/Arbuzik_AIBot"
+          "return_url": UKASSA_REDIRECT_URL
         },
         "description": order.subscription_title
       }
