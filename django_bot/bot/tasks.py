@@ -29,8 +29,10 @@ def clean_user_voices():
 @app.task(ignore_result=False)
 def check_payment_api(order_id: str):
     AAIO_INFO = os.environ.get("AAIO_INFO")
-
+    AAIO_API_KEY = os.environ.get('AAIO_API_KEY')
+    AAIO_MERCHANT_ID = os.environ.get('AAIO_MERCHANT_ID')
     SERVICE = 'aaio'
+
     order = Order.objects.get(id=order_id)
     if order.status:
         msg = f'{SERVICE}: Заказ оплачен'
@@ -39,20 +41,17 @@ def check_payment_api(order_id: str):
         logger.info(msg)
         return True
 
-    url = AAIO_INFO
-    api_key = os.environ.get('AAIO_API_KEY')
-    merchant_id = os.environ.get('MERCHANT_ID')
     params = {
-        'merchant_id': merchant_id,
+        'merchant_id': AAIO_MERCHANT_ID,
         'order_id': order_id
     }
     headers = {
         'Accept': 'application/json',
-        'X-Api-Key': api_key
+        'X-Api-Key': AAIO_API_KEY
     }
 
     try:
-        response = requests.post(url, data=params, headers=headers, timeout=(15, 60))
+        response = requests.post(url=AAIO_INFO, data=params, headers=headers, timeout=(15, 60))
     except ConnectTimeout:
         logger.error('ConnectTimeout')  # Не хватило времени на подключение к сайту
     except ReadTimeout:

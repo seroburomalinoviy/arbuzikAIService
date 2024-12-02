@@ -109,11 +109,11 @@ async def get_aaio_url(order: PayUrl) -> json:
         "Content-Type": "application/x-www-form-urlencoded",
     }
 
-    merchant_id = uuid.UUID(os.environ.get("MERCHANT_ID"))
+    AAIO_MERCHANT_ID = uuid.UUID(os.environ.get("AAIO_MERCHANT_ID"))
     currency = "RUB"
 
     body = {
-        "merchant_id": merchant_id,
+        "merchant_id": AAIO_MERCHANT_ID,
         "amount": order.amount,
         "order_id": order.order_id,
         "currency": currency,
@@ -121,8 +121,8 @@ async def get_aaio_url(order: PayUrl) -> json:
         "lang": "ru"
     }
 
-    secret_key_1 = os.environ.get("SECRET_KEY_1")
-    key = f'{str(merchant_id)}:{order.amount}:{currency}:{secret_key_1}:{order.order_id}'
+    secret_key_1 = os.environ.get("AAIO_SECRET_KEY_1")
+    key = f'{str(AAIO_MERCHANT_ID)}:{order.amount}:{currency}:{secret_key_1}:{order.order_id}'
     body["sign"] = await create_hash(key)
 
     logging.info(f"Create order in aaio: url={AAIO_CREATE_ORDER}, {body=}")

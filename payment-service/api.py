@@ -42,7 +42,7 @@ async def get_payment(request: Request, remote_ip: str = Header(None, alias='X-R
         logging.warning('Not allowed ip!')
         return Response(status_code=400)
 
-    secret_key_2 = os.environ.get('SECRET_KEY_2')
+    secret_key_2 = os.environ.get('AAIO_SECRET_KEY_2')
     key = f'{payment.merchant_id}:{payment.amount}:{payment.currency}:{secret_key_2}:{payment.order_id}'
     internal_sign = await create_hash(key)
 
