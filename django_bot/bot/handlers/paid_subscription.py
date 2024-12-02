@@ -10,7 +10,7 @@ from bot.logic.utils import log_journal
 from bot.logic import message_text
 from bot.logic.constants import *
 from bot.logic.amqp_driver import push_amqp_message
-from bot.tasks import check_payment_api
+from bot.tasks import check_pay_aaio
 from bot.structures.schemas import PayUrl
 
 from django.conf import settings
@@ -178,9 +178,9 @@ async def buy_subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await push_amqp_message(data.model_dump(), routing_key='bot-to-payment')
 
-    # проверка оплаты через 30 минут
-    time_waiting = 60 * int(os.environ.get('AAIO_TIME_WAITING_PAYMENT_MIN', 30))
-    check_payment_api.apply_async(args=[str(order.id)], countdown=time_waiting)
+    time_waiting = 60 * int(os.environ.get('AAIO_TIME_WAITING_PAYMENT_MIN', 11))
+    check_pay_aaio.apply_async(args=[str(order.id)], countdown=time_waiting)
+
 
     return BASE_STATES
 

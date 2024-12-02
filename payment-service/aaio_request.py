@@ -88,7 +88,8 @@ async def get_ukassa_url(order: PayUrl) -> json:
 
     ans = response.json()
     order.url = ans['confirmation']['confirmation_url']
-    order.type = 'success'
+    order.type = ans.get('status')
+    order.payment_id = ans.get('id')
 
     logging.info(f"created order data: {order.model_dump()}")
 
