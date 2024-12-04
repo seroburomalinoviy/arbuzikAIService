@@ -72,14 +72,14 @@ def push_amqp_message(payload):
 
     with _create_connection() as connection:
         channel = connection.channel()
-        logging.debug("message is publishing")
+        logging.info("message is publishing")
         channel.basic_publish(
             exchange="",
             routing_key=routing_key,
             body=json.dumps(payload).encode(),
         )
 
-    logging.debug(f"message {payload} sent to bot")
+    logging.info(f"message {payload} sent to bot")
 
 
 async def reader(r: redis.Redis):
