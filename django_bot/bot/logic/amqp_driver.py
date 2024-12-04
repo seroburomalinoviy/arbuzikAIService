@@ -50,7 +50,6 @@ async def send_payment_answer(data):
     order.status = payment.status
     order.currency = payment.currency
     order.amount = payment.amount
-    order.comment = f'Заказ оплачен через сервис {payment.service}'
     await order.asave()
     chat_id = order.user.telegram_id
 
@@ -60,6 +59,7 @@ async def send_payment_answer(data):
             text='Оплата не прошла'
         )
     else:
+        # await order.asave()  # TODO проверить
         order.user.subscription = order.subscription
         order.user.subscription_status = True
         order.user.subscription_final_date = get_moscow_time() + timedelta(days=order.subscription.days_limit)
