@@ -2,6 +2,7 @@ import os
 import logging
 import django
 import requests
+from requests.auth import HTTPBasicAuth
 from requests.exceptions import ConnectTimeout, ReadTimeout
 import json
 import amqp
@@ -27,7 +28,7 @@ def clean_user_voices():
 
 
 @app.task(ignore_result=False)
-def check_payment_api(order_id: str):
+def check_pay_aaio(order_id: str):
     AAIO_INFO = os.environ.get("AAIO_INFO")
     AAIO_API_KEY = os.environ.get('AAIO_API_KEY')
     AAIO_MERCHANT_ID = os.environ.get('AAIO_MERCHANT_ID')
@@ -111,3 +112,33 @@ def check_payment_api(order_id: str):
                     )
                     logger.info('Celery task was successfully sent to rabbitmq')
                 return True
+
+
+@app.task(ignore_result=False)
+def check_pay_ukassa(order_id: str, payment_id: str):
+    SERVICE = 'ukassa'
+    UKASSA_API_URL = os.getenv("UKASSA_API_URL")
+    UKASSA_SECRET_KEY = os.getenv("UKASSA_SECRET_KEY")
+    UKASSA_SHOP_ID = os.getenv("UKASSA_SHOP_ID")
+
+    order = Order.objects.get(id=order_id)
+    if order.status:
+        msg = f'{SERVICE}: Заказ оплачен'
+        order.comment = msg
+        order.save()
+        logger.info(msg)
+        return True
+
+    try:
+        auth = HTTPBasicAuth(username=UKASSA_SHOP_ID, password=UKASSA_SECRET_KEY)
+        responce = requests.get(url=f"{UKASSA_API_URL}/{payment_id}", auth=auth)
+    except Exception as e:
+        return False
+
+    if responce.status_code != 200:
+        ...
+
+
+
+
+

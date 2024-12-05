@@ -13,6 +13,7 @@ from bot.logic import message_text, keyboards
 from bot.logic.constants import *
 from bot.logic.utils import get_moscow_time
 from bot.structures.schemas import PayUrl, RVCData, Payment
+from bot.tasks import check_pay_ukassa
 
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
@@ -49,7 +50,6 @@ async def send_payment_answer(data):
     order.status = payment.status
     order.currency = payment.currency
     order.amount = payment.amount
-    order.comment = f'Заказ оплачен через сервис {payment.service}'
     await order.asave()
     chat_id = order.user.telegram_id
 
@@ -59,6 +59,7 @@ async def send_payment_answer(data):
             text='Оплата не прошла'
         )
     else:
+        # await order.asave()  # TODO проверить
         order.user.subscription = order.subscription
         order.user.subscription_status = True
         order.user.subscription_final_date = get_moscow_time() + timedelta(days=order.subscription.days_limit)
@@ -80,6 +81,9 @@ async def send_payment_answer(data):
 async def send_payment_url(data):
     logging.info(f'send_payment_url: {data=}')
     payment_page = PayUrl(**json.loads(data))
+
+    time_waiting = 60 * int(os.environ.get('UKASSA_TIME_WAITING_PAYMENT_MIN', 11))
+    check_pay_ukassa.apply_async(args=[payment_page.order_id, payment_page.payment_id], countdown=time_waiting)
 
     logging.info(f'Sending payment url to {payment_page.chat_id}')
 
