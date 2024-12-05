@@ -62,7 +62,7 @@ async def get_ukassa_url(order: PayUrl) -> json:
                 }
             ]
         },
-        "capture": True,
+        "capture": False,
         "confirmation": {
           "type": "redirect",
           "return_url": UKASSA_REDIRECT_URL
@@ -80,8 +80,9 @@ async def get_ukassa_url(order: PayUrl) -> json:
         )
     except Exception as e:
         logging.error(f"Ukassa request error: {e}")
-
-    await client.aclose()
+        return
+    else:
+        await client.aclose()
 
     if response.status_code != 200:
         logging.warning(f'Error during request to  ukassa status_code: {response.status_code}\n{response.json()=}')

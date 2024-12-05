@@ -9,6 +9,8 @@ import amqp
 from dotenv import load_dotenv
 import os
 
+from bot.tasks import Payment
+
 load_dotenv()
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
@@ -131,12 +133,65 @@ def check_pay_ukassa(order_id: str, payment_id: str):
 
     try:
         auth = HTTPBasicAuth(username=UKASSA_SHOP_ID, password=UKASSA_SECRET_KEY)
-        responce = requests.get(url=f"{UKASSA_API_URL}/{payment_id}", auth=auth)
+        response = requests.get(url=f"{UKASSA_API_URL}/{payment_id}", auth=auth)
     except Exception as e:
+        logging.error(f"Ukassa request error: {e}")
         return False
 
-    if responce.status_code != 200:
-        ...
+    msg = ''
+    if response.status_code == 400:
+        msg = "invalid_request"
+    elif response.status_code == 401:
+        msg = "invalid_credentials"
+    elif response.status_code == 403:
+        msg = "forbidden"
+    elif response.status_code == 404:
+        msg = "not_found"
+    elif response.status_code == 429:
+        msg = "too_many_requests"
+    elif response.status_code == 500:
+        msg = "internal_server_error"
+    elif response.status_code == 200:
+        msg = "success"
+    logging.info(f'{msg}: {response.status_code=}\n{response.json()=}')
+
+    ans = response.json()
+    if ans['status'] == 'canceled':
+        msg = f'{SERVICE}: Платеж отменен'
+        order.comment = msg
+        order.save()
+        logger.info(msg)
+        return False
+    elif ans['status'] == 'succeeded':
+        msg = f'{SERVICE}: Заказ оплачен'
+        order.comment = msg
+        order.save()
+        logger.info(msg)
+
+        payment = Payment(
+            order_id=order_id,
+            amount=ans['amount']['value'],
+            currency=ans['amount']['currency'],
+            status=True,
+            service=SERVICE
+        )
+
+        payload = payment.model_dump()
+
+        with amqp.Connection(
+                host=f'{os.environ.get("RABBIT_HOST")}:{os.environ.get("RABBIT_PORT")}',
+                userid=os.environ.get("RABBIT_USER"),
+                password=os.environ.get("RABBIT_PASSWORD")
+        ) as c:
+            ch = c.channel()
+            logger.info('Celery connected to rabbitmq')
+            ch.basic_publish(
+                amqp.Message(body=payload.encode()),
+                routing_key='payment-to-bot'
+            )
+            logger.info('Celery task was successfully sent to rabbitmq')
+        return True
+
 
 
 
