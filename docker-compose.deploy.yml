@@ -234,7 +234,7 @@ services:
     volumes:
       - type: volume
         source: socket_file
-        target: /var/run/socket.sock
+        target: /var/run
       - type: volume
         source: media-data-volume
         target: /app/media/data/
@@ -277,7 +277,7 @@ services:
     volumes:
       - type: volume
         source: socket_file
-        target: /var/run/socket.sock
+        target: /var/run
       - type: volume
         source: static_volume
         target: /app/static
