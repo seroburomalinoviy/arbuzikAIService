@@ -226,7 +226,7 @@ services:
     image: localhost:5000/django:latest
     command: sh -c 'python manage.py migrate --noinput && 
                     python manage.py collectstatic --noinput --clear &&
-                    uwsgi --socket socket.sock --module config.wsgi --chmod-socket=664'
+                    uwsgi --socket socket.sock --module config.wsgi --chmod-socket=666'
     environment:
       POSTGRES_HOST: db
     env_file:
@@ -234,7 +234,7 @@ services:
     volumes:
       - type: volume
         source: socket
-        target: /app
+        target: /app/socket.sock
       - type: volume
         source: media-data-volume
         target: /app/media/data/
