@@ -226,7 +226,7 @@ services:
     image: localhost:5000/django:latest
     command: sh -c 'python manage.py migrate --noinput && 
                     python manage.py collectstatic --noinput --clear &&
-                    uwsgi --http :3000 --module config.wsgi'
+                    python manage.py runserver 3000'
     environment:
       POSTGRES_HOST: db
     env_file:
