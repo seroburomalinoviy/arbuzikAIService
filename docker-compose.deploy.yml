@@ -238,6 +238,8 @@ services:
       - type: volume
         source: static_volume
         target: /app/static
+    expose:
+      - 80
     networks:
       - everywhere_overlay
     depends_on:
