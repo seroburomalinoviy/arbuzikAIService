@@ -226,7 +226,7 @@ services:
     image: localhost:5000/django:latest
     command: sh -c 'python manage.py migrate --noinput && 
                     python manage.py collectstatic --noinput --clear &&
-                    gunicorn config.asgi:application -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:80'
+                    gunicorn config.asgi:application -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000'
     environment:
       POSTGRES_HOST: db
     env_file:
@@ -239,7 +239,7 @@ services:
         source: static_volume
         target: /app/static
     expose:
-      - 80
+      - 8000
     networks:
       - everywhere_overlay
     depends_on:
