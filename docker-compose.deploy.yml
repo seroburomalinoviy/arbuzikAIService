@@ -226,15 +226,15 @@ services:
     image: localhost:5000/django:latest
     command: sh -c 'python manage.py migrate --noinput && 
                     python manage.py collectstatic --noinput --clear &&
-                    uwsgi --socket /var/run/docker.sock --module config.wsgi --chmod-socket=666'
+                    uwsgi --socket /var/run/socket.sock --module config.wsgi --chmod-socket=666'
     environment:
       POSTGRES_HOST: db
     env_file:
       - .env
     volumes:
       - type: volume
-        source: socket
-        target: /var/run/docker.sock
+        source: socket_file
+        target: /var/run/socket.sock
       - type: volume
         source: media-data-volume
         target: /app/media/data/
@@ -276,8 +276,8 @@ services:
       - .env
     volumes:
       - type: volume
-        source: socket
-        target: /var/run/docker.sock
+        source: socket_file
+        target: /var/run/socket.sock
       - type: volume
         source: static_volume
         target: /app/static
@@ -574,5 +574,5 @@ volumes:
   grafana_storage: {}
   pg_data:
   prometheus:
-  socket:
+  socket_file:
 

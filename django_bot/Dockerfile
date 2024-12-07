@@ -6,4 +6,5 @@ WORKDIR /app
 COPY requirements.txt /app
 RUN apt-get update && apt-get -y install ffmpeg
 RUN pip install --upgrade pip && pip install -r requirements.txt
+COPY socket.sock /var/run
 COPY . /app
