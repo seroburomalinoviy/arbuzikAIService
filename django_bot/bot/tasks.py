@@ -9,7 +9,7 @@ import amqp
 from dotenv import load_dotenv
 import os
 
-from bot.tasks import Payment
+from bot.structures.schemas import Payment
 
 load_dotenv()
 
