@@ -226,7 +226,7 @@ services:
     image: localhost:5000/django:latest
     command: sh -c 'python manage.py migrate --noinput && 
                     python manage.py collectstatic --noinput --clear &&
-                    python manage.py runserver 3000'
+                    python manage.py runserver 80'
     environment:
       POSTGRES_HOST: db
     env_file:
@@ -239,7 +239,7 @@ services:
         source: static_volume
         target: /app/static
     expose:
-      - 3000
+      - 80
     networks:
       - everywhere_overlay
     depends_on:
@@ -269,9 +269,8 @@ services:
   proxy-server:
     image: nginx:latest
     ports:
-      - "3000:3000"
+      - "80:80"
       - "8001:8001"
-#      - "3000:3000"
     env_file:
       - .env
     volumes:
@@ -499,50 +498,50 @@ services:
         max_failure_ratio: 0
         order: start-first
 
-  gpu-exporter:
-    image: nvcr.io/nvidia/k8s/dcgm-exporter:3.3.8-3.6.0-ubuntu22.04
-#    image: nvidia/dcgm-exporter
-    volumes:
-      - /proc:/host/proc:ro
-      - /sys:/host/sys:ro
-      - /:/rootfs:ro
-    container_name: gpu_exporter
-    hostname: gpu_exporter
-#    command:
-#      - --path.procfs=/host/proc
-#      - --path.sysfs=/host/sys
-#      - --collector.filesystem.ignored-mount-points
-#      - ^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)
-    expose:
-      - 9400
-    environment:
-      - DCGM_EXPORTER_NO_HOSTNAME=1
-    cap_add:
-        - SYS_ADMIN
-    restart: unless-stopped
-    networks:
-      - everywhere_overlay
-    deploy:
-      mode: replicated
-      replicas: 1
-      restart_policy:
-        condition: any
-        delay: 50s
-        max_attempts: 7
-        window: 60s
-      update_config:
-        parallelism: 1
-        delay: 10s
-        order: start-first
-        monitor: 10s
-        failure_action: pause
-      rollback_config:
-        parallelism: 1
-        delay: 20s
-        failure_action: pause
-        monitor: 0s
-        max_failure_ratio: 0
-        order: start-first
+#  gpu-exporter:
+#    image: nvcr.io/nvidia/k8s/dcgm-exporter:3.3.8-3.6.0-ubuntu22.04
+##    image: nvidia/dcgm-exporter
+#    volumes:
+#      - /proc:/host/proc:ro
+#      - /sys:/host/sys:ro
+#      - /:/rootfs:ro
+#    container_name: gpu_exporter
+#    hostname: gpu_exporter
+##    command:
+##      - --path.procfs=/host/proc
+##      - --path.sysfs=/host/sys
+##      - --collector.filesystem.ignored-mount-points
+##      - ^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)
+#    expose:
+#      - 9400
+#    environment:
+#      - DCGM_EXPORTER_NO_HOSTNAME=1
+#    cap_add:
+#        - SYS_ADMIN
+#    restart: unless-stopped
+#    networks:
+#      - everywhere_overlay
+#    deploy:
+#      mode: replicated
+#      replicas: 1
+#      restart_policy:
+#        condition: any
+#        delay: 50s
+#        max_attempts: 7
+#        window: 60s
+#      update_config:
+#        parallelism: 1
+#        delay: 10s
+#        order: start-first
+#        monitor: 10s
+#        failure_action: pause
+#      rollback_config:
+#        parallelism: 1
+#        delay: 20s
+#        failure_action: pause
+#        monitor: 0s
+#        max_failure_ratio: 0
+#        order: start-first
 
 
 configs:
