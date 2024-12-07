@@ -226,7 +226,7 @@ services:
     image: localhost:5000/django:latest
     command: sh -c 'python manage.py migrate --noinput && 
                     python manage.py collectstatic --noinput --clear &&
-                    uwsgi --http :8000 --module config.wsgi'
+                    uwsgi --http :80 --module config.wsgi'
     environment:
       POSTGRES_HOST: db
     env_file:
@@ -239,7 +239,7 @@ services:
         source: static_volume
         target: /app/static
     expose:
-      - 8000
+      - 80
     networks:
       - everywhere_overlay
     depends_on:
@@ -269,9 +269,9 @@ services:
   proxy-server:
     image: nginx:latest
     ports:
-      - "80:80"
+      - "3000:80"
       - "8001:8001"
-      - "3000:3000"
+#      - "3000:3000"
     env_file:
       - .env
     volumes:
