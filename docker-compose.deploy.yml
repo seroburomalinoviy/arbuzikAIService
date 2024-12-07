@@ -267,9 +267,9 @@ services:
   proxy-server:
     image: nginx:latest
     ports:
-      - "3000:80"
+      - "80:80"
       - "8001:8001"
-#      - "3000:3000"
+      - "3000:3000"
     env_file:
       - .env
     volumes:
