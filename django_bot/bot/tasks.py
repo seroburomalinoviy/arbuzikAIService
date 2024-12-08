@@ -80,7 +80,7 @@ def check_pay_aaio(order_id: str):
                 logger.info(msg)
                 return True
             elif response_json['status'] == 'in_process':
-                msg = f'{SERVICE}: Заказ в процессе оплаты, потребуется ручное подтверждение в сервисе оплаты aaio'
+                msg = f'{SERVICE}: Заказ в процессе оплаты, потребуется ручное подтверждение в сервисе оплаты'
                 order.comment = msg
                 order.save()
                 logger.info(msg)
@@ -153,7 +153,7 @@ def check_pay_ukassa(order_id: str, payment_id: str):
         msg = "internal_server_error"
     elif response.status_code == 200:
         msg = "success"
-    logging.info(f'{msg}: {response.status_code=}\n{response.json()=}')
+        logging.info(f'{msg}: {response.status_code=}\n{response.json()=}')
 
     ans = response.json()
     if ans['status'] == 'canceled':
@@ -161,7 +161,13 @@ def check_pay_ukassa(order_id: str, payment_id: str):
         order.comment = msg
         order.save()
         logger.info(msg)
-        return False
+        return msg
+    elif ans['status'] == 'pending':
+        msg = f'{SERVICE}: Пользователь не совершил оплаты в течение 10 минут'
+        order.comment = msg
+        order.save()
+        logger.info(msg)
+        return msg
     elif ans['status'] == 'succeeded':
         msg = f'{SERVICE}: Заказ оплачен'
         order.comment = msg
