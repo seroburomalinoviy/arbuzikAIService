@@ -1,4 +1,3 @@
-import os
 import logging
 import django
 import requests
@@ -33,6 +32,7 @@ def clean_user_voices():
 def check_pay_aaio(order_id: str):
     AAIO_INFO = os.environ.get("AAIO_INFO")
     AAIO_API_KEY = os.environ.get('AAIO_API_KEY')
+    print(AAIO_API_KEY)
     AAIO_MERCHANT_ID = os.environ.get('AAIO_MERCHANT_ID')
     SERVICE = 'aaio'
     msg = ''

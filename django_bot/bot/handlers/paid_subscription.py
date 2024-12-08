@@ -181,7 +181,6 @@ async def buy_subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
     time_waiting = 60 * int(os.environ.get('AAIO_TIME_WAITING_PAYMENT_MIN', 11))
     check_pay_aaio.apply_async(args=[str(order.id)], countdown=time_waiting)
 
-
     return BASE_STATES
 
 
