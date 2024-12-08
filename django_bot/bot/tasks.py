@@ -189,7 +189,7 @@ def check_pay_ukassa(order_id: str, payment_id: str):
             order_id=order_id,
             amount=ans['amount']['value'],
             currency=ans['amount']['currency'],
-            status=True,
+            status='True',
             service=SERVICE
         )
 

@@ -21,12 +21,12 @@ class RVCData(BaseModel):
 
 class Payment(BaseModel):
     status: str
-    merchant_id: str
-    invoice_id: str
+    merchant_id: str = ''
+    invoice_id: str = ''
     order_id: str
     amount: str
     currency: str
-    sign: str
+    sign: str = ''
     service: str = ''
     bot: ClassVar = Bot(token=getenv("BOT_TOKEN"))
 
