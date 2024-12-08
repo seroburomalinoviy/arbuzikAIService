@@ -124,12 +124,11 @@ def check_pay_aaio(order_id: str):
 
 
 @app.task(ignore_result=False)
-def check_pay_ukassa(order_id: str, payment_id: str):
+def check_pay_ukassa(order_id: str, payment_id: str, timer:int):
     SERVICE = 'ukassa'
     UKASSA_API_URL = os.getenv("UKASSA_API_URL")
     UKASSA_SECRET_KEY = os.getenv("UKASSA_SECRET_KEY")
     UKASSA_SHOP_ID = os.getenv("UKASSA_SHOP_ID")
-    UKASSA_TIME_WAITING_PAYMENT_MIN = os.getenv("UKASSA_TIME_WAITING_PAYMENT_MIN")
     msg = ''
 
     order = Order.objects.get(id=order_id)
@@ -174,7 +173,7 @@ def check_pay_ukassa(order_id: str, payment_id: str):
         logger.info(msg)
         return msg
     elif ans['status'] == 'pending':
-        msg = f'{SERVICE}: Пользователь не совершил оплаты в течение {UKASSA_TIME_WAITING_PAYMENT_MIN} минут'
+        msg = f'{SERVICE}: Пользователь не совершил оплаты в течение {timer} минут'
         order.comment = msg
         order.save()
         logger.info(msg)

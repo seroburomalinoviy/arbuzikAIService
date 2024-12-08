@@ -84,7 +84,7 @@ async def send_payment_url(data):
 
     last_timer = int(os.environ.get('UKASSA_TIME_WAITING_PAYMENT_MIN', 11))
     for timer in range(1, last_timer+1, 4):
-        check_pay_ukassa.apply_async(args=[payment_page.order_id, payment_page.payment_id], countdown=60*timer)
+        check_pay_ukassa.apply_async(args=[payment_page.order_id, payment_page.payment_id, timer], countdown=60*timer)
 
     logging.info(f'Sending payment url to {payment_page.chat_id}')
 
