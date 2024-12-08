@@ -178,8 +178,9 @@ async def buy_subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await push_amqp_message(data.model_dump(), routing_key='bot-to-payment')
 
-    time_waiting = 60 * int(os.environ.get('AAIO_TIME_WAITING_PAYMENT_MIN', 11))
-    check_pay_aaio.apply_async(args=[str(order.id)], countdown=time_waiting)
+    if payment_service == 'aaio':
+        time_waiting = 60 * int(os.environ.get('AAIO_TIME_WAITING_PAYMENT_MIN', 11))
+        check_pay_aaio.apply_async(args=[str(order.id)], countdown=time_waiting)
 
     return BASE_STATES
 
