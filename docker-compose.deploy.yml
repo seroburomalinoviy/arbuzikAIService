@@ -222,19 +222,19 @@ services:
         max_failure_ratio: 0
         order: start-first
 
-  django-back:
+  django:
     image: localhost:5000/django:latest
     command: sh -c 'python manage.py migrate --noinput && 
                     python manage.py collectstatic --noinput --clear &&
-                    python manage.py runserver 8000'
+                    uwsgi uwsgi.ini'
     environment:
       POSTGRES_HOST: db
+    configs:
+      - source: uwsgi_config
+        target: /app/uwsgi.ini
     env_file:
       - .env
     volumes:
-      - type: volume
-        source: socket_file
-        target: /var/run
       - type: volume
         source: media-data-volume
         target: /app/media/data/
@@ -271,7 +271,7 @@ services:
     image: nginx:latest
     ports:
       - "3000:3000"
-#      - "8001:8001"
+      - "8001:8001"
       - "8000:8000"
     env_file:
       - .env
@@ -283,6 +283,8 @@ services:
       - payment-api
       - django-back
     configs:
+     - source: uwsgi_params
+       target: /etc/nginx/uwsgi_params
      - source: nginx_config
        target: /etc/nginx/conf.d/default.conf
     networks:
@@ -559,6 +561,10 @@ configs:
     file: ./redis.conf
   prometheus_config:
     file: ./prometheus.yml
+  uwsgi_params:
+    file: ./uwsgi_params
+  uwsgi_config:
+    file: ./uwsgi.ini
 
 networks:
   everywhere_overlay:
