@@ -222,7 +222,7 @@ services:
         max_failure_ratio: 0
         order: start-first
 
-  django:
+  django-back:
     image: localhost:5000/django:latest
     command: sh -c 'python manage.py migrate --noinput && 
                     python manage.py collectstatic --noinput --clear &&
@@ -276,9 +276,6 @@ services:
     env_file:
       - .env
     volumes:
-#      - type: volume
-#        source: socket_file
-#        target: /var/run
       - type: volume
         source: static_volume
         target: /app/static
