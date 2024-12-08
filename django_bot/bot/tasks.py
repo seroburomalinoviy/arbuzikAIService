@@ -195,6 +195,8 @@ def check_pay_ukassa(order_id: str, payment_id: str):
 
         payload = json.dumps(payment.model_dump())
 
+        logging.info(f'{msg}: {response.status_code=}\n{payload}')
+
         with amqp.Connection(
                 host=f'{os.environ.get("RABBIT_HOST")}:{os.environ.get("RABBIT_PORT")}',
                 userid=os.environ.get("RABBIT_USER"),
