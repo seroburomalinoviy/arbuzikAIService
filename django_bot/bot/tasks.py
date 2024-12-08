@@ -164,6 +164,8 @@ def check_pay_ukassa(order_id: str, payment_id: str):
         logging.info(f'{msg}: {response.status_code=}\n{response.json()=}')
         return msg
 
+    logging.info(f'{msg}: {response.status_code=}\n{response.json()=}')
+
     ans = response.json()
     if ans['status'] == 'canceled':
         msg = f'{SERVICE}: Платеж отменен'
