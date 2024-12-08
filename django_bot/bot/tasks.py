@@ -122,6 +122,7 @@ def check_pay_ukassa(order_id: str, payment_id: str):
     UKASSA_API_URL = os.getenv("UKASSA_API_URL")
     UKASSA_SECRET_KEY = os.getenv("UKASSA_SECRET_KEY")
     UKASSA_SHOP_ID = os.getenv("UKASSA_SHOP_ID")
+    UKASSA_TIME_WAITING_PAYMENT_MIN = os.getenv("UKASSA_TIME_WAITING_PAYMENT_MIN")
 
     order = Order.objects.get(id=order_id)
     if order.status:
@@ -163,7 +164,7 @@ def check_pay_ukassa(order_id: str, payment_id: str):
         logger.info(msg)
         return msg
     elif ans['status'] == 'pending':
-        msg = f'{SERVICE}: Пользователь не совершил оплаты в течение 10 минут'
+        msg = f'{SERVICE}: Пользователь не совершил оплаты в течение {UKASSA_TIME_WAITING_PAYMENT_MIN} минут'
         order.comment = msg
         order.save()
         logger.info(msg)
