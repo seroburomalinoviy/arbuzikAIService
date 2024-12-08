@@ -123,6 +123,7 @@ def check_pay_ukassa(order_id: str, payment_id: str):
     UKASSA_SECRET_KEY = os.getenv("UKASSA_SECRET_KEY")
     UKASSA_SHOP_ID = os.getenv("UKASSA_SHOP_ID")
     UKASSA_TIME_WAITING_PAYMENT_MIN = os.getenv("UKASSA_TIME_WAITING_PAYMENT_MIN")
+    msg = ''
 
     order = Order.objects.get(id=order_id)
     if order.status:
@@ -130,31 +131,31 @@ def check_pay_ukassa(order_id: str, payment_id: str):
         order.comment = msg
         order.save()
         logger.info(msg)
-        return True
+        return msg
 
     try:
         auth = HTTPBasicAuth(username=UKASSA_SHOP_ID, password=UKASSA_SECRET_KEY)
         response = requests.get(url=f"{UKASSA_API_URL}/{payment_id}", auth=auth)
     except Exception as e:
-        logging.error(f"Ukassa request error: {e}")
-        return False
+        msg = f"Ukassa request error: {e}"
+        logging.error(msg)
+        return msg
 
-    msg = ''
-    if response.status_code == 400:
-        msg = "invalid_request"
-    elif response.status_code == 401:
-        msg = "invalid_credentials"
-    elif response.status_code == 403:
-        msg = "forbidden"
-    elif response.status_code == 404:
-        msg = "not_found"
-    elif response.status_code == 429:
-        msg = "too_many_requests"
-    elif response.status_code == 500:
-        msg = "internal_server_error"
-    elif response.status_code == 200:
-        msg = "success"
+    if response.status_code != 200:
+        if response.status_code == 400:
+            msg = "invalid_request"
+        elif response.status_code == 401:
+            msg = "invalid_credentials"
+        elif response.status_code == 403:
+            msg = "forbidden"
+        elif response.status_code == 404:
+            msg = "not_found"
+        elif response.status_code == 429:
+            msg = "too_many_requests"
+        elif response.status_code == 500:
+            msg = "internal_server_error"
         logging.info(f'{msg}: {response.status_code=}\n{response.json()=}')
+        return msg
 
     ans = response.json()
     if ans['status'] == 'canceled':
@@ -197,7 +198,7 @@ def check_pay_ukassa(order_id: str, payment_id: str):
                 routing_key='payment-to-bot'
             )
             logger.info('Celery task was successfully sent to rabbitmq')
-        return True
+        return msg
 
 
 
