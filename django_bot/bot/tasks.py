@@ -35,6 +35,7 @@ def check_pay_aaio(order_id: str):
     AAIO_API_KEY = os.environ.get('AAIO_API_KEY')
     AAIO_MERCHANT_ID = os.environ.get('AAIO_MERCHANT_ID')
     SERVICE = 'aaio'
+    msg = ''
 
     order = Order.objects.get(id=order_id)
     if order.status:
@@ -42,7 +43,7 @@ def check_pay_aaio(order_id: str):
         order.comment = msg
         order.save()
         logger.info(msg)
-        return True
+        return msg
 
     params = {
         'merchant_id': AAIO_MERCHANT_ID,
@@ -56,35 +57,42 @@ def check_pay_aaio(order_id: str):
     try:
         response = requests.post(url=AAIO_INFO, data=params, headers=headers, timeout=(15, 60))
     except ConnectTimeout:
-        logger.error('ConnectTimeout')  # Не хватило времени на подключение к сайту
+        msg = 'ConnectTimeout: Не хватило времени на подключение к сайту'
+        logger.error(msg)
+        return msg
     except ReadTimeout:
-        logger.error('ReadTimeout')  # Не хватило времени на выполнение запроса
+        msg = 'ReadTimeout: Не хватило времени на выполнение запроса'
+        logger.error(msg)
+        return msg
 
     if response.status_code not in [200, 400, 401]:
-        logger.error('Response code: ' + str(response.status_code))
-        return True
+        msg = 'Response code: ' + str(response.status_code)
+        logger.error(msg)
+        return msg
     else:
         try:
             response_json = response.json()
         except Exception as e:
-            logger.error(f'Не удалось пропарсить ответ: {e}')
+            msg = f'Не удалось пропарсить ответ: {e}'
+            logger.error(msg)
 
         if response_json['type'] != 'success':
-            logger.error('Ошибка: ' + response_json['message'])
-            return True
+            msg = 'Ошибка: ' + response_json['message']
+            logger.error(msg)
+            return msg
         else:
             if response_json['status'] == 'expired':
                 msg = f'{SERVICE}: Не оплачено, время заказа истекло в сервисе оплаты'
                 order.comment = msg
                 order.save()
                 logger.info(msg)
-                return True
+                return msg
             elif response_json['status'] == 'in_process':
                 msg = f'{SERVICE}: Заказ в процессе оплаты, потребуется ручное подтверждение в сервисе оплаты'
                 order.comment = msg
                 order.save()
                 logger.info(msg)
-                return True
+                return msg
             elif response_json['status'] == 'success' or response_json['status'] == 'hold':
                 msg = f'{SERVICE}: Заказ оплачен'
                 order.comment = msg
@@ -113,7 +121,7 @@ def check_pay_aaio(order_id: str):
                         routing_key='payment-to-bot'
                     )
                     logger.info('Celery task was successfully sent to rabbitmq')
-                return True
+                return msg
 
 
 @app.task(ignore_result=False)
