@@ -147,8 +147,7 @@ services:
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=all
-#      - PYTORCH_NO_CUDA_MEMORY_CACHING=1
-#      - PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+
     volumes:
       - type: volume
         source: media-data-volume
