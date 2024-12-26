@@ -157,5 +157,5 @@ MEDIA_ROOT = BASE_DIR / "media"
 # CSRF_TRUSTED_ORIGINS = ['https://example.com']
 # CSRF_USE_SESSIONS = True
 
-CSRF_TRUSTED_ORIGINS = ['http://95.31.211.45:8000']
-CSRF_COOKIE_DOMAIN = 'http://95.31.211.45:8000'
+CSRF_TRUSTED_ORIGINS = [f'http://{os.getenv("HOST")}:8000']
+CSRF_COOKIE_DOMAIN = f'http://{os.getenv("HOST")}:8000'
