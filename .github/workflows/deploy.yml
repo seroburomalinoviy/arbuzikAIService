@@ -22,11 +22,11 @@ jobs:
           cd arbuzikAIService/
           git switch main
           git pull origin main
-          docker compose -f docker-compose.build.yml build
-          docker push localhost:5000/preclient:latest
-          docker push localhost:5000/client:latest
-          docker push localhost:5000/django:latest
-          docker push localhost:5000/payment-api:latest
+#          docker compose -f docker-compose.build.yml build
+#          docker push localhost:5000/preclient:latest
+#          docker push localhost:5000/client:latest
+#          docker push localhost:5000/django:latest
+#          docker push localhost:5000/payment-api:latest
 #          docker service update --image localhost:5000/payment-api:latest arb_payment-api
 #          docker service update --image localhost:5000/payment-api:latest arb_payment-listener
 #          docker service update --image localhost:5000/django:latest arb_bot
