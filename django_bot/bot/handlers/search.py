@@ -32,7 +32,7 @@ async def inline_searching(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     results = []
-    async for voice in Voice.objects.filter(search_words__icontains=query.query):
+    async for voice in Voice.objects.filter(search_words__icontains=query.query).exclude(subcategory__title="system"):
         results.append(
             InlineQueryResultArticle(
                 id=str(uuid4()),
