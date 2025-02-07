@@ -151,8 +151,10 @@ async def push_amqp_message(data: dict, routing_key):
 
 def amqp_message_handler(func: asyncio.coroutine):
     async def process_message(message: aio_pika.IncomingMessage):
-        logging.info(f"{func.__name__} got msg from rabbit: {message.body.decode()}")
-        await func(message.body.decode())
+        async with message.process():
+            msg = message.body.decode()
+            logging.info(f"{func.__name__} got msg from rabbit: {msg}")
+            await func(msg)
     return process_message
 
 
