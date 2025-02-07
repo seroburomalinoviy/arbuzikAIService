@@ -1,50 +1,21 @@
 import logging
 import os
-from dotenv import load_dotenv
-import aio_pika
 import json
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.constants import ParseMode
-import asyncio
 import aiofiles
 import django
 from datetime import timedelta
 
 from bot.logic import message_text, keyboards
-from bot.logic.constants import *
 from bot.logic.utils import get_moscow_time
 from bot.structures.schemas import PayUrl, RVCData, Payment
 from bot.tasks import check_pay_ukassa
-
-from typing import Awaitable, Callable
-
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 django.setup()
 
 from user.models import Order
-
-load_dotenv()
-
-AsyncFunc = Callable[[str], Awaitable[None]]
-
-
-class PikaConnector:
-    @classmethod
-    async def connector(cls):
-        try:
-            connector = await aio_pika.connect_robust(
-                host=os.environ.get("RABBIT_HOST"),
-                port=int(os.environ.get("RABBIT_PORT")),
-                login=os.environ.get("RABBIT_USER"),
-                password=os.environ.get("RABBIT_PASSWORD"),
-            )
-            logging.info(f"Connected to rabbit")
-            return connector
-        except aio_pika.exceptions.CONNECTION_EXCEPTIONS as e:
-            logging.error(e)
-            await asyncio.sleep(3)
-            return await cls.connector()
 
 
 async def send_payment_answer(data: str):
@@ -84,10 +55,10 @@ async def send_payment_answer(data: str):
 
 
 async def send_payment_url(data: str):
-    logging.info(f'send_payment_url: {data=}')
+    logging.info(f'send_payment_url:\n{data=}')
     payment_page = PayUrl(**json.loads(data))
 
-    last_timer = int(os.environ.get('UKASSA_TIME_WAITING_PAYMENT_MIN', 11))
+    last_timer = int(os.getenv('UKASSA_TIME_WAITING_PAYMENT_MIN', 11))
     for timer in range(1, last_timer+1, 4):
         check_pay_ukassa.apply_async(args=[payment_page.order_id, payment_page.payment_id, timer], countdown=60*timer)
 
@@ -111,7 +82,7 @@ async def send_rvc_answer(data: str):
     """
     audio = RVCData(**json.loads(data))
 
-    file_path = os.environ.get("USER_VOICES") + "/" + audio.voice_filename
+    file_path = os.getenv("USER_VOICES") + "/" + audio.voice_filename
     async with aiofiles.open(file_path, 'rb') as f:
         voice_file_data = await f.read()
 
@@ -138,38 +109,3 @@ async def send_rvc_answer(data: str):
         parse_mode=ParseMode.MARKDOWN,
         reply_markup=InlineKeyboardMarkup(keyboards.final_buttons),
     )
-
-
-async def push_amqp_message(data: dict, routing_key: str) -> None:
-    payload = json.dumps(data)
-    connection = await PikaConnector.connector()
-
-    async with connection:
-        channel = await connection.channel()
-        queue = await channel.declare_queue(routing_key, durable=True)
-        await channel.default_exchange.publish(
-            # delivery_mode ...PERSISTENT: сообщения будут сохраняться на диске,
-            # что позволяет предотвратить их потерю при сбоях RabbitMQ
-            aio_pika.Message(body=payload.encode(), delivery_mode=aio_pika.DeliveryMode.PERSISTENT),
-            routing_key=queue.name,
-
-        )
-    logging.info(f"The message sent to rabbit:\n{payload} ")
-
-
-def amqp_message_handler(func: AsyncFunc):
-    async def process_message(message: aio_pika.IncomingMessage):
-        async with message.process():
-            msg = message.body.decode()
-            logging.info(f"The {func.__name__} got msg from rabbit:\n{msg}")
-            await func(msg)
-    return process_message
-
-
-async def amqp_listener(queue_name: str, func: AsyncFunc):
-    connection = await PikaConnector.connector()
-    channel = await connection.channel()
-    queue = await channel.declare_queue(queue_name, durable=True)
-
-    await queue.consume(amqp_message_handler(func))
-    return connection

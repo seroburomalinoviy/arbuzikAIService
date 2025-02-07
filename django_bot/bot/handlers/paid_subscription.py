@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 from bot.logic.utils import log_journal
 from bot.logic import message_text
 from bot.logic.constants import *
-from bot.logic.amqp_driver import push_amqp_message
+from bot.logic.amqp.drivers import push_amqp_message
 from bot.tasks import check_pay_aaio
 from bot.structures.schemas import PayUrl
 
