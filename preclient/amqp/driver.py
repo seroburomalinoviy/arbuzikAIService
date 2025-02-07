@@ -11,6 +11,7 @@ class PikaConnector:
     @classmethod
     async def connector(cls):
         try:
+            print(os.getenv("RABBIT_HOST"))
             connector = await aio_pika.connect_robust(
                 host=os.getenv("RABBIT_HOST"),
                 port=int(os.getenv("RABBIT_PORT")),
