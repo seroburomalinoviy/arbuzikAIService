@@ -37,7 +37,7 @@ def _amqp_message_handler(func: AsyncFunc):
 async def amqp_listener(queue_name: str, func: AsyncFunc):
     connection = await PikaConnector.connector()
     channel = await connection.channel()
-    queue = await channel.declare_queue(queue_name, durable=True)
+    queue = await channel.declare_queue(queue_name)
 
     await queue.consume(_amqp_message_handler(func))
     return connection
