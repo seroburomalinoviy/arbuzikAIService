@@ -2,6 +2,9 @@ import httpx
 import redis
 import os
 import logging
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 async def create_task(payload: str):
