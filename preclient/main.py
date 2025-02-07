@@ -16,5 +16,4 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format=log_format, datefmt="%Y-%m-%d %H:%M:%S")
     logging.getLogger('').addHandler(handler)
 
-    loop = asyncio.get_event_loop()
-    loop.create_task(amqp_listener("bot-to-rvc", create_task))
+    asyncio.run(amqp_listener("bot-to-rvc", create_task))

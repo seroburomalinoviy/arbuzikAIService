@@ -14,6 +14,7 @@ class PikaConnector:
     @classmethod
     async def connector(cls):
         logging.info(os.environ.get("RABBIT_HOST"))
+        print(os.environ.get("RABBIT_HOST"))
         try:
             connector = await aio_pika.connect_robust(
                 host=os.environ.get("RABBIT_HOST"),
