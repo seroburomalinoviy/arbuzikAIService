@@ -148,8 +148,11 @@ async def push_amqp_message(data: dict, routing_key: str) -> None:
         channel = await connection.channel()
         queue = await channel.declare_queue(routing_key, durable=True)
         await channel.default_exchange.publish(
-            aio_pika.Message(body=payload.encode()),
+            # delivery_mode ...PERSISTENT: сообщения будут сохраняться на диске,
+            # что позволяет предотвратить их потерю при сбоях RabbitMQ
+            aio_pika.Message(body=payload.encode(), delivery_mode=aio_pika.DeliveryMode.PERSISTENT),
             routing_key=queue.name,
+
         )
     logging.info(f"The message sent to rabbit:\n{payload} ")
 
