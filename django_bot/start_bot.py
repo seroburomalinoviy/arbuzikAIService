@@ -13,16 +13,17 @@ from bot.logic.amqp_driver import amqp_listener, send_payment_url, send_payment_
 load_dotenv()
 
 
-async def main() -> None:
+def main() -> None:
     TOKEN = os.environ.get("BOT_TOKEN")
     application = ApplicationBuilder().token(TOKEN).build()
 
     application = init_handlers(application)
 
     # AMQP listeners
-    queue_func = (("rvc-to-bot", send_rvc_answer), ("payment-to-bot", send_payment_url), ("payment-url", send_payment_answer))
-    tasks = [amqp_listener(queue, func) for queue, func in queue_func]
-    await asyncio.gather(*tasks)
+    loop = asyncio.get_running_loop()
+    loop.create_task(amqp_listener("rvc-to-bot", send_rvc_answer))
+    loop.create_task(amqp_listener("payment-to-bot", send_payment_url))
+    loop.create_task(amqp_listener("payment-url", send_payment_answer))
 
     application.run_polling(allowed_updates=Update.ALL_TYPES)
 
@@ -38,5 +39,5 @@ if "__main__" == __name__:
 
     logging.getLogger("httpx").setLevel(logging.WARNING)
 
-    asyncio.run(main())
+    main()
 
