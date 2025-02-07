@@ -20,7 +20,7 @@ def main() -> None:
     application = init_handlers(application)
 
     # AMQP listeners
-    loop = asyncio.get_running_loop()
+    loop = asyncio.get_event_loop()
     loop.create_task(amqp_listener("rvc-to-bot", send_rvc_answer))
     loop.create_task(amqp_listener("payment-to-bot", send_payment_url))
     loop.create_task(amqp_listener("payment-url", send_payment_answer))
