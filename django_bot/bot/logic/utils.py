@@ -32,7 +32,7 @@ def log_journal(func):
             _id = "Not found"
 
         logging.info(
-            f"JOURNAL: {func.__name__} - was called for user - {_id} - tg_id"
+            f"JOURNAL: A call for user,id: {_id} from {func.__name__}"
         )
         return await func(*args, **kwargs)
 

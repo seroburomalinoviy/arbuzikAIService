@@ -13,12 +13,13 @@ AsyncFunc = Callable[[str], Awaitable[None]]
 class PikaConnector:
     @classmethod
     async def connector(cls):
+        logging.info(os.environ.get("RABBIT_HOST"))
         try:
             connector = await aio_pika.connect_robust(
-                host=os.getenv("RABBIT_HOST"),
-                port=int(os.getenv("RABBIT_PORT")),
-                login=os.getenv("RABBIT_USER"),
-                password=os.getenv("RABBIT_PASSWORD"),
+                host=os.environ.get("RABBIT_HOST"),
+                port=int(os.environ.get("RABBIT_PORT")),
+                login=os.environ.get("RABBIT_USER"),
+                password=os.environ.get("RABBIT_PASSWORD"),
             )
             logging.info(f"Connected from Preclient to RabbitMQ")
             return connector
