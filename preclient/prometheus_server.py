@@ -10,7 +10,7 @@ COMPLETE_TASKS = Gauge('complete_tasks', 'Completed tasks of the ArbuzikAiBot')
 SPEED_H = Histogram('speed_h', 'Speed of 1 task processing')
 SPEED_G = Gauge('speed_g', 'Speed of 1 task processing')
 
-app = FastAPI(debug=True, redoc_url=None)
+app = FastAPI(debug=False, redoc_url=None)
 
 metrics_app = make_asgi_app()
 app.mount("/metrics", metrics_app)

@@ -13,8 +13,6 @@ AsyncFunc = Callable[[str], Awaitable[None]]
 class PikaConnector:
     @classmethod
     async def connector(cls):
-        logging.info(os.environ.get("RABBIT_HOST"))
-        print(os.environ.get("RABBIT_HOST"))
         try:
             connector = await aio_pika.connect_robust(
                 host=os.environ.get("RABBIT_HOST"),
@@ -34,7 +32,7 @@ def _amqp_message_handler(func: AsyncFunc):
     async def process_message(message: aio_pika.IncomingMessage):
         async with message.process():
             msg = message.body.decode()
-            logging.info(f"A message from RabbitMQ to Preclient:\n{msg}")
+            logging.info(f"A message from Bot to RVC:\n{msg}")
             await func(msg)
     return process_message
 

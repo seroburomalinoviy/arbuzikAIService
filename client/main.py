@@ -79,7 +79,7 @@ def push_amqp_message(payload):
             body=json.dumps(payload).encode(),
         )
 
-    logging.info(f"message {payload} sent to bot")
+    logging.info(f"A message from RVC to BOT: \n{payload}")
 
 
 async def reader(r: redis.Redis):
@@ -143,26 +143,16 @@ async def reader(r: redis.Redis):
 
 
 async def main():
+    logger = logging.getLogger(__name__)
+    host, port = os.environ.get('REDIS_HOST'), os.environ.get('REDIS_PORT')
     try:
-        r = redis.Redis(
-            host=os.environ.get('REDIS_HOST'),
-            port=os.environ.get('REDIS_PORT'),
-            retry_on_timeout=True
-        )
-    except ConnectionError as e:
-        logging.error(e)
-        sys.exit(1)
-    except ResponseError as e:
-        logging.error(e)
-        sys.exit(1)
-    except RedisError as e:
-        logging.error(e)
-        sys.exit(1)
+        r = redis.Redis(host=host, port=int(port), retry_on_timeout=True)
+    except redis.exceptions.ConnectionError:
+        logger.info(f"Redis ConnectionError: {host=} {port=}")
     except Exception as e:
-        logging.error(e)
-        sys.exit(1)
-
-    await asyncio.create_task(reader(r))
+        logging.info(f"Exception during Redis connection\n{e}")
+    else:
+        await asyncio.create_task(reader(r))
 
 
 if __name__ == "__main__":
