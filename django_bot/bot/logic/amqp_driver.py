@@ -113,7 +113,7 @@ async def send_rvc_answer(data: str):
 
     file_path = os.environ.get("USER_VOICES") + "/" + audio.voice_filename
     async with aiofiles.open(file_path, 'rb') as f:
-        voice_file_data = f.read()
+        voice_file_data = await f.read()
 
     logging.debug(f"file_path: {file_path}")
 
