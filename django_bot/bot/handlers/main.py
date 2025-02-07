@@ -571,7 +571,6 @@ async def voice_audio_process(update: Update, context: ContextTypes.DEFAULT_TYPE
         voice_model_pth=voice_model_pth,
         message_id=message.id
     )
-    logging.info(f"{payload.model_dump()=}")
 
     await push_amqp_message(payload.model_dump(), routing_key="bot-to-rvc")
 
