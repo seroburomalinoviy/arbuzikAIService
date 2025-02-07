@@ -6,6 +6,7 @@ import json
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.constants import ParseMode
 import asyncio
+import aiofiles
 import django
 from datetime import timedelta
 
@@ -107,6 +108,8 @@ async def send_rvc_answer(data: str):
     audio = RVCData(**json.loads(data))
 
     file_path = os.environ.get("USER_VOICES") + "/" + audio.voice_filename
+    async with aiofiles.open(file_path, 'rb') as f:
+        voice_file_data = f.read()
 
     logging.debug(f"file_path: {file_path}")
 
@@ -116,11 +119,11 @@ async def send_rvc_answer(data: str):
     )
 
     if audio.extension == ".ogg":
-        await audio.bot.send_voice(chat_id=audio.chat_id, voice=open(file_path, "rb"))
+        await audio.bot.send_voice(chat_id=audio.chat_id, voice=voice_file_data)
     else:
         await audio.bot.send_audio(
             chat_id=audio.chat_id,
-            audio=open(file_path, "rb"),
+            audio=voice_file_data,
             duration=audio.duration,
             filename=audio.voice_title,
         )
@@ -146,73 +149,87 @@ async def push_amqp_message(data: dict, routing_key):
     logging.info(f"message {payload} sent to rabbit")
 
 
-async def amqp_rvc_listener():
+def amqp_message_handler(func: asyncio.coroutine):
+    async def process_message(message: aio_pika.IncomingMessage):
+        logging.info(f"{func.__name__} got msg from rabbit: {message.body.decode()}")
+        await func(message.body.decode())
+    return process_message
+
+
+async def amqp_listener(queue_name: str, func: asyncio.coroutine):
     connection = await PikaConnector.connector()
+    channel = await connection.channel()
+    queue = await channel.declare_queue(queue_name, durable=True)
 
-    async with connection:
-        # Creating channel
-        channel = await connection.channel()
-
-        # Will take no more than 10 messages in advance
-        await channel.set_qos(prefetch_count=1000)
-
-        # Declaring queue rvc-to-bot
-        queue = await channel.declare_queue(name="rvc-to-bot", durable=True, auto_delete=True)
-
-        async with queue.iterator() as queue_iter:
-            async for message in queue_iter:
-                async with message.process():
-                    logging.info(f"bot got msg from rabbit: {message.body.decode()}")
-
-                    await send_rvc_answer(message.body.decode())
-
-                    if queue.name in message.body.decode():
-                        break
+    await queue.consume(amqp_message_handler(func))
+    return connection
 
 
-async def amqp_payment_listener():
-    connection = await PikaConnector.connector()
 
-    async with connection:
-        # Creating channel
-        channel = await connection.channel()
-
-        # Will take no more than 10 messages in advance
-        await channel.set_qos(prefetch_count=1000)
-
-        # Declaring queue payment-to-bot
-        queue = await channel.declare_queue(name="payment-to-bot", durable=True, auto_delete=True)
-
-        async with queue.iterator() as queue_iter:
-            async for message in queue_iter:
-                async with message.process():
-                    logging.info(f"bot got msg from rabbit: {message.body.decode()}")
-
-                    await send_payment_answer(message.body.decode())
-
-                    if queue.name in message.body.decode():
-                        break
+    # async with connection:  # ????
+    #     # Creating channel
+    #     channel = await connection.channel()
+    #
+    #     # Will take no more than 10 messages in advance
+    #     await channel.set_qos(prefetch_count=1000)  #
+    #
+    #     # Declaring queue rvc-to-bot
+    #     queue = await channel.declare_queue(name="rvc-to-bot", durable=True, auto_delete=True)  # ??? auto_delete???
+    #
+    #     async with queue.iterator() as queue_iter:
+    #         async for message in queue_iter:
+    #             async with message.process():
+    #                 logging.info(f"bot got msg from rabbit: {message.body.decode()}")
+    #
+    #                 await send_rvc_answer(message.body.decode())
+    #
+    #                 if queue.name in message.body.decode():
+    #                     break
 
 
-async def amqp_payment_url_listener():
-    connection = await PikaConnector.connector()
+# async def amqp_payment_listener():
+#     connection = await PikaConnector.connector()
+#
+#     async with connection:
+#         # Creating channel
+#         channel = await connection.channel()
+#
+#         # Will take no more than 10 messages in advance
+#         await channel.set_qos(prefetch_count=1000)
+#
+#         # Declaring queue payment-to-bot
+#         queue = await channel.declare_queue(name="payment-to-bot", durable=True, auto_delete=True)
+#
+#         async with queue.iterator() as queue_iter:
+#             async for message in queue_iter:
+#                 async with message.process():
+#                     logging.info(f"bot got msg from rabbit: {message.body.decode()}")
+#
+#                     await send_payment_answer(message.body.decode())
+#
+#                     if queue.name in message.body.decode():
+#                         break
 
-    async with connection:
-        # Creating channel
-        channel = await connection.channel()
 
-        # Will take no more than 10 messages in advance
-        await channel.set_qos(prefetch_count=10000)
-
-        # Declaring queue payment-url
-        queue = await channel.declare_queue(name="payment-url", durable=True, auto_delete=True)
-
-        async with queue.iterator() as queue_iter:
-            async for message in queue_iter:
-                async with message.process():
-                    logging.info(f"bot got msg from rabbit: {message.body.decode()}")
-
-                    await send_payment_url(message.body.decode())
-
-                    if queue.name in message.body.decode():
-                        break
+# async def amqp_payment_url_listener():
+#     connection = await PikaConnector.connector()
+#
+#     async with connection:
+#         # Creating channel
+#         channel = await connection.channel()
+#
+#         # Will take no more than 10 messages in advance
+#         await channel.set_qos(prefetch_count=10000)
+#
+#         # Declaring queue payment-url
+#         queue = await channel.declare_queue(name="payment-url", durable=True, auto_delete=True)
+#
+#         async with queue.iterator() as queue_iter:
+#             async for message in queue_iter:
+#                 async with message.process():
+#                     logging.info(f"bot got msg from rabbit: {message.body.decode()}")
+#
+#                     await send_payment_url(message.body.decode())
+#
+#                     if queue.name in message.body.decode():
+#                         break

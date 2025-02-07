@@ -8,22 +8,21 @@ from telegram.ext import ApplicationBuilder
 from telegram import Update
 
 from bot.logic.setup import init_handlers
-from bot.logic.amqp_driver import amqp_payment_url_listener, amqp_payment_listener, amqp_rvc_listener
+from bot.logic.amqp_driver import amqp_listener, send_payment_url, send_payment_answer, send_rvc_answer
 
 load_dotenv()
 
 
-def main() -> None:
+async def main() -> None:
     TOKEN = os.environ.get("BOT_TOKEN")
     application = ApplicationBuilder().token(TOKEN).build()
 
     application = init_handlers(application)
 
-    # async rabbit listener
-    loop = asyncio.get_event_loop()
-    loop.create_task(amqp_rvc_listener())
-    loop.create_task(amqp_payment_url_listener())
-    loop.create_task(amqp_payment_listener())
+    # AMQP listeners
+    queue_func = (("rvc-to-bot", send_rvc_answer), ("payment-to-bot", send_payment_url), ("payment-url", send_payment_answer))
+    tasks = [amqp_listener(queue, func) for queue, func in queue_func]
+    await asyncio.gather(*tasks)
 
     application.run_polling(allowed_updates=Update.ALL_TYPES)
 
@@ -39,4 +38,5 @@ if "__main__" == __name__:
 
     logging.getLogger("httpx").setLevel(logging.WARNING)
 
-    main()
+    asyncio.run(main())
+
