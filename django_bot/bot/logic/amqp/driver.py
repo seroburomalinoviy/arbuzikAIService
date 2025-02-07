@@ -32,7 +32,7 @@ async def push_amqp_message(data: dict, routing_key: str) -> None:
 
     async with connection:
         channel = await connection.channel()
-        queue = await channel.declare_queue(routing_key, durable=True, passive=True)
+        queue = await channel.declare_queue(routing_key, durable=True)
         await channel.default_exchange.publish(
             # delivery_mode ...PERSISTENT: сообщения будут сохраняться на диске,
             # что позволяет предотвратить их потерю при сбоях RabbitMQ
@@ -54,7 +54,7 @@ def _amqp_message_handler(func: AsyncFunc):
 async def amqp_listener(queue_name: str, func: AsyncFunc):
     connection = await PikaConnector.connector()
     channel = await connection.channel()
-    queue = await channel.declare_queue(queue_name, durable=True, passive=True)
+    queue = await channel.declare_queue(queue_name, durable=True)
 
     await queue.consume(_amqp_message_handler(func))
     return connection

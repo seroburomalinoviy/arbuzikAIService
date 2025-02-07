@@ -38,7 +38,7 @@ async def amqp_listener():
         channel = await connection.channel()
         await channel.set_qos(prefetch_count=10)
 
-        queue = await channel.declare_queue(queue_name, durable=True, passive=True)
+        queue = await channel.declare_queue(queue_name, durable=True)
 
         logging.debug(f"get queue {queue_name} from rabbit")
 
