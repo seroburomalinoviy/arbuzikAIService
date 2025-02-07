@@ -6,7 +6,7 @@ import logging
 from uuid import uuid4
 
 from bot.logic import message_text, keyboards
-from bot.logic.amqp.drivers import push_amqp_message
+from bot.logic.amqp.driver import push_amqp_message
 from bot.logic.constants import *
 from bot.logic.utils import get_moscow_time, log_journal
 from bot.handlers.paid_subscription import preview_paid_subscription, show_paid_subscriptions

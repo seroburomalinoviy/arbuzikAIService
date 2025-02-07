@@ -8,7 +8,7 @@ from telegram.ext import ApplicationBuilder
 from telegram import Update
 
 from bot.logic.setup import init_handlers
-from bot.logic.amqp.drivers import amqp_listener
+from bot.logic.amqp.driver import amqp_listener
 from bot.logic.amqp.answers import send_payment_url, send_payment_answer, send_rvc_answer
 
 load_dotenv()

@@ -38,12 +38,11 @@ async def push_amqp_message(data: dict, routing_key: str) -> None:
             # что позволяет предотвратить их потерю при сбоях RabbitMQ
             aio_pika.Message(body=payload.encode(), delivery_mode=aio_pika.DeliveryMode.PERSISTENT),
             routing_key=queue.name,
-
         )
     logging.info(f"The message sent to rabbit:\n{payload} ")
 
 
-def amqp_message_handler(func: AsyncFunc):
+def _amqp_message_handler(func: AsyncFunc):
     async def process_message(message: aio_pika.IncomingMessage):
         async with message.process():
             msg = message.body.decode()
@@ -57,5 +56,5 @@ async def amqp_listener(queue_name: str, func: AsyncFunc):
     channel = await connection.channel()
     queue = await channel.declare_queue(queue_name, durable=True)
 
-    await queue.consume(amqp_message_handler(func))
+    await queue.consume(_amqp_message_handler(func))
     return connection
