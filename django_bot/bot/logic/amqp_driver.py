@@ -140,24 +140,25 @@ async def send_rvc_answer(data: str):
     )
 
 
-async def push_amqp_message(data: dict, routing_key):
+async def push_amqp_message(data: dict, routing_key: str) -> None:
     payload = json.dumps(data)
     connection = await PikaConnector.connector()
 
     async with connection:
         channel = await connection.channel()
+        queue = await channel.declare_queue(routing_key, durable=True)
         await channel.default_exchange.publish(
             aio_pika.Message(body=payload.encode()),
-            routing_key=routing_key,
+            routing_key=queue.name,
         )
-    logging.info(f"message {payload} sent to rabbit")
+    logging.info(f"The message sent to rabbit:\n{payload} ")
 
 
 def amqp_message_handler(func: AsyncFunc):
     async def process_message(message: aio_pika.IncomingMessage):
         async with message.process():
             msg = message.body.decode()
-            logging.info(f"{func.__name__} got msg from rabbit: {msg}")
+            logging.info(f"The {func.__name__} got msg from rabbit:\n{msg}")
             await func(msg)
     return process_message
 
@@ -169,73 +170,3 @@ async def amqp_listener(queue_name: str, func: AsyncFunc):
 
     await queue.consume(amqp_message_handler(func))
     return connection
-
-
-
-    # async with connection:  # ????
-    #     # Creating channel
-    #     channel = await connection.channel()
-    #
-    #     # Will take no more than 10 messages in advance
-    #     await channel.set_qos(prefetch_count=1000)  #
-    #
-    #     # Declaring queue rvc-to-bot
-    #     queue = await channel.declare_queue(name="rvc-to-bot", durable=True, auto_delete=True)  # ??? auto_delete???
-    #
-    #     async with queue.iterator() as queue_iter:
-    #         async for message in queue_iter:
-    #             async with message.process():
-    #                 logging.info(f"bot got msg from rabbit: {message.body.decode()}")
-    #
-    #                 await send_rvc_answer(message.body.decode())
-    #
-    #                 if queue.name in message.body.decode():
-    #                     break
-
-
-# async def amqp_payment_listener():
-#     connection = await PikaConnector.connector()
-#
-#     async with connection:
-#         # Creating channel
-#         channel = await connection.channel()
-#
-#         # Will take no more than 10 messages in advance
-#         await channel.set_qos(prefetch_count=1000)
-#
-#         # Declaring queue payment-to-bot
-#         queue = await channel.declare_queue(name="payment-to-bot", durable=True, auto_delete=True)
-#
-#         async with queue.iterator() as queue_iter:
-#             async for message in queue_iter:
-#                 async with message.process():
-#                     logging.info(f"bot got msg from rabbit: {message.body.decode()}")
-#
-#                     await send_payment_answer(message.body.decode())
-#
-#                     if queue.name in message.body.decode():
-#                         break
-
-
-# async def amqp_payment_url_listener():
-#     connection = await PikaConnector.connector()
-#
-#     async with connection:
-#         # Creating channel
-#         channel = await connection.channel()
-#
-#         # Will take no more than 10 messages in advance
-#         await channel.set_qos(prefetch_count=10000)
-#
-#         # Declaring queue payment-url
-#         queue = await channel.declare_queue(name="payment-url", durable=True, auto_delete=True)
-#
-#         async with queue.iterator() as queue_iter:
-#             async for message in queue_iter:
-#                 async with message.process():
-#                     logging.info(f"bot got msg from rabbit: {message.body.decode()}")
-#
-#                     await send_payment_url(message.body.decode())
-#
-#                     if queue.name in message.body.decode():
-#                         break
