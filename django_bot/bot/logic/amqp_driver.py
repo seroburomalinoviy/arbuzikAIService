@@ -16,6 +16,8 @@ from bot.logic.utils import get_moscow_time
 from bot.structures.schemas import PayUrl, RVCData, Payment
 from bot.tasks import check_pay_ukassa
 
+from typing import Awaitable, Callable
+
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 django.setup()
@@ -23,6 +25,8 @@ django.setup()
 from user.models import Order
 
 load_dotenv()
+
+AsyncFunc = Callable[[str], Awaitable[None]]
 
 
 class PikaConnector:
@@ -79,7 +83,7 @@ async def send_payment_answer(data):
         )
 
 
-async def send_payment_url(data):
+async def send_payment_url(data: str):
     logging.info(f'send_payment_url: {data=}')
     payment_page = PayUrl(**json.loads(data))
 
@@ -149,7 +153,7 @@ async def push_amqp_message(data: dict, routing_key):
     logging.info(f"message {payload} sent to rabbit")
 
 
-def amqp_message_handler(func: asyncio.coroutine):
+def amqp_message_handler(func: AsyncFunc):
     async def process_message(message: aio_pika.IncomingMessage):
         async with message.process():
             msg = message.body.decode()
@@ -158,7 +162,7 @@ def amqp_message_handler(func: asyncio.coroutine):
     return process_message
 
 
-async def amqp_listener(queue_name: str, func: asyncio.coroutine):
+async def amqp_listener(queue_name: str, func: AsyncFunc):
     connection = await PikaConnector.connector()
     channel = await connection.channel()
     queue = await channel.declare_queue(queue_name, durable=True)
