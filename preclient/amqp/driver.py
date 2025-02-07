@@ -17,7 +17,7 @@ class PikaConnector:
                 login=os.getenv("RABBIT_USER"),
                 password=os.getenv("RABBIT_PASSWORD"),
             )
-            logging.info(f"Preclient connected to rabbit")
+            logging.info(f"Connected from Preclient to RabbitMQ")
             return connector
         except aio_pika.exceptions.CONNECTION_EXCEPTIONS as e:
             logging.error(e)
@@ -29,7 +29,7 @@ def _amqp_message_handler(func: AsyncFunc):
     async def process_message(message: aio_pika.IncomingMessage):
         async with message.process():
             msg = message.body.decode()
-            logging.info(f"Preclient got msg from rabbit:\n{msg}")
+            logging.info(f"A message from RabbitMQ to Preclient:\n{msg}")
             await func(msg)
     return process_message
 
