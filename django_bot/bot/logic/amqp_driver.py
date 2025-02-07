@@ -47,7 +47,7 @@ class PikaConnector:
             return await cls.connector()
 
 
-async def send_payment_answer(data):
+async def send_payment_answer(data: str):
     payment = Payment(**json.loads(data))
     order = await Order.objects.select_related("user", "subscription").aget(id=payment.order_id)
 
