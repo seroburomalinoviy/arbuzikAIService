@@ -32,7 +32,7 @@ def _amqp_message_handler(func: AsyncFunc):
     async def process_message(message: aio_pika.IncomingMessage):
         async with message.process():
             msg = message.body.decode()
-            logging.info(f"A message from Bot to RVC:\n{msg}")
+            logging.info(f"A message from Bot to RVC (by Redis):\n{msg}")
             await func(msg)
     return process_message
 

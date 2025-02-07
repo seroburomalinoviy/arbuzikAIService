@@ -36,6 +36,9 @@ def log_journal(func):
         )
         return await func(*args, **kwargs)
 
+    logging.info(
+        f"JOURNAL: {func.__name__}"
+    )
     return wrapper
 
 
