@@ -67,11 +67,11 @@ def convert_to_voice(path):
     )
 
 
-def push_amqp_message(payload):
-    routing_key = "rvc-to-bot"
+def push_amqp_message(payload, routing_key="rvc-to-bot"):
 
     with _create_connection() as connection:
         channel = connection.channel()
+        queue = channel.queue_declare(routing_key, durable=True)
         logging.info("message is publishing")
         channel.basic_publish(
             exchange="",
