@@ -42,10 +42,7 @@ async def amqp_listener(queue_name: str, func: AsyncFunc):
     channel = await connection.channel()
     queue = await channel.declare_queue(queue_name, durable=True)
 
-    while True:
-        try:
-            await queue.consume(_amqp_message_handler(func))
-        except Exception as e:
-            logging.info(f"Preclient error\n{e}")
+    await queue.consume(_amqp_message_handler(func))
+    await asyncio.Future()
 
 
