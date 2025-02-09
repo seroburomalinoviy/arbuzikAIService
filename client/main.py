@@ -2,14 +2,12 @@ import logging
 from logging.handlers import RotatingFileHandler
 import os
 import asyncio
-import sys
 import json
 import pika
 
 import async_timeout
 import redis
 import requests
-from redis.exceptions import ConnectionError, DataError, NoScriptError, RedisError, ResponseError
 from dotenv import load_dotenv
 from time import perf_counter
 
@@ -162,5 +160,6 @@ if __name__ == "__main__":
     rotating_handler.setFormatter(formatter)
     logging.basicConfig(level=logging.INFO, format=log_format, datefmt="%Y-%m-%d %H:%M:%S")
     logging.getLogger('').addHandler(rotating_handler)
+    logging.getLogger('pika').setLevel(logging.WARNING)
 
     asyncio.run(main())
