@@ -42,19 +42,19 @@ async def push_amqp_message(data: dict, routing_key: str) -> None:
     logging.info(f"A message from Bot to RVC (by Preclient over RabbitMQ)\n{payload} ")
 
 
-def _amqp_message_handler(func: AsyncFunc):
+def _amqp_message_handler(task: AsyncFunc):
     async def process_message(message: aio_pika.IncomingMessage):
         async with message.process():
             msg = message.body.decode()
             logging.info(f"A message from RVC to Bot\n{msg}")
-            await func(msg)
+            await task(msg)
     return process_message
 
 
-async def amqp_listener(queue_name: str, func: AsyncFunc):
+async def amqp_listener(queue_name: str, task: AsyncFunc):
     connection = await PikaConnector.connector()
     channel = await connection.channel()
     queue = await channel.declare_queue(queue_name, durable=True)
 
-    await queue.consume(_amqp_message_handler(func))
+    await queue.consume(_amqp_message_handler(task))
     await asyncio.Future()

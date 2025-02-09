@@ -19,6 +19,11 @@ from user.models import Order
 
 
 async def send_payment_answer(data: str):
+    """
+    Send answer from Payment to Bot after got payment
+    :param data:
+    :return:
+    """
     payment = Payment(**json.loads(data))
     order = await Order.objects.select_related("user", "subscription").aget(id=payment.order_id)
 
@@ -55,6 +60,11 @@ async def send_payment_answer(data: str):
 
 
 async def send_payment_url(data: str):
+    """
+    Send the generated url for payment to Bot
+    :param data:
+    :return:
+    """
     logging.info(f'send_payment_url:\n{data=}')
     payment_page = PayUrl(**json.loads(data))
 
@@ -78,7 +88,9 @@ async def send_payment_url(data: str):
 
 async def send_rvc_answer(data: str):
     """
-    Send voice to user from RVC-NN
+    Send the answer from RVC to Bot
+    :param data:
+    :return:
     """
     audio = RVCData(**json.loads(data))
 
@@ -86,7 +98,7 @@ async def send_rvc_answer(data: str):
     async with aiofiles.open(file_path, 'rb') as f:
         voice_file_data = await f.read()
 
-    logging.debug(f"file_path: {file_path}")
+    logging.info(f"file_path: {file_path}")
 
     await audio.bot.delete_message(
         chat_id=audio.chat_id,
