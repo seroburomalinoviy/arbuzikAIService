@@ -85,7 +85,7 @@ async def reader(r: redis.Redis):
             async with (async_timeout.timeout(1)):
                 name_of_list = "raw-data"
 
-                message_from_list = r.blpop(name_of_list)
+                message_from_list = r.blpop([name_of_list])
                 logging.info(f"{message_from_list=}")
                 if message_from_list:
 
