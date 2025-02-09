@@ -19,5 +19,5 @@ services:
 
   payment-api:
     build: ./payment-service
-    image: localhost:5000/payment-api
+    image: localhost:5000/payment-api:latest
     pull_policy: build
