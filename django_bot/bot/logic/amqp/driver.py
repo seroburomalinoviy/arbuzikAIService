@@ -57,4 +57,4 @@ async def amqp_listener(queue_name: str, func: AsyncFunc):
     queue = await channel.declare_queue(queue_name, durable=True)
 
     await queue.consume(_amqp_message_handler(func))
-    return connection
+    await asyncio.Future()
