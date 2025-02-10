@@ -523,7 +523,7 @@ def get_vc(sid, to_return_protect0, to_return_protect1):
         )
     person = "%s/%s" % (weight_root, sid)
     print("loading %s" % person)
-    cpt = torch.load(person, map_location="cpu", weights_only=False)
+    cpt = torch.load(person, map_location="cpu")
     tgt_sr = cpt["config"][-1]
     cpt["config"][-3] = cpt["weight"]["emb_g.weight"].shape[0]  # n_spk
     if_f0 = cpt.get("f0", 1)
@@ -1476,7 +1476,7 @@ def change_info_(ckpt_path):
 
 
 def export_onnx(ModelPath, ExportedPath):
-    cpt = torch.load(ModelPath, map_location="cpu", weights_only=False)
+    cpt = torch.load(ModelPath, map_location="cpu")
     cpt["config"][-3] = cpt["weight"]["emb_g.weight"].shape[0]
     vec_channels = 256 if cpt.get("version", "v1") == "v1" else 768
 
