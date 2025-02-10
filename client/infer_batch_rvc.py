@@ -176,7 +176,7 @@ def vc_single(sid, input_audio, f0_up_key, f0_file, f0_method, file_index, index
 def get_vc(model_path):
     global n_spk, tgt_sr, net_g, vc, cpt, device, is_half, version
     print("loading pth %s" % model_path)
-    cpt = torch.load(model_path, map_location="cpu", weights_only=False)
+    cpt = torch.load(model_path, map_location="cpu")
     tgt_sr = cpt["config"][-1]
     cpt["config"][-3] = cpt["weight"]["emb_g.weight"].shape[0]  # n_spk
     if_f0 = cpt.get("f0", 1)
