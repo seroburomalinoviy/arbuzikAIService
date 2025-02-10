@@ -1,15 +1,6 @@
 pydantic==1.10.2
-gradio==3.34.0
 pika
 aio-pika==9.4.0
-faiss-gpu
-ffmpeg
-ffmpeg-python==0.2.0
-praat-parselmouth==0.4.2
-pyworld==0.3.2
-numpy==1.23.5
-numba==0.56.4
-librosa==0.9.1
 python-dotenv==1.0.1
 redis==5.0.2
 absl-py==1.4.0
@@ -43,7 +34,6 @@ edge-tts==6.1.5
 elevenlabs==0.2.21
 entrypoints==0.4
 executing==1.2.0
-fairseq==0.12.2
 faiss-cpu==1.7.2
 fastapi==0.88.0
 ffmpy==0.0.3
@@ -166,4 +156,3 @@ websockets==10.4
 Werkzeug==2.2.3
 yarl==1.8.2
 zipp==3.15.0
-fairseq
