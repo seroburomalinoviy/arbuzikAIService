@@ -81,7 +81,7 @@ class RVC:
             else:
                 self.model = self.model.float()
             self.model.eval()
-            cpt = torch.load(pth_path, map_location="cpu")
+            cpt = torch.load(pth_path, map_location="cpu", weights_only=False)
             self.tgt_sr = cpt["config"][-1]
             cpt["config"][-3] = cpt["weight"]["emb_g.weight"].shape[0]  # n_spk
             self.if_f0 = cpt.get("f0", 1)

@@ -58,7 +58,7 @@ class RVC:
                 hubert_model = hubert_model.float()
             hubert_model.eval()
             self.model = hubert_model
-            cpt = torch.load(pth_path, map_location="cpu")
+            cpt = torch.load(pth_path, map_location="cpu", weights_only=False)
             self.tgt_sr = cpt["config"][-1]
             cpt["config"][-3] = cpt["weight"]["emb_g.weight"].shape[0]
             self.if_f0 = cpt.get("f0", 1)
