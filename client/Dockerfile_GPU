@@ -12,7 +12,7 @@ RUN apt-get -y install build-essential python3-dev
 RUN apt install --no-install-recommends -y build-essential gcc
 
 RUN pip install --no-cache-dir --upgrade --ignore-installed --target=/app/reqs setuptools wheel
-RUN pip install --no-cache-dir --ignore-installed --target=/app/reqs torch==2.0.0 faiss-gpu fairseq==0.12.2 gradio==3.34.0 ffmpeg ffmpeg-python==0.2.0 praat-parselmouth==0.4.2 pyworld==0.3.2 numpy==1.23.5 numba==0.56.4 librosa==0.9.1
+RUN pip install --no-cache-dir --ignore-installed --target=/app/reqs torch==2.4.1 faiss-gpu fairseq==0.12.2 gradio==3.34.0 ffmpeg ffmpeg-python==0.2.0 praat-parselmouth==0.4.2 pyworld==0.3.2 numpy==1.23.5 numba==0.56.4 librosa==0.9.1
 RUN pip install --no-cache-dir --ignore-installed --no-deps --target=/app/reqs -r requirements.txt \
 && pip install --upgrade pip \
 && pip install --upgrade --no-cache-dir --target=/app/reqs lxml \
