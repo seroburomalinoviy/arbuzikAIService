@@ -1,6 +1,4 @@
-import json
 from pydantic import BaseModel
-from typing import ClassVar
 
 
 class PayUrl(BaseModel):
