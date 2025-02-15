@@ -75,7 +75,7 @@ class PreparedFile:
         sound = AudioSegment.from_file(self.path)
         return sound.duration_seconds
 
-    async def _trim_audio(self):
+    def _trim_audio(self):
         obj = AudioSegment.from_file(self.path)
         obj[: self.user.subscription.time_voice_limit * 1001].export(self.path)
         self.duration = self.user.subscription.time_voice_limit
