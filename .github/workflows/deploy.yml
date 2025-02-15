@@ -81,6 +81,8 @@ jobs:
             docker service update --image localhost:5000/client:latest arb_client
             docker service update --image localhost:5000/preclient:latest arb_preclient
             docker service update --image localhost:5000/preclient:latest arb_prometheus-server
+            sleep 5
+            docker builder prune -f
             docker image prune -af
 
 #    - name: Deploy dev branch
