@@ -1,3 +1,4 @@
+#syntax=docker/dockerfile:1.7-labs
 FROM python:3.10-bullseye AS builder
 
 ENV PYTHONUNBUFFERED=1
