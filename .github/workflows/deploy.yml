@@ -40,8 +40,6 @@ jobs:
           port: ${{ secrets.SSH_PORT_PROD }}
           script: |
             cd arbuzikAIService/
-            git switch main
-            git pull origin main
             docker compose -f docker-compose.build.yml build client
   push_client:
     needs: build_client
@@ -58,7 +56,6 @@ jobs:
           port: ${{ secrets.SSH_PORT_PROD }}
           script: |
             cd arbuzikAIService/
-            git switch main
             docker push localhost:5000/client:latest
   deploy:
     needs: push_client
@@ -75,7 +72,6 @@ jobs:
           port: ${{ secrets.SSH_PORT_PROD }}
           script: |
             cd arbuzikAIService/
-            git switch main
             docker stack rm arb
             docker stack deploy -c docker-compose.deploy.yml arb
             docker builder prune -af
