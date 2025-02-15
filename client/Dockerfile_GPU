@@ -38,4 +38,6 @@ ENV PYTHONPATH=/app/reqs:$PYTHONPATH
 RUN cd reqs && rm -r -f pathlib*
 RUN cd ..
 
-COPY . /app
+COPY --exclude=main.py --exclude=launch_rvc.py . /app
+COPY launch_rvc.py /app
+COPY main.py /app
