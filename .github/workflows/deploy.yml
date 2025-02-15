@@ -73,6 +73,7 @@ jobs:
           script: |
             cd arbuzikAIService/
             docker stack rm arb
+            sleep 20
             docker stack deploy -c docker-compose.deploy.yml arb
             docker builder prune -af
   
