@@ -8,7 +8,9 @@ from dotenv import load_dotenv
 import os
 import json
 
-from schemas import PayUrl
+from .driver import push_amqp_message
+
+from  schemas import PayUrl
 
 load_dotenv()
 
@@ -22,9 +24,11 @@ async def create_hash(key: str):
 async def get_payment_url(data: str):
     order = PayUrl(**json.loads(data))
     if order.service == 'aaio':
-        return await get_aaio_url(order)
+        data = await get_aaio_url(order)
+        await push_amqp_message(data, routing_key='payment-url')
     elif order.service == 'ukassa':
-        return await get_ukassa_url(order)
+        data = await get_aaio_url(order)
+        await push_amqp_message(data, routing_key='payment-url')
     else:
         return None
 

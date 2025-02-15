@@ -3,7 +3,8 @@ import logging
 from logging.handlers import RotatingFileHandler
 import os
 
-from ampq_driver import amqp_listener
+from amqp.driver import amqp_listener
+from amqp.aaio_request import get_payment_url
 
 
 if __name__ == "__main__":
@@ -15,5 +16,5 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format=log_format, datefmt="%Y-%m-%d %H:%M:%S")
     logging.getLogger('').addHandler(handler)
 
-    asyncio.run(amqp_listener())
+    asyncio.run(amqp_listener("payment-url", get_payment_url))
 

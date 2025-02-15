@@ -1,12 +1,12 @@
 import json
 
-from ampq_driver import push_amqp_message
-from aaio_request import get_actual_ips, create_hash
+from amqp.driver import push_amqp_message
+from amqp.aaio_request import get_actual_ips, create_hash
 
 import os
 import logging
 from logging.handlers import RotatingFileHandler
-from schemas import Payment
+from amqp.schemas import Payment
 from fastapi import FastAPI, Request, Header
 from fastapi.responses import Response, HTMLResponse
 from fastapi.encoders import jsonable_encoder
