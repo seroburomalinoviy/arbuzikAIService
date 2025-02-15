@@ -81,20 +81,7 @@ jobs:
             docker service update --image localhost:5000/client:latest arb_client
             docker service update --image localhost:5000/preclient:latest arb_preclient
             docker service update --image localhost:5000/preclient:latest arb_prometheus-server
-            docker builder prune -f
-  
-    
-    
-
-#          docker service update --image localhost:5000/payment-api:latest arb_payment-api
-#          docker service update --image localhost:5000/payment-api:latest arb_payment-listener
-#          docker service update --image localhost:5000/django:latest arb_bot
-#          docker service update --image localhost:5000/django:latest arb_django
-#          docker service update --image localhost:5000/django:latest arb_celery-worker
-#          docker service update --image localhost:5000/django:latest arb_celery-scheduler
-#          docker service update --image localhost:5000/client:latest arb_client
-#          docker service update --image localhost:5000/preclient:latest arb_preclient
-#          docker service update --image localhost:5000/preclient:latest arb_prometheus-server
+            docker image prune -af
 
 #    - name: Deploy dev branch
 #      if: github.ref == 'refs/heads/dev'
