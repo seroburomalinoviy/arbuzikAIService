@@ -10,7 +10,7 @@ import json
 
 from .driver import push_amqp_message
 
-from  schemas import PayUrl
+from .schemas import PayUrl
 
 load_dotenv()
 
