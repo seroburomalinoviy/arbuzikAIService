@@ -9,7 +9,6 @@ import os
 import json
 
 from .driver import push_amqp_message
-
 from .schemas import PayUrl
 
 load_dotenv()
