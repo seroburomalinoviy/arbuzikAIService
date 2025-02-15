@@ -89,8 +89,6 @@ class PreparedFile:
             self.duration = self.obj.duration
 
         if self.duration > self.user.subscription.time_voice_limit:
-            logger.info(f"{self.duration=}")
-            logger.info(f"{self.user.subscription.time_voice_limit=}")
             await asyncio.to_thread(self._trim_audio)
 
     @property
