@@ -13,6 +13,8 @@ from telegram import Voice as TelegramVoice
 from telegram import Audio as TelegramAudio
 from telegram import Document as TelegramDocument
 
+logger = logging.getLogger(__name__)
+
 
 def get_moscow_time() -> datetime:
     return datetime.now(tz=ZoneInfo(settings.TIME_ZONE))
@@ -55,7 +57,7 @@ class PreparedFile:
             self.obj = None
 
     async def is_valid_size(self):
-        if self.obj.file_size >= 20_000_000:  # 20МБ
+        if self.obj.file_size >= 10_000_000:  # 10МБ
             return False
         return True
 
@@ -87,6 +89,8 @@ class PreparedFile:
             self.duration = self.obj.duration
 
         if self.duration > self.user.subscription.time_voice_limit:
+            logger.info(f"{self.duration=}")
+            logger.info(f"{self.user.subscription.time_voice_limit=}")
             await asyncio.to_thread(self._trim_audio)
 
     @property
