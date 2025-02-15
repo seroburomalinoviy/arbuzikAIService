@@ -3,14 +3,13 @@ on:
   push:
     branches:
       - main
-      - dev
 jobs:
 
-  deploy:
-    name: deployment
+  build_push_main_stack:
+    name: build and push main stack
     runs-on: ubuntu-latest
     steps:
-    - name: Deploy main branch
+    - name: Build and push main branch
       if: github.ref == 'refs/heads/main'
       uses: appleboy/ssh-action@master
       with:
@@ -24,12 +23,46 @@ jobs:
           git pull origin main
           docker compose -f docker-compose.build.yml build
           docker push localhost:5000/preclient:latest
-          docker push localhost:5000/client:latest
           docker push localhost:5000/django:latest
           docker push localhost:5000/payment-api:latest
-          docker stack rm arb
-          docker stack deploy -c docker-compose.deploy.yml arb
-          docker builder prune -af
+  push_client:
+    name: push client
+    runs-on: ubuntu-latest
+    steps:
+      - name: Push main branch
+        if: github.ref == 'refs/heads/main'
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST_PROD }}
+          username: ${{ secrets.SSH_USER_PROD }}
+          key: ${{ secrets.SSH_KEY_PROD }}
+          port: ${{ secrets.SSH_PORT_PROD }}
+          script: |
+            cd arbuzikAIService/
+            git switch main
+            docker push localhost:5000/client:latest
+  deploy:
+    name: deploy stack
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy main branch
+        if: github.ref == 'refs/heads/main'
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST_PROD }}
+          username: ${{ secrets.SSH_USER_PROD }}
+          key: ${{ secrets.SSH_KEY_PROD }}
+          port: ${{ secrets.SSH_PORT_PROD }}
+          script: |
+            cd arbuzikAIService/
+            git switch main
+            docker stack rm arb
+            docker stack deploy -c docker-compose.deploy.yml arb
+            docker builder prune -af
+  
+    
+    
+
 #          docker service update --image localhost:5000/payment-api:latest arb_payment-api
 #          docker service update --image localhost:5000/payment-api:latest arb_payment-listener
 #          docker service update --image localhost:5000/django:latest arb_bot
