@@ -5,7 +5,7 @@ on:
       - main
 jobs:
 
-  build_push_main_stack:
+  build_and_push_main_stack:
     name: build and push main stack
     runs-on: ubuntu-latest
     steps:
@@ -21,11 +21,30 @@ jobs:
           cd arbuzikAIService/
           git switch main
           git pull origin main
-          docker compose -f docker-compose.build.yml build
+          docker compose -f docker-compose.build.yml build preclient django payment-api
           docker push localhost:5000/preclient:latest
           docker push localhost:5000/django:latest
           docker push localhost:5000/payment-api:latest
+  build_client:
+    needs: build_and_push_main_stack
+    name: build client
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build main branch
+        if: github.ref == 'refs/heads/main'
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST_PROD }}
+          username: ${{ secrets.SSH_USER_PROD }}
+          key: ${{ secrets.SSH_KEY_PROD }}
+          port: ${{ secrets.SSH_PORT_PROD }}
+          script: |
+            cd arbuzikAIService/
+            git switch main
+            git pull origin main
+            docker compose -f docker-compose.build.yml build client
   push_client:
+    needs: build_client
     name: push client
     runs-on: ubuntu-latest
     steps:
@@ -42,6 +61,7 @@ jobs:
             git switch main
             docker push localhost:5000/client:latest
   deploy:
+    needs: push_client
     name: deploy stack
     runs-on: ubuntu-latest
     steps:
