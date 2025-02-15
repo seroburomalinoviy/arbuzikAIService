@@ -1,5 +1,5 @@
 import logging
-from logging.handlers import RotatingFileHandler
+from logging.config import dictConfig
 import os
 import asyncio
 import json
@@ -12,6 +12,7 @@ from dotenv import load_dotenv
 from time import perf_counter
 
 from launch_rvc import starter_infer
+import logging_config
 
 load_dotenv()
 
@@ -153,12 +154,7 @@ async def main():
 
 if __name__ == "__main__":
     os.makedirs('/logs', exist_ok=True)
-    rotating_handler = RotatingFileHandler('/logs/client.log', backupCount=5, maxBytes=512 * 1024)
-    log_format = "%(asctime)s - %(levelname)s - %(name)s - %(message)s >>> %(funcName)s(%(lineno)d)"
-    formatter = logging.Formatter(log_format)
-    rotating_handler.setFormatter(formatter)
-    logging.basicConfig(level=logging.INFO, format=log_format, datefmt="%Y-%m-%d %H:%M:%S")
-    logging.getLogger('').addHandler(rotating_handler)
+    dictConfig(logging_config.config)
     logging.getLogger('pika').setLevel(logging.WARNING)
 
     asyncio.run(main())
