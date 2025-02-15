@@ -29,6 +29,7 @@ jobs:
           docker push localhost:5000/payment-api:latest
           docker stack rm arb
           docker stack deploy -c docker-compose.deploy.yml arb
+          docker builder prune -af
 #          docker service update --image localhost:5000/payment-api:latest arb_payment-api
 #          docker service update --image localhost:5000/payment-api:latest arb_payment-listener
 #          docker service update --image localhost:5000/django:latest arb_bot
