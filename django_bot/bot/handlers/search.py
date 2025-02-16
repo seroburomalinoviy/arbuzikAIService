@@ -3,6 +3,7 @@ import os
 import django
 from dotenv import load_dotenv
 import logging
+import traceback
 
 from telegram import Update, InlineQueryResultArticle, InputTextMessageContent
 from telegram.ext import ContextTypes, ConversationHandler
@@ -47,5 +48,5 @@ async def inline_searching(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         await query.answer(results, cache_time=300, auto_pagination=True)
     except:
-        logger.warning('A voice did not get an image')
+        logger.error(f'A voice did not get an icon, traceback: {traceback.format_exc()}')
     return ConversationHandler.END

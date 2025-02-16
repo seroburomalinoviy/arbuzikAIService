@@ -4,6 +4,7 @@ import aio_pika
 import json
 import asyncio
 from typing import Awaitable, Callable
+import traceback
 
 logger = logging.getLogger(__name__)
 
@@ -20,12 +21,17 @@ class PikaConnector:
                 login=os.getenv("RABBIT_USER"),
                 password=os.getenv("RABBIT_PASSWORD"),
             )
-            logger.info(f"Connected from Bot to RabbitMQ")
-            return connector
         except aio_pika.exceptions.CONNECTION_EXCEPTIONS as e:
             logger.error(e)
             await asyncio.sleep(3)
             return await cls.connector()
+        except:
+            logger.error(f"Uncaught error: {traceback.format_exc()}")
+            await asyncio.sleep(3)
+            return await cls.connector()
+        else:
+            logger.info(f"Connected from Bot to RabbitMQ")
+            return connector
 
 
 async def push_amqp_message(data: dict, routing_key: str) -> None:

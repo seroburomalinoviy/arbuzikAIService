@@ -4,8 +4,11 @@ import logging
 from typing import Callable, Awaitable
 import asyncio
 from dotenv import load_dotenv
+import traceback
 
 load_dotenv()
+
+logger = logging.getLogger(__name__)
 
 AsyncFunc = Callable[[str], Awaitable[None]]
 
@@ -15,17 +18,22 @@ class PikaConnector:
     async def connector(cls):
         try:
             connector = await aio_pika.connect_robust(
-                host=os.environ.get("RABBIT_HOST"),
-                port=int(os.environ.get("RABBIT_PORT")),
-                login=os.environ.get("RABBIT_USER"),
-                password=os.environ.get("RABBIT_PASSWORD"),
+                host=os.getenv("RABBIT_HOST"),
+                port=int(os.getenv("RABBIT_PORT")),
+                login=os.getenv("RABBIT_USER"),
+                password=os.getenv("RABBIT_PASSWORD"),
             )
-            logging.info(f"Connected from Preclient to RabbitMQ")
-            return connector
         except aio_pika.exceptions.CONNECTION_EXCEPTIONS as e:
-            logging.error(e)
+            logger.error(e)
             await asyncio.sleep(3)
             return await cls.connector()
+        except:
+            logger.error(f"Uncaught error: {traceback.format_exc()}")
+            await asyncio.sleep(3)
+            return await cls.connector()
+        else:
+            logger.info(f"Connected from Bot to RabbitMQ")
+            return connector
 
 
 def _amqp_message_handler(func: AsyncFunc):
@@ -42,7 +50,10 @@ async def amqp_listener(queue_name: str, func: AsyncFunc):
     channel = await connection.channel()
     queue = await channel.declare_queue(queue_name, durable=True)
 
-    await queue.consume(_amqp_message_handler(func))
-    await asyncio.Future()
+    try:
+        await queue.consume(_amqp_message_handler(func))
+        await asyncio.Future()
+    except:
+        logger.error(f"Unkown error: {traceback.format_exc()}")
 
 

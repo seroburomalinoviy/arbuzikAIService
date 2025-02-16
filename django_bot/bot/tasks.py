@@ -7,6 +7,7 @@ import json
 import amqp
 from dotenv import load_dotenv
 import os
+import traceback
 
 from bot.structures.schemas import Payment
 
@@ -63,6 +64,8 @@ def check_pay_aaio(order_id: str):
         msg = 'ReadTimeout: Не хватило времени на выполнение запроса'
         logger.error(msg)
         return msg
+    except:
+        logger.error(f"Uncaught error: {traceback.format_exc()}")
 
     if response.status_code not in [200, 400, 401]:
         msg = 'Response code: ' + str(response.status_code)
@@ -71,8 +74,8 @@ def check_pay_aaio(order_id: str):
     else:
         try:
             response_json = response.json()
-        except Exception as e:
-            msg = f'Не удалось пропарсить ответ: {e}'
+        except:
+            msg = f'Не удалось пропарсить ответ: {traceback.format_exc()}'
             logger.error(msg)
 
         if response_json['type'] != 'success':
@@ -142,8 +145,8 @@ def check_pay_ukassa(order_id: str, payment_id: str, timer:int):
     try:
         auth = HTTPBasicAuth(username=UKASSA_SHOP_ID, password=UKASSA_SECRET_KEY)
         response = requests.get(url=f"{UKASSA_API_URL}/{payment_id}", auth=auth)
-    except Exception as e:
-        msg = f"Ukassa request error: {e}"
+    except:
+        msg = f"Ukassa request error: {traceback.format_exc()}"
         logger.error(msg)
         return msg
 
