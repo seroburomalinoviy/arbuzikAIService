@@ -1,5 +1,5 @@
 import logging
-from logging.handlers import RotatingFileHandler
+from logging.config import dictConfig
 import os
 import asyncio
 import json
@@ -12,6 +12,9 @@ from dotenv import load_dotenv
 from time import perf_counter
 
 from launch_rvc import starter_infer
+import logging_config
+
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 
@@ -76,7 +79,7 @@ def push_amqp_message(payload, routing_key="rvc-to-bot"):
             body=json.dumps(payload).encode(),
         )
 
-    logging.info(f"A message from RVC to BOT: \n{payload}")
+    logger.info(f"A message from RVC to BOT: \n{payload}")
 
 
 async def reader(r: redis.Redis):
@@ -86,12 +89,12 @@ async def reader(r: redis.Redis):
                 name_of_list = "raw-data"
 
                 message_from_list = r.blpop([name_of_list])
-                logging.info(f"{message_from_list=}")
+                logger.info(f"{message_from_list=}")
                 if message_from_list:
 
                     payload: dict = json.loads(message_from_list[1])
 
-                    logging.info(f"Got payload: {payload}")
+                    logger.info(f"Got payload: {payload}")
 
                     voice_name = payload.get('voice_name')
                     extension = payload.get('extension')
@@ -104,7 +107,7 @@ async def reader(r: redis.Redis):
                     infer_parameters["output_file_name"] = voice_filename + ".tmp" if extension == ".ogg" else voice_filename
                     infer_parameters["transposition"] = payload.get('pitch')
 
-                    logging.info(
+                    logger.info(
                         f"infer parameters: {infer_parameters['model_name']=},\n"
                         f" {infer_parameters['source_audio_path']=},\n"
                         f"{infer_parameters['output_file_name']=}\n"
@@ -114,29 +117,29 @@ async def reader(r: redis.Redis):
 
                     start = perf_counter()
                     starter_infer(**infer_parameters)
-                    logging.info(f"NN finished for: {perf_counter() - start}")
+                    logger.info(f"NN finished for: {perf_counter() - start}")
 
                     if extension == ".ogg":
                         convert_to_voice(voice_path)
 
                         time_per_task = float(perf_counter() - start)
-                        logging.info(
+                        logger.info(
                             f"NN + Formatting finished for: {time_per_task}"
                         )
 
                     response = requests.post('http://prometheus-server:9001/api/add_speed', json={"speed": time_per_task})
-                    logging.info(f"Response from prometheus-server [add_speed]: {response.status_code}")
+                    logger.info(f"Response from prometheus-server [add_speed]: {response.status_code}")
 
                     response = requests.get('http://prometheus-server:9001/api/complete_task')
-                    logging.info(f"Response from prometheus-server [complete_task]: {response.status_code}")
+                    logger.info(f"Response from prometheus-server [complete_task]: {response.status_code}")
 
                     payload["voice_filename"] = voice_filename
-                    logging.debug(payload)
+                    logger.debug(payload)
 
                     push_amqp_message(payload)
 
         except asyncio.TimeoutError as e:
-            logging.error(e)
+            logger.error(e)
 
 
 async def main():
@@ -144,21 +147,16 @@ async def main():
     try:
         r = redis.Redis(host=host, port=int(port), retry_on_timeout=True)
     except redis.exceptions.ConnectionError:
-        logging.info(f"Redis ConnectionError: {host=} {port=}")
+        logger.info(f"Redis ConnectionError: {host=} {port=}")
     except Exception as e:
-        logging.info(f"Exception during Redis connection\n{e}")
+        logger.info(f"Exception during Redis connection\n{e}")
     else:
         await asyncio.create_task(reader(r))
 
 
 if __name__ == "__main__":
     os.makedirs('/logs', exist_ok=True)
-    rotating_handler = RotatingFileHandler('/logs/client.log', backupCount=5, maxBytes=512 * 1024)
-    log_format = "%(asctime)s - %(levelname)s - %(name)s - %(message)s >>> %(funcName)s(%(lineno)d)"
-    formatter = logging.Formatter(log_format)
-    rotating_handler.setFormatter(formatter)
-    logging.basicConfig(level=logging.INFO, format=log_format, datefmt="%Y-%m-%d %H:%M:%S")
-    logging.getLogger('').addHandler(rotating_handler)
+    dictConfig(logging_config.config)
     logging.getLogger('pika').setLevel(logging.WARNING)
 
     asyncio.run(main())

@@ -7,6 +7,8 @@ import scipy.io.wavfile as wavfile
 
 import logging
 
+logger = logging.getLogger(__name__)
+
 load_dotenv()
 
 
@@ -40,12 +42,12 @@ def starter_infer(
             "csvdb/formanting.csv", "w+", "formanting", DoFormant, Quefrency, Timbre
         )
 
-    logging.info("[Mangio-RVC] starter_infer: Starting the inference...")
+    logger.info("[Mangio-RVC] starter_infer: Starting the inference...")
     try:
         vc_data = get_vc(model_name, protection_amnt, protect1)
     except Exception as e:
-        logging.error(f"[vc_data error] {e}")
-    logging.info("[Mangio-RVC] starter_infer: Performing inference...")
+        logger.error(f"[vc_data error] {e}")
+    logger.info("[Mangio-RVC] starter_infer: Performing inference...")
 
     try:
         conversion_data = vc_single(
@@ -65,10 +67,10 @@ def starter_infer(
             crepe_hop_length,
         )
     except Exception as e:
-        logging.error(f"[vc_single error] {e}")
+        logger.error(f"[vc_single error] {e}")
 
     if "Success." in conversion_data[0]:
-        logging.info(
+        logger.info(
             "[Mangio-RVC] starter_infer: Inference succeeded. Writing to %s/%s..."
             % ("audio-outputs", output_file_name)
         )
@@ -80,14 +82,14 @@ def starter_infer(
                 conversion_data[1][1],
             )
         except Exception as e:
-            logging.error(f"[wavfile error] {e}")
+            logger.error(f"[wavfile error] {e}")
 
-        logging.info(
+        logger.info(
             "[Mangio-RVC] starter_infer: Finished! Saved output to %s/%s"
             % (result_path, output_file_name)
         )
     else:
-        logging.info(
+        logger.info(
             "[Mangio-RVC] starter_infer: Inference failed. Here's the traceback: "
         )
-        logging.info(conversion_data[0])
+        logger.info(conversion_data[0])
