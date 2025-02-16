@@ -144,7 +144,7 @@ def check_pay_ukassa(order_id: str, payment_id: str, timer:int):
         response = requests.get(url=f"{UKASSA_API_URL}/{payment_id}", auth=auth)
     except Exception as e:
         msg = f"Ukassa request error: {e}"
-        logging.error(msg)
+        logger.error(msg)
         return msg
 
     if response.status_code != 200:
@@ -160,10 +160,10 @@ def check_pay_ukassa(order_id: str, payment_id: str, timer:int):
             msg = "too_many_requests"
         elif response.status_code == 500:
             msg = "internal_server_error"
-        logging.info(f'{msg}: {response.status_code=}\n{response.json()=}')
+        logger.info(f'{msg}: {response.status_code=}\n{response.json()=}')
         return msg
 
-    logging.info(f'{msg}: {response.status_code=}\n{response.json()=}')
+    logger.info(f'{msg}: {response.status_code=}\n{response.json()=}')
 
     ans = response.json()
     if ans['status'] == 'canceled':
@@ -194,7 +194,7 @@ def check_pay_ukassa(order_id: str, payment_id: str, timer:int):
 
         payload = json.dumps(payment.model_dump())
 
-        logging.info(f'{msg}: {response.status_code=}\n{payload}')
+        logger.info(f'{msg}: {response.status_code=}\n{payload}')
 
         with amqp.Connection(
                 host=f'{os.environ.get("RABBIT_HOST")}:{os.environ.get("RABBIT_PORT")}',

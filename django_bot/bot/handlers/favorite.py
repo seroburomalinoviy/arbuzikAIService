@@ -1,7 +1,6 @@
 import os
 from uuid import uuid4
 import django
-import logging
 from asgiref.sync import sync_to_async
 from dotenv import load_dotenv
 

@@ -17,6 +17,8 @@ django.setup()
 
 from user.models import Order
 
+logger = logging.getLogger(__name__)
+
 
 async def send_payment_answer(data: str):
     """
@@ -65,14 +67,14 @@ async def send_payment_url(data: str):
     :param data:
     :return:
     """
-    logging.info(f'send_payment_url:\n{data=}')
+    logger.info(f'send_payment_url:\n{data=}')
     payment_page = PayUrl(**json.loads(data))
 
     last_timer = int(os.getenv('UKASSA_TIME_WAITING_PAYMENT_MIN', 11))
     for timer in range(1, last_timer+1, 4):
         check_pay_ukassa.apply_async(args=[payment_page.order_id, payment_page.payment_id, timer], countdown=60*timer)
 
-    logging.info(f'Sending payment url to {payment_page.chat_id}')
+    logger.info(f'Sending payment url to {payment_page.chat_id}')
 
     await payment_page.bot.send_message(
         chat_id=payment_page.chat_id,
@@ -98,7 +100,7 @@ async def send_rvc_answer(data: str):
     async with aiofiles.open(file_path, 'rb') as f:
         voice_file_data = await f.read()
 
-    logging.info(f"file_path: {file_path}")
+    logger.info(f"file_path: {file_path}")
 
     await audio.bot.delete_message(
         chat_id=audio.chat_id,

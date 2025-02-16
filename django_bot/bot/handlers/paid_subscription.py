@@ -3,7 +3,6 @@ from telegram.ext import ContextTypes
 from telegram.constants import ParseMode
 
 import os
-import logging
 from dotenv import load_dotenv
 
 from bot.logic.utils import log_journal

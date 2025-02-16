@@ -33,7 +33,7 @@ def log_journal(func):
         else:
             _id = "Not found"
 
-        logging.info(
+        logger.info(
             f"JOURNAL: A call for user,id: {_id} from {func.__name__}"
         )
         return await func(*args, **kwargs)

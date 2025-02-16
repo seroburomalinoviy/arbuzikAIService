@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 import asyncio
 import logging
-from logging.handlers import RotatingFileHandler
+from logging.config import dictConfig
 
 from telegram.ext import ApplicationBuilder
 from telegram import Update
@@ -10,6 +10,7 @@ from telegram import Update
 from bot.logic.setup import init_handlers
 from bot.logic.amqp.driver import amqp_listener
 from bot.logic.amqp.tasks import send_payment_url, send_payment_answer, send_rvc_answer
+import logging_config
 
 load_dotenv()
 
@@ -31,13 +32,7 @@ def main() -> None:
 
 if "__main__" == __name__:
     os.makedirs('/logs', exist_ok=True)
-    handler = RotatingFileHandler('/logs/bot.log', backupCount=5, maxBytes=512 * 1024)
-    log_format = "%(asctime)s - %(levelname)s - %(name)s - %(message)s >>> %(funcName)s(%(lineno)d)"
-    formatter = logging.Formatter(log_format)
-    handler.setFormatter(formatter)
-    logging.basicConfig(level=logging.INFO, format=log_format, datefmt="%Y-%m-%d %H:%M:%S")
-    logging.getLogger('').addHandler(handler)
-
+    dictConfig(logging_config.config)
     logging.getLogger("httpx").setLevel(logging.WARNING)
 
     main()

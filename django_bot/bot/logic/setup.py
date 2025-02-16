@@ -10,11 +10,13 @@ from bot.logic.conversations import (
 
 import logging
 
+logger = logging.getLogger(__name__)
+
 
 async def on_result_chosen(update: Update, context: tg_ext.ContextTypes.DEFAULT_TYPE):
     result = update.chosen_inline_result.query
     context.user_data["inline_query"] = result
-    logging.info(result)
+    logger.info(result)
 
 
 def init_handlers(application: tg_ext.Application):

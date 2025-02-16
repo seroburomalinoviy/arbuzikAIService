@@ -16,6 +16,8 @@ django.setup()
 
 from bot.models import Voice, Subscription
 
+logger = logging.getLogger(__name__)
+
 load_dotenv()
 
 
@@ -45,5 +47,5 @@ async def inline_searching(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         await query.answer(results, cache_time=300, auto_pagination=True)
     except:
-        logging.warning('A voice did not get an image')
+        logger.warning('A voice did not get an image')
     return ConversationHandler.END

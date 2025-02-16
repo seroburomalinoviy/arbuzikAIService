@@ -5,6 +5,8 @@ import json
 import asyncio
 from typing import Awaitable, Callable
 
+logger = logging.getLogger(__name__)
+
 AsyncFunc = Callable[[str], Awaitable[None]]
 
 
@@ -18,10 +20,10 @@ class PikaConnector:
                 login=os.getenv("RABBIT_USER"),
                 password=os.getenv("RABBIT_PASSWORD"),
             )
-            logging.info(f"Connected from Bot to RabbitMQ")
+            logger.info(f"Connected from Bot to RabbitMQ")
             return connector
         except aio_pika.exceptions.CONNECTION_EXCEPTIONS as e:
-            logging.error(e)
+            logger.error(e)
             await asyncio.sleep(3)
             return await cls.connector()
 
@@ -39,14 +41,14 @@ async def push_amqp_message(data: dict, routing_key: str) -> None:
             aio_pika.Message(body=payload.encode(), delivery_mode=aio_pika.DeliveryMode.PERSISTENT),
             routing_key=queue.name,
         )
-    logging.info(f"A message from Bot to RVC (by Preclient over RabbitMQ)\n{payload} ")
+    logger.info(f"A message from Bot to RVC (by Preclient over RabbitMQ)\n{payload} ")
 
 
 def _amqp_message_handler(task: AsyncFunc):
     async def process_message(message: aio_pika.IncomingMessage):
         async with message.process():
             msg = message.body.decode()
-            logging.info(f"A message from RVC to Bot\n{msg}")
+            logger.info(f"A message from RVC to Bot\n{msg}")
             await task(msg)
     return process_message
 
