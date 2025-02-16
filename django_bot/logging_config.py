@@ -30,6 +30,26 @@ config = {
             "level": "INFO",
             "handlers": ["file", "console"],
             "propagate": False
+        },
+        "bot.handler.main": {
+            "level": "INFO",
+            "handlers": ["file", "console"],
+            "propagate": False
+        },
+        "bot.logic.utils": {
+            "level": "INFO",
+            "handlers": ["file", "console"],
+            "propagate": False
+        },
+        "bot.logic.amqp.driver": {
+            "level": "INFO",
+            "handlers": ["file", "console"],
+            "propagate": False
+        },
+        "bot.logic.amqp.tasks": {
+            "level": "INFO",
+            "handlers": ["file", "console"],
+            "propagate": False
         }
     }
 }
