@@ -54,6 +54,6 @@ async def amqp_listener(queue_name: str, func: AsyncFunc):
         await queue.consume(_amqp_message_handler(func))
         await asyncio.Future()
     except:
-        logger.error(f"Unkown error: {traceback.format_exc()}")
+        logger.error(f"Unknown error: {traceback.format_exc()}")
 
 

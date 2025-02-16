@@ -3,35 +3,46 @@ config = {
     "formatters": {
         "main": {
             "format": "%(asctime)s - %(levelname)s - %(name)s - %(message)s >>> %(funcName)s(%(lineno)d)"
-        }
+        },
+        "json": {
+            "class": "pythonjsonlogger.jsonlogger.JsonFormatter",
+            "format": "%(asctime)s - %(levelname)s - %(name)s - %(message)s >>> %(funcName)s(%(lineno)d)"
+        },
     },
     "handlers": {
         "file": {
             "class": "logging.handlers.RotatingFileHandler",
-            "filename": "/logs/payment.log",
+            "formatter": "main",
+            "filename": "/logs/bot.log",
             "backupCount": 5,
             "maxBytes": 512 * 1024,
-            "formatter": "main"
         },
-        "console": {
+        "stream": {
             "class": "logging.StreamHandler",
             "formatter": "main",
             "level": "INFO",
             "stream": "ext://sys.stdout"
-        }
+        },
+        "stream_json": {
+            "class": "logging.StreamHandler",
+            "formatter": "json",
+            "level": "INFO",
+            "stream": "ext://sys.stdout",
+        },
     },
     "loggers": {
         "": {  # root logger
             "level": "INFO",
-            "handlers": ["file", "console"],
+            "handlers": ["file", "stream_json"],
             "propagate": False
         },
         "__main__": {
             "level": "INFO",
-            "handlers": ["file", "console"],
-            "propagate": False
         },
-        "api": {
+        "amqp.driver": {
+            "level": "INFO",
+        },
+        "amqp.aaio_request": {
             "level": "INFO",
         },
         "api": {

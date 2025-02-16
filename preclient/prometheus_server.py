@@ -2,7 +2,8 @@ from fastapi import FastAPI, status
 from prometheus_client import Gauge, make_asgi_app, Histogram
 import logging
 
-logger = logging.getLogger('uvicorn.error')
+logging.getLogger("uvicorn").setLevel(logging.WARNING)
+logger = logging.getLogger(__name__)
 
 
 TASKS = Gauge('tasks', 'Created tasks of the ArbuzikAiBot')
