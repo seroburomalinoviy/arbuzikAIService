@@ -4,12 +4,22 @@ config = {
         "main": {
             "format": "%(asctime)s - %(levelname)s - %(name)s - %(message)s >>> %(funcName)s(%(lineno)d)"
         },
-        "json_formatter": {
+        "json": {
             "class": "pythonjsonlogger.jsonlogger.JsonFormatter",
             "format": "%(asctime)s - %(levelname)s - %(name)s - %(message)s >>> %(funcName)s(%(lineno)d)"
-        }
+        },
+        "utils": {
+            "class": "pythonjsonlogger.jsonlogger.JsonFormatter",
+            "format": "%(asctime)s - JOURNAL - %(name)s - %(message)s"
+        },
     },
     "handlers": {
+        "utils_json_console": {
+            "class": "logging.StreamHandler",
+            "formatter": "utils",
+            "level": "INFO",
+            "stream": "ext://sys.stdout"
+        },
         "file": {
             "class": "logging.handlers.RotatingFileHandler",
             "filename": "/logs/bot.log",
@@ -23,9 +33,9 @@ config = {
             "level": "INFO",
             "stream": "ext://sys.stdout"
         },
-        "json_handler": {
+        "json": {
             "class": "logging.StreamHandler",
-            "formatter": "json_formatter",
+            "formatter": "json",
             "level": "INFO",
             "stream": "ext://sys.stdout",
         }
@@ -33,7 +43,7 @@ config = {
     "loggers": {
         "": {  # root logger
             "level": "INFO",
-            "handlers": ["file", "json_handler"],
+            "handlers": ["file", "json"],
             "propagate": False
         },
         "__main__": {
@@ -50,6 +60,8 @@ config = {
         },
         "bot.logic.utils": {
             "level": "INFO",
+            "handlers": ["file", "utils_json_console"],
+            "propagate": False
         },
         "bot.logic.setup": {
             "level": "INFO",
