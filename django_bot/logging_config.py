@@ -28,13 +28,12 @@ config = {
             "formatter": "json_formatter",
             "level": "INFO",
             "stream": "ext://sys.stdout",
-            "filename": "/logs/bot_json.log",
         }
     },
     "loggers": {
         "": {  # root logger
             "level": "INFO",
-            "handlers": ["file", "console", "json_handler"],
+            "handlers": ["file", "json_handler"],
             "propagate": False
         },
         "__main__": {
