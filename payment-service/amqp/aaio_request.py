@@ -11,6 +11,8 @@ import json
 from .driver import push_amqp_message
 from .schemas import PayUrl
 
+logger = logging.getLogger(__name__)
+
 load_dotenv()
 
 
@@ -82,20 +84,20 @@ async def get_ukassa_url(order: PayUrl) -> json:
             json=data
         )
     except Exception as e:
-        logging.error(f"Ukassa request error: {e}")
+        logger.error(f"Ukassa request error: {e}")
     else:
         await client.aclose()
 
     if response.status_code != 200:
         msg = f'Error during request to  ukassa status_code: {response.status_code}\n{response.json()=}'
-        logging.warning(msg)
+        logger.warning(msg)
 
     ans = response.json()
     order.url = ans['confirmation']['confirmation_url']
     order.type = ans.get('status')
     order.payment_id = ans.get('id')
 
-    logging.info(f"created order data: {order.model_dump()}")
+    logger.info(f"created order data: {order.model_dump()}")
 
     return order.model_dump()
 
@@ -130,7 +132,7 @@ async def get_aaio_url(order: PayUrl) -> json:
     key = f'{str(AAIO_MERCHANT_ID)}:{order.amount}:{currency}:{secret_key_1}:{order.order_id}'
     body["sign"] = await create_hash(key)
 
-    logging.info(f"Create order in aaio: url={AAIO_CREATE_ORDER}, {body=}")
+    logger.info(f"Create order in aaio: url={AAIO_CREATE_ORDER}, {body=}")
     client = httpx.AsyncClient()
     try:
         response = await client.post(
@@ -139,18 +141,18 @@ async def get_aaio_url(order: PayUrl) -> json:
             headers=headers,
         )
     except Exception as e:
-        logging.error(f'Error during request to  aaio {e}')
+        logger.error(f'Error during request to  aaio {e}')
 
     await client.aclose()
 
     if response.status_code != 200:
-        logging.warning(f'Error during request to  aaio status_code: {response.status_code}')
+        logger.warning(f'Error during request to  aaio status_code: {response.status_code}')
 
     ans = response.json()
     order.type = ans.get("type")
     order.url = ans.get("url")
 
-    logging.info(f"created order data: {order.model_dump()}")
+    logger.info(f"created order data: {order.model_dump()}")
 
     return order.model_dump()
 
@@ -161,11 +163,11 @@ async def get_actual_ips() -> list:
     try:
         response = await client.get(url=AAIO_IPS)
     except Exception as e:
-        logging.error(e)
+        logger.error(e)
         raise Exception('cant get actual ips')
 
     if response.status_code != 200:
-        logging.warning(f'Error during request to  aaio status_code: {response.status_code}')
+        logger.warning(f'Error during request to  aaio status_code: {response.status_code}')
 
     await client.aclose()
 

@@ -8,6 +8,8 @@ import json
 
 load_dotenv()
 
+logger = logging.getLogger(__name__)
+
 AsyncFunc = Callable[[str], Awaitable[None]]
 
 
@@ -21,10 +23,10 @@ class PikaConnector:
                 login=os.environ.get("RABBIT_USER"),
                 password=os.environ.get("RABBIT_PASSWORD"),
             )
-            logging.info(f"Connected from Payment to RabbitMQ")
+            logger.info(f"Connected from Payment to RabbitMQ")
             return connector
         except aio_pika.exceptions.CONNECTION_EXCEPTIONS as e:
-            logging.error(e)
+            logger.error(e)
             await asyncio.sleep(3)
             return await cls.connector()
 
@@ -42,14 +44,14 @@ async def push_amqp_message(data: dict, routing_key: str) -> None:
             aio_pika.Message(body=payload.encode(), delivery_mode=aio_pika.DeliveryMode.PERSISTENT),
             routing_key=queue.name,
         )
-    logging.info(f"A message from Payment to Bot (over RabbitMQ)\n{payload} ")
+    logger.info(f"A message from Payment to Bot (over RabbitMQ)\n{payload} ")
 
 
 def _amqp_message_handler(func: AsyncFunc):
     async def process_message(message: aio_pika.IncomingMessage):
         async with message.process():
             msg = message.body.decode()
-            logging.info(f"A message from Bot to Payment (by RabbitMQ):\n{msg}")
+            logger.info(f"A message from Bot to Payment (by RabbitMQ):\n{msg}")
             await func(msg)
     return process_message
 

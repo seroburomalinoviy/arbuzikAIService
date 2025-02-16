@@ -3,12 +3,15 @@ config = {
     "formatters": {
         "main": {
             "format": "%(asctime)s - %(levelname)s - %(name)s - %(message)s >>> %(funcName)s(%(lineno)d)"
+        },
+        "json_formatter": {
+            "format": "%(asctime)s - %(levelname)s - %(name)s - %(message)s >>> %(funcName)s(%(lineno)d)"
         }
     },
     "handlers": {
         "file": {
             "class": "logging.handlers.RotatingFileHandler",
-            "filename": "/logs/preclient.log",
+            "filename": "/logs/bot.log",
             "backupCount": 5,
             "maxBytes": 512 * 1024,
             "formatter": "main"
@@ -18,38 +21,45 @@ config = {
             "formatter": "main",
             "level": "INFO",
             "stream": "ext://sys.stdout"
+        },
+        "json_handler": {
+            "class": "pythonjsonlogger.jsonlogger.JsonFormatter",
+            "formatter": "json_formatter",
+            "level": "INFO",
         }
     },
     "loggers": {
         "": {  # root logger
             "level": "INFO",
-            "handlers": ["file", "console"],
+            "handlers": ["file", "console", "json_handler"],
             "propagate": False
         },
         "__main__": {
             "level": "INFO",
-            "handlers": ["file", "console"],
-            "propagate": False
+        },
+        "bot.tasks": {
+            "level": "INFO",
+        },
+        "bot.config.celery": {
+            "level": "INFO",
         },
         "bot.handler.main": {
             "level": "INFO",
-            "handlers": ["file", "console"],
-            "propagate": False
         },
         "bot.logic.utils": {
             "level": "INFO",
-            "handlers": ["file", "console"],
-            "propagate": False
+        },
+        "bot.logic.setup": {
+            "level": "INFO",
         },
         "bot.logic.amqp.driver": {
             "level": "INFO",
-            "handlers": ["file", "console"],
-            "propagate": False
         },
         "bot.logic.amqp.tasks": {
             "level": "INFO",
-            "handlers": ["file", "console"],
-            "propagate": False
+        },
+        "bot.handlers.search": {
+            "level": "INFO",
         }
     }
 }

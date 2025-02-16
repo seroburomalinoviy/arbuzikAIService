@@ -8,7 +8,7 @@ config = {
     "handlers": {
         "file": {
             "class": "logging.handlers.RotatingFileHandler",
-            "filename": "/logs/preclient.log",
+            "filename": "/logs/payment.log",
             "backupCount": 5,
             "maxBytes": 512 * 1024,
             "formatter": "main"
@@ -30,6 +30,12 @@ config = {
             "level": "INFO",
             "handlers": ["file", "console"],
             "propagate": False
+        },
+        "api": {
+            "level": "INFO",
+        },
+        "api": {
+            "level": "INFO",
         }
     }
 }
