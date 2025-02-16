@@ -19,6 +19,9 @@ services:
     deploy:
       mode: replicated
       replicas: 1
+      placement:
+        constraints:
+          - node.role==manager
       restart_policy:
         condition: any
         delay: 5s
@@ -56,6 +59,9 @@ services:
     deploy:
       mode: replicated
       replicas: 1
+      placement:
+        constraints:
+          - node.role==manager
       restart_policy:
         condition: any
         delay: 5s
@@ -98,6 +104,9 @@ services:
     deploy:
       mode: replicated
       replicas: 1
+      placement:
+        constraints:
+          - node.role==manager
       restart_policy:
         condition: any
         delay: 5s
@@ -117,6 +126,9 @@ services:
     deploy:
       mode: replicated
       replicas: 1
+      placement:
+        constraints:
+          - node.role==manager
       restart_policy:
         condition: any
         delay: 50s
@@ -159,8 +171,8 @@ services:
     networks:
       - everywhere_overlay
     deploy:
-      mode: replicated
-      replicas: 1
+      mode: global
+      # replicas: 1
       restart_policy:
         condition: any
         delay: 50s
@@ -203,6 +215,9 @@ services:
     deploy:
       mode: replicated
       replicas: 1
+      placement:
+        constraints:
+          - node.role==manager
       restart_policy:
         condition: any
         delay: 30s
@@ -247,6 +262,9 @@ services:
     deploy:
       mode: replicated
       replicas: 1
+      placement:
+        constraints:
+          - node.role==manager
       restart_policy:
         condition: any
         delay: 30s
@@ -289,6 +307,9 @@ services:
     deploy:
       mode: replicated
       replicas: 1
+      placement:
+        constraints:
+          - node.role==manager
       restart_policy:
         condition: any
         delay: 30s
@@ -309,6 +330,9 @@ services:
     deploy:
       mode: replicated
       replicas: 1
+      placement:
+        constraints:
+          - node.role==manager
       restart_policy:
         condition: any
         delay: 10s
@@ -330,6 +354,9 @@ services:
     deploy:
       mode: replicated
       replicas: 1
+      placement:
+        constraints:
+          - node.role==manager
       restart_policy:
         condition: any
         delay: 10s
@@ -356,6 +383,9 @@ services:
     deploy:
       mode: replicated
       replicas: 1
+      placement:
+        constraints:
+          - node.role==manager
       restart_policy:
         condition: any
         delay: 10s
@@ -376,6 +406,9 @@ services:
     deploy:
       mode: replicated
       replicas: 1
+      placement:
+        constraints:
+          - node.role==manager
       restart_policy:
         condition: any
         delay: 10s
@@ -397,6 +430,9 @@ services:
     deploy:
       mode: replicated
       replicas: 1
+      placement:
+        constraints:
+          - node.role==manager
       restart_policy:
         condition: any
         delay: 10s
@@ -422,6 +458,9 @@ services:
     deploy:
       mode: replicated
       replicas: 1
+      placement:
+        constraints:
+          - node.role==manager
       restart_policy:
         condition: any
         delay: 10s
@@ -440,6 +479,9 @@ services:
     deploy:
       mode: replicated
       replicas: 1
+      placement:
+        constraints:
+          - node.role==manager
       restart_policy:
         condition: any
         delay: 50s
@@ -480,6 +522,9 @@ services:
     deploy:
       mode: replicated
       replicas: 1
+      placement:
+        constraints:
+          - node.role==manager
       restart_policy:
         condition: any
         delay: 50s
@@ -525,6 +570,9 @@ services:
     deploy:
       mode: replicated
       replicas: 1
+      placement:
+        constraints:
+          - node.role==manager
       restart_policy:
         condition: any
         delay: 50s
