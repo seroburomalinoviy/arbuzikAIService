@@ -5,6 +5,7 @@ config = {
             "format": "%(asctime)s - %(levelname)s - %(name)s - %(message)s >>> %(funcName)s(%(lineno)d)"
         },
         "json_formatter": {
+            "class": "pythonjsonlogger.jsonlogger.JsonFormatter",
             "format": "%(asctime)s - %(levelname)s - %(name)s - %(message)s >>> %(funcName)s(%(lineno)d)"
         }
     },
@@ -23,9 +24,11 @@ config = {
             "stream": "ext://sys.stdout"
         },
         "json_handler": {
-            "class": "pythonjsonlogger.jsonlogger.JsonFormatter",
+            "class": "logging.StreamHandler",
             "formatter": "json_formatter",
             "level": "INFO",
+            "stream": "ext://sys.stdout",
+            "filename": "/logs/bot_json.log",
         }
     },
     "loggers": {
