@@ -163,10 +163,10 @@ services:
       - PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
     volumes:
       - type: volume
-        source: media-data-volume
+        source: test_media
         target: /app/weights
       - type: volume
-        source: voices-volume
+        source: test_voice
         target: /app/media/user-voices
     networks:
       - everywhere_overlay
@@ -202,10 +202,10 @@ services:
       - .env
     volumes:
       - type: volume
-        source: voices-volume
+        source: test_voice
         target: /app/media/user-voices
       - type: volume
-        source: media-data-volume
+        source: test_media
         target: /app/media/data/
     networks:
       - everywhere_overlay
@@ -248,7 +248,7 @@ services:
       - .env
     volumes:
       - type: volume
-        source: media-data-volume
+        source: test_media
         target: /app/media/data/
       - type: volume
         source: static_volume
@@ -378,7 +378,7 @@ services:
       - everywhere_overlay
     volumes:
       - type: volume
-        source: voices-volume
+        source: test_voice
         target: /app/media/user-voices
     deploy:
       mode: replicated
@@ -401,7 +401,7 @@ services:
       - .env
     volumes:
       - type: volume
-        source: voices-volume
+        source: test_voice
         target: /app/media/user-voices
     deploy:
       mode: replicated
@@ -619,4 +619,8 @@ volumes:
   grafana_storage: {}
   pg_data:
   prometheus:
+  test_media:
+    external: true
+  test_voice:
+    external: true
 
