@@ -13,7 +13,7 @@ config = {
         "file": {
             "class": "logging.handlers.RotatingFileHandler",
             "formatter": "main",
-            "filename": "/logs/bot.log",
+            "filename": "/logs/preclient.log",
             "backupCount": 5,
             "maxBytes": 512 * 1024,
         },
