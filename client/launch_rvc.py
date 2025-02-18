@@ -44,32 +44,39 @@ def starter_infer(
 
     logger.info("[Mangio-RVC] starter_infer: Starting the inference...")
     try:
-        vc_data = get_vc(model_name, protection_amnt, protect1)
+        get_vc(model_name, protection_amnt, protect1)
     except Exception as e:
-        logger.error(f"[vc_data error] {e}")
+        logger.error(f"[Mangio-RVC] {e}")
+        return
     logger.info("[Mangio-RVC] starter_infer: Performing inference...")
 
-    try:
-        conversion_data = vc_single(
-            speaker_id,
-            source_audio_path,
-            source_audio_path,
-            transposition,
-            None,
-            f0_method,
-            feature_index_path,
-            feature_index_path,
-            feature_ratio,
-            harvest_median_filter,
-            resample,
-            mix,
-            protection_amnt,
-            crepe_hop_length,
-        )
-    except Exception as e:
-        logger.error(f"[vc_single error] {e}")
+    msg, conversion_data = vc_single(
+        speaker_id,
+        source_audio_path,
+        source_audio_path,
+        transposition,
+        None,
+        f0_method,
+        feature_index_path,
+        feature_index_path,
+        feature_ratio,
+        harvest_median_filter,
+        resample,
+        mix,
+        protection_amnt,
+        crepe_hop_length,
+    )
 
-    if "Success." in conversion_data[0]:
+    if conversion_data is None:
+        logger.error(f"[Mangio-RVC] Error: {msg} ")
+        return
+    elif isinstance(conversion_data, tuple):
+        if all(conversion_data):
+            logger.error(f"[Mangio-RVC] Error: {msg} ")
+            return
+    else:
+        logger.info(f"[Mangio-RVC] INFO: {msg}")
+        tgt_sr, audio_opt = conversion_data
         logger.info(
             "[Mangio-RVC] starter_infer: Inference succeeded. Writing to %s/%s..."
             % ("audio-outputs", output_file_name)
@@ -78,9 +85,10 @@ def starter_infer(
             result_path = os.environ.get("USER_VOICES")
             wavfile.write(
                 "%s/%s" % (result_path, output_file_name),
-                conversion_data[1][0],
-                conversion_data[1][1],
+                tgt_sr,
+                audio_opt,
             )
+            return True
         except Exception as e:
             logger.error(f"[wavfile error] {e}")
 
@@ -88,8 +96,3 @@ def starter_infer(
             "[Mangio-RVC] starter_infer: Finished! Saved output to %s/%s"
             % (result_path, output_file_name)
         )
-    else:
-        logger.info(
-            "[Mangio-RVC] starter_infer: Inference failed. Here's the traceback: "
-        )
-        logger.info(conversion_data[0])

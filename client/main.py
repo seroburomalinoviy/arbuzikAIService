@@ -20,10 +20,10 @@ load_dotenv()
 
 infer_parameters = {
     # get VC first
-    "model_name": "example.pth",
-    "source_audio_path": "mysource/voice_for_test.wav",
-    "output_file_name": "TEST_OUT.wav",
-    "feature_index_path": "logs/test/kasparova.index",
+    "model_name": None,  # "example.pth",
+    "source_audio_path": None,  # "mysource/voice_for_test.wav",
+    "output_file_name": None,  # "TEST_OUT.wav",
+    "feature_index_path": None,  # "logs/test/kasparova.index",
     # Get parameters for inference
     "speaker_id": 0,
     "transposition": -2,
@@ -116,25 +116,30 @@ async def reader(r: redis.Redis):
                     )
 
                     start = perf_counter()
-                    starter_infer(**infer_parameters)
-                    logger.info(f"NN finished for: {perf_counter() - start}")
+                    success_flag = starter_infer(**infer_parameters)
+                    if not success_flag:
+                        payload["error"] = True
+                    else:
 
-                    if extension == ".ogg":
-                        convert_to_voice(voice_path)
+                        logger.info(f"NN finished for: {perf_counter() - start}")
 
-                        time_per_task = float(perf_counter() - start)
-                        logger.info(
-                            f"NN + Formatting finished for: {time_per_task}"
-                        )
+                        if extension == ".ogg":
+                            convert_to_voice(voice_path)
 
-                    response = requests.post('http://prometheus-server:9001/api/add_speed', json={"speed": time_per_task})
-                    logger.info(f"Response from prometheus-server [add_speed]: {response.status_code}")
+                            time_per_task = float(perf_counter() - start)
+                            logger.info(
+                                f"NN + Formatting finished for: {time_per_task}"
+                            )
 
-                    response = requests.get('http://prometheus-server:9001/api/complete_task')
-                    logger.info(f"Response from prometheus-server [complete_task]: {response.status_code}")
+                        response = requests.post('http://prometheus-server:9001/api/add_speed', json={"speed": time_per_task})
+                        logger.info(f"Response from prometheus-server [add_speed]: {response.status_code}")
 
-                    payload["voice_filename"] = voice_filename
-                    logger.debug(payload)
+                        response = requests.get('http://prometheus-server:9001/api/complete_task')
+                        logger.info(f"Response from prometheus-server [complete_task]: {response.status_code}")
+
+                        payload["voice_filename"] = voice_filename
+                        payload["error"] = False
+                        logger.debug(payload)
 
                     push_amqp_message(payload)
 
