@@ -622,7 +622,15 @@ volumes:
   pg_data:
   prometheus:
   test_media:
-    external: true
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=192.168.0.100,rw
+      device: ":/home/remote/nfs/media"
   test_voice:
-    external: true
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=192.168.0.100,rw
+      device: ":/home/remote/nfs/voices"
 
