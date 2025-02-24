@@ -1,7 +1,7 @@
 services:
   preclient:
     build: ./preclient
-    image: localhost:5000/preclient:latest
+    image: managernode:5000/preclient:latest
     pull_policy: build
     
   client:
@@ -9,15 +9,15 @@ services:
       context: ./client
       dockerfile: Dockerfile_GPU
 
-    image: localhost:5000/client:latest
+    image: managernode:5000/client:latest
     pull_policy: build
 
   django:
     build: ./django_bot
-    image: localhost:5000/django:latest
+    image: managernode:5000/django:latest
     pull_policy: build
 
   payment-api:
     build: ./payment-service
-    image: localhost:5000/payment-api:latest
+    image: managernode:5000/payment-api:latest
     pull_policy: build

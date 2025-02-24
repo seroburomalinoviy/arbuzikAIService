@@ -114,7 +114,7 @@ services:
         window: 10s
 
   preclient:
-    image: localhost:5000/preclient:latest
+    image: managernode:5000/preclient:latest
     command: ["python", "main.py"]
     env_file:
       - .env
@@ -149,7 +149,7 @@ services:
         order: start-first
 
   client:
-    image: localhost:5000/client:latest
+    image: managernode:5000/client:latest
     command: ["python3.10", "main.py"]
     env_file:
       - .env
@@ -170,6 +170,8 @@ services:
         target: /app/media/user-voices
     networks:
       - everywhere_overlay
+    extra_hosts:
+      - "mangernode:192.168.0.100"
     deploy:
       mode: global
       # replicas: 1
@@ -194,7 +196,7 @@ services:
 
 
   bot:
-    image: localhost:5000/django:latest
+    image: managernode:5000/django:latest
     command: ["python", "start_bot.py"]
     environment:
       POSTGRES_HOST: db
@@ -238,7 +240,7 @@ services:
         order: start-first
 
   django:
-    image: localhost:5000/django:latest
+    image: managernode:5000/django:latest
     command: sh -c 'python manage.py migrate --noinput && 
                     python manage.py collectstatic --noinput --clear &&
                     gunicorn config.asgi:application -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:80'
@@ -317,7 +319,7 @@ services:
         window: 60s
 
   payment-api:
-    image: localhost:5000/payment-api
+    image: managernode:5000/payment-api
     command: sh -c 'uvicorn api:app --host 0.0.0.0 --port 8001 --proxy-headers'
     expose:
       - 8001
@@ -341,7 +343,7 @@ services:
 
   payment-listener:
     # container_name: payment-listener
-    image: localhost:5000/payment-api
+    image: managernode:5000/payment-api
     command: ["python", "main.py"]
     env_file:
       - .env
@@ -364,7 +366,7 @@ services:
         window: 60s
 
   celery-scheduler:
-    image: localhost:5000/django:latest
+    image: managernode:5000/django:latest
     command: celery --app config beat --loglevel=info --scheduler django_celery_beat.schedulers:DatabaseScheduler
     depends_on:
       - redis
@@ -393,7 +395,7 @@ services:
         window: 60s
 
   celery-worker:
-    image: localhost:5000/django:latest
+    image: managernode:5000/django:latest
     command: celery --app config worker --loglevel=info
     depends_on:
       - celery-scheduler
@@ -470,7 +472,7 @@ services:
       - everywhere_overlay
 
   prometheus-server:
-    image: localhost:5000/preclient:latest
+    image: managernode:5000/preclient:latest
     command: sh -c 'uvicorn prometheus_server:app --host 0.0.0.0 --port 9001 --log-level info'
     env_file:
       - .env
