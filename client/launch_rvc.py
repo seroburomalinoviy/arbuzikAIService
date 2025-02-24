@@ -71,7 +71,8 @@ def starter_infer(
         logger.error(f"[Mangio-RVC] Error: {msg} ")
         return
     elif isinstance(conversion_data, tuple):
-        if all(conversion_data):
+        tgt_sr, audio_opt = conversion_data
+        if tgt_sr is None and audio_opt is None:
             logger.error(f"[Mangio-RVC] Error: {msg} ")
             return
     else:
