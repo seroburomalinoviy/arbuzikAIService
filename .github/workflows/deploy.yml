@@ -22,9 +22,9 @@ jobs:
           git switch main
           git pull origin main
           docker compose -f docker-compose.build.yml build preclient django payment-api
-          docker push localhost:5000/preclient:latest
-          docker push localhost:5000/django:latest
-          docker push localhost:5000/payment-api:latest
+          docker push managernode:5000/preclient:latest
+          docker push managernode:5000/django:latest
+          docker push managernode:5000/payment-api:latest
   build_client:
     needs: build_and_push_main_stack
     name: build client
@@ -56,7 +56,7 @@ jobs:
           port: ${{ secrets.SSH_PORT_PROD }}
           script: |
             cd arbuzikAIService/
-            docker push localhost:5000/client:latest
+            docker push managernode:5000/client:latest
   deploy:
     needs: push_client
     name: update stack
@@ -72,15 +72,15 @@ jobs:
           port: ${{ secrets.SSH_PORT_PROD }}
           script: |
             cd arbuzikAIService/
-            docker service update --image localhost:5000/payment-api:latest arb_payment-api
-            docker service update --image localhost:5000/payment-api:latest arb_payment-listener
-            docker service update --image localhost:5000/django:latest arb_bot
-            docker service update --image localhost:5000/django:latest arb_django
-            docker service update --image localhost:5000/django:latest arb_celery-worker
-            docker service update --image localhost:5000/django:latest arb_celery-scheduler
-            docker service update --image localhost:5000/client:latest arb_client
-            docker service update --image localhost:5000/preclient:latest arb_preclient
-            docker service update --image localhost:5000/preclient:latest arb_prometheus-server
+            docker service update --image managernode:5000/payment-api:latest arb_payment-api
+            docker service update --image managernode:5000/payment-api:latest arb_payment-listener
+            docker service update --image managernode:5000/django:latest arb_bot
+            docker service update --image managernode:5000/django:latest arb_django
+            docker service update --image managernode:5000/django:latest arb_celery-worker
+            docker service update --image managernode:5000/django:latest arb_celery-scheduler
+            docker service update --image managernode:5000/client:latest arb_client
+            docker service update --image managernode:5000/preclient:latest arb_preclient
+            docker service update --image managernode:5000/preclient:latest arb_prometheus-server
             sleep 5
             docker builder prune -f
             docker image prune -af
