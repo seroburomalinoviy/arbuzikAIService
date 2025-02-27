@@ -163,10 +163,10 @@ services:
       - PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
     volumes:
       - type: volume
-        source: test_media
+        source: media_volume
         target: /app/weights
       - type: volume
-        source: test_voice
+        source: voice_volume
         target: /app/media/user-voices
     networks:
       - everywhere_overlay
@@ -204,10 +204,10 @@ services:
       - .env
     volumes:
       - type: volume
-        source: test_voice
+        source: voice_volume
         target: /app/media/user-voices
       - type: volume
-        source: test_media
+        source: media_volume
         target: /app/media/data/
     networks:
       - everywhere_overlay
@@ -250,7 +250,7 @@ services:
       - .env
     volumes:
       - type: volume
-        source: test_media
+        source: media_volume
         target: /app/media/data/
       - type: volume
         source: static_volume
@@ -380,7 +380,7 @@ services:
       - everywhere_overlay
     volumes:
       - type: volume
-        source: test_voice
+        source: voice_volume
         target: /app/media/user-voices
     deploy:
       mode: replicated
@@ -403,7 +403,7 @@ services:
       - .env
     volumes:
       - type: volume
-        source: test_voice
+        source: voice_volume
         target: /app/media/user-voices
     deploy:
       mode: replicated
@@ -616,18 +616,16 @@ networks:
 
 volumes:
   static_volume:
-  media-data-volume:
-  voices-volume:
   grafana_storage: {}
   pg_data:
   prometheus:
-  test_media:
+  media_volume:
     driver: local
     driver_opts:
       type: nfs
       o: addr=192.168.0.100,rw
       device: ":/home/remote/nfs/media"
-  test_voice:
+  voice_volume:
     driver: local
     driver_opts:
       type: nfs
