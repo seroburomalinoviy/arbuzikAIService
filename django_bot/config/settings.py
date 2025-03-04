@@ -158,4 +158,3 @@ MEDIA_ROOT = BASE_DIR / "media"
 # CSRF_USE_SESSIONS = True
 
 CSRF_TRUSTED_ORIGINS = [f'http://{os.environ.get("HOST")}:{os.environ.get("PORT")}']
-# CSRF_COOKIE_DOMAIN = f'http://{os.environ.get("HOST")}:{os.environ.get("PORT")}'

@@ -29,14 +29,14 @@ load_dotenv()
 
 
 @sync_to_async
-def voice_add_favorite(model, arg):
-    model.favorites.add(arg)
+def voice_add_favorite(user, voice):
+    user.favorites.add(voice)
     return
 
 
 @sync_to_async
-def voice_remove_favorite(model, arg):
-    model.favorites.remove(arg)
+def voice_remove_favorite(user, voice):
+    user.favorites.remove(voice)
     return
 
 
