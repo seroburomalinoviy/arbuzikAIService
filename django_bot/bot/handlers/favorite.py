@@ -119,5 +119,5 @@ async def roll_out(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 input_message_content=InputTextMessageContent(voice.slug),
             )
         )
-    await update.inline_query.answer(results, cache_time=0, auto_pagination=True)
+    await update.inline_query.answer(results, cache_time=1, auto_pagination=True)
     return ConversationHandler.END
