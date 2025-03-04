@@ -50,10 +50,15 @@ class User(models.Model):
         null=True,
     )
     subscription = models.ForeignKey(
-        Subscription, on_delete=models.SET_NULL, related_name="users", null=True
+        Subscription,
+        on_delete=models.SET_NULL,
+        related_name="users",
+        null=True
     )
     favorites = models.ManyToManyField(
-        verbose_name="Избранные голоса", to=Voice, blank=True
+        verbose_name="Избранные голоса",
+        to=Voice,
+        blank=True
     )
     date_created = models.DateTimeField(
         'Зарегистрирован',
