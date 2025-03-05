@@ -47,14 +47,14 @@ async def push_amqp_message(data: dict, routing_key: str) -> None:
             aio_pika.Message(body=payload.encode(), delivery_mode=aio_pika.DeliveryMode.PERSISTENT),
             routing_key=queue.name,
         )
-    logger.info(f"A message from Bot to RVC (by Preclient over RabbitMQ)\n{payload} ")
+    logger.info(f"A message from Bot\n{payload} ")
 
 
 def _amqp_message_handler(task: AsyncFunc):
     async def process_message(message: aio_pika.IncomingMessage):
         async with message.process():
             msg = message.body.decode()
-            logger.info(f"A message from RVC to Bot\n{msg}")
+            logger.info(f"A message to Bot\n{msg}")
             await task(msg)
     return process_message
 

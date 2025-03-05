@@ -19,10 +19,10 @@ class PikaConnector:
     async def connector(cls):
         try:
             connector = await aio_pika.connect_robust(
-                host=os.getenv("RABBIT_HOST"),
-                port=int(os.getenv("RABBIT_PORT")),
-                login=os.getenv("RABBIT_USER"),
-                password=os.getenv("RABBIT_PASSWORD"),
+                host=os.environ.get("RABBIT_HOST"),
+                port=int(os.environ.get("RABBIT_PORT")),
+                login=os.environ.get("RABBIT_USER"),
+                password=os.environ.get("RABBIT_PASSWORD"),
             )
         except aio_pika.exceptions.CONNECTION_EXCEPTIONS as e:
             logger.error(e)
