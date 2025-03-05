@@ -33,7 +33,7 @@ config = {
     "loggers": {
         "": {  # root logger
             "level": "INFO",
-            "handlers": ["file", "stream_json"],
+            "handlers": ["file", "stream"],
             "propagate": False
         },
         "__main__": {
