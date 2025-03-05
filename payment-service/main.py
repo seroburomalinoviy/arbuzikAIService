@@ -11,5 +11,6 @@ if __name__ == "__main__":
     os.makedirs('/logs', exist_ok=True)
     dictConfig(logging_config.config)
 
-    asyncio.run(amqp_listener("payment-url", get_payment_url))
+    # asyncio.run(amqp_listener("payment-url", get_payment_url))
+    asyncio.run(amqp_listener("bot-to-payment", get_payment_url))
 
