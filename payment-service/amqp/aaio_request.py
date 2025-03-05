@@ -35,11 +35,11 @@ async def get_payment_url(data: str):
 
 
 async def get_ukassa_url(order: PayUrl) -> json:
-    UKASSA_API_URL = os.getenv("UKASSA_API_URL")
-    UKASSA_SHOP_ID = os.getenv("UKASSA_SHOP_ID")
-    UKASSA_SECRET_KEY = os.getenv("UKASSA_SECRET_KEY")
-    UKASSA_CUSTOMER_EMAIL = os.getenv("UKASSA_CUSTOMER_EMAIL")
-    UKASSA_REDIRECT_URL = os.getenv("UKASSA_REDIRECT_URL")
+    UKASSA_API_URL = os.environ.get("UKASSA_API_URL")
+    UKASSA_SHOP_ID = os.environ.get("UKASSA_SHOP_ID")
+    UKASSA_SECRET_KEY = os.environ.get("UKASSA_SECRET_KEY")
+    UKASSA_CUSTOMER_EMAIL = os.environ.get("UKASSA_CUSTOMER_EMAIL")
+    UKASSA_REDIRECT_URL = os.environ.get("UKASSA_REDIRECT_URL")
 
     currency = "RUB"
     header = {
