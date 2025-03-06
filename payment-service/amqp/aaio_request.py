@@ -28,7 +28,7 @@ async def get_payment_url(data: str):
         data = await get_aaio_url(order)
         await push_amqp_message(data, routing_key='payment-url')
     elif order.service == 'ukassa':
-        data = await get_aaio_url(order)
+        data = await get_ukassa_url(order)
         await push_amqp_message(data, routing_key='payment-url')
     else:
         return None
