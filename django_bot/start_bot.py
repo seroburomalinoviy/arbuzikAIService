@@ -24,8 +24,8 @@ def main() -> None:
     # AMQP listeners
     loop = asyncio.get_event_loop()
     loop.create_task(amqp_listener("rvc-to-bot", send_rvc_answer))
-    loop.create_task(amqp_listener("payment-to-bot", send_payment_url))
-    loop.create_task(amqp_listener("payment-url", send_payment_answer))
+    loop.create_task(amqp_listener("payment-to-bot", send_payment_answer))
+    loop.create_task(amqp_listener("payment-url", send_payment_url))
 
     application.run_polling(allowed_updates=Update.ALL_TYPES)
 
