@@ -33,7 +33,10 @@ class OrderAdmin(admin.ModelAdmin):
 
     @admin.display(description='Пользователь')
     def telegram_username(self, obj):
-        return str(obj.user.telegram_username)
+        if obj.user:
+            return str(obj.user.telegram_username)
+        else:
+            return "неизвестен"
 
     @admin.display(description='Подписка')
     def subscription_title(self, obj):
