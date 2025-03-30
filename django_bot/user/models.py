@@ -22,12 +22,14 @@ class User(models.Model):
         max_length=100,
         blank=True,
         null=True,
+        default="unknown"
     )
     telegram_username = models.CharField(
         "telegram username",
         max_length=100,
         blank=True,
         null=True,
+        default="unknown"
     )
     subscription_status = models.BooleanField(
         "Статус подписки", editable=True, default=False
