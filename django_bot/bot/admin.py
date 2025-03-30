@@ -27,7 +27,9 @@ class VoiceAdmin(admin.ModelAdmin):
 
     @admin.display(description="Category", ordering="subcategory__category__title")
     def category_display(self, obj):
-        return str(obj.subcategory.category.title)
+        if obj.subcategory:
+            return str(obj.subcategory.category.title)
+        return "неизвестная подкатегория"
 
 
 @admin.register(Subcategory)
