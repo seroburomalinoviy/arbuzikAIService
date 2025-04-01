@@ -620,7 +620,7 @@ services:
     image: grafana/promtail:3.4.1
     container_name: promtail
     configs:
-      - source: promtail.yml
+      - source: promtail_config
         target: /etc/promtail/promtail.yaml
     volumes:
       - promtail_data:/var/promtail
