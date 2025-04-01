@@ -604,6 +604,7 @@ services:
       - loki_data:/loki
     command:
       - "--config.file=/etc/loki/loki.yml"
+      - "--config.expand-env=true"
     deploy:
       mode: replicated
       replicas: 1
