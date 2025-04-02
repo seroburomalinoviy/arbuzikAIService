@@ -30,6 +30,10 @@ django.setup()
 from bot.models import Voice, Category, Subcategory, Subscription
 from user.models import User
 
+import sentry_sdk
+
+sentry_sdk.init("http://8eebad4c4a544c2abe940ced968d5cef@localhost:8000/3")
+
 load_dotenv()
 
 logger = logging.getLogger(__name__)

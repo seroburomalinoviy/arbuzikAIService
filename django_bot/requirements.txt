@@ -47,3 +47,4 @@ django_celery_beat
 django-db-connection-pool
 aiofiles
 python-json-logger
+sentry-sdk

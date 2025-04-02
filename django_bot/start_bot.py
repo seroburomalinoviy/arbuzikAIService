@@ -11,6 +11,8 @@ from bot.logic.setup import init_handlers
 from bot.logic.amqp.driver import amqp_listener
 from bot.logic.amqp.tasks import send_payment_url, send_payment_answer, send_rvc_answer
 import logging_config
+import sentry_sdk
+sentry_sdk.init("http://8eebad4c4a544c2abe940ced968d5cef@localhost:8000/3")
 
 load_dotenv()
 
