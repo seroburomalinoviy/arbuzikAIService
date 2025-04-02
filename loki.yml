@@ -35,7 +35,7 @@ storage_config:
   tsdb_shipper:
     active_index_directory: /data/loki/tsdb-index
     cache_location: /data/loki/tsdb-cache
-    shared_store: filesystem
+    object_store: filesystem
 
 limits_config:
   retention_period: 7d # days to delete old logs, you can change
@@ -59,8 +59,8 @@ compactor:
   retention_delete_worker_count: 150
   delete_request_store:
     store: local
-    local:
-      directory: /data/loki/delete-requests
+  delete_request_local:
+    directory: /data/loki/delete-requests
 
 querier:
   query_ingesters_within: 2h # avoid https://github.com/grafana/loki/issues/6043
