@@ -47,5 +47,5 @@ compactor:
 
 querier:
   query_ingesters_within: 2h # avoid https://github.com/grafana/loki/issues/6043
-  engine:
-    max_look_back_period: 7d # from docs https://grafana.com/docs/loki/latest/configure/#querier
+  # engine:
+  #   max_look_back_period: 7d # from docs https://grafana.com/docs/loki/latest/configure/#querier
