@@ -11,8 +11,7 @@ from bot.logic.constants import *
 from bot.logic.utils import get_moscow_time, log_journal
 from bot.handlers.paid_subscription import preview_paid_subscription, show_paid_subscriptions
 from bot.structures.schemas import RVCData
-from bot.logic.utils import PreparedFile
-
+from bot.logic.utils import PreparedFile, connection
 
 from telegram.constants import ParseMode
 from telegram.ext import ContextTypes, ConversationHandler, ApplicationHandlerStop
@@ -42,6 +41,7 @@ allowed_user_statuses = ["member", "creator", "administrator"]
 unresolved_user_statuses = ["kicked", "restricted", "left"]
 
 
+@connection
 async def set_demo_to_user(user: User, update: Update) -> None:
     demo_subscription: Subscription = await Subscription.objects.aget(
         title=os.environ.get("DEFAULT_SUBSCRIPTION")
@@ -64,6 +64,7 @@ async def set_demo_to_user(user: User, update: Update) -> None:
     await user.asave()
 
 
+@connection
 async def update_subscription(user: User):
     demo = os.environ.get("DEFAULT_SUBSCRIPTION")
     if user.subscription.title == demo:
@@ -71,6 +72,7 @@ async def update_subscription(user: User):
         await user.asave()
 
 
+@connection
 def is_valid_subscription(user: User) -> bool:
     demo = os.environ.get("DEFAULT_SUBSCRIPTION")
     if not user.subscription_status:
@@ -88,6 +90,7 @@ def is_valid_subscription(user: User) -> bool:
                 return True
 
 
+@connection
 @sync_to_async
 def check_subscription(user_model: User) -> tuple[str, bool]:
     """
@@ -112,6 +115,7 @@ def check_subscription(user_model: User) -> tuple[str, bool]:
     return user_model.subscription.title, user_model.subscription_status
 
 
+@connection
 @log_journal
 async def subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
@@ -165,6 +169,7 @@ async def subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return BASE_STATES
 
 
+@connection
 @log_journal
 async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
@@ -228,6 +233,7 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return BASE_STATES
 
 
+@connection
 @log_journal
 async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
@@ -273,6 +279,7 @@ async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return BASE_STATES
 
 
+@connection
 @log_journal
 async def voice_inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
@@ -305,6 +312,7 @@ async def voice_inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE)
     return ConversationHandler.END
 
 
+@connection
 @log_journal
 async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
@@ -376,6 +384,7 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return BASE_STATES
 
 
+@connection
 @log_journal
 async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
@@ -437,6 +446,7 @@ async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return BASE_STATES
 
 
+@connection
 @log_journal
 async def voice_set_0(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
@@ -458,6 +468,7 @@ async def voice_set_0(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return BASE_STATES
 
 
+@connection
 @log_journal
 async def pitch_setting(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
@@ -503,6 +514,7 @@ async def pitch_setting(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return BASE_STATES
 
 
+@connection
 @log_journal
 async def voice_audio_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
@@ -585,6 +597,7 @@ async def voice_audio_process(update: Update, context: ContextTypes.DEFAULT_TYPE
     return BASE_STATES
 
 
+@connection
 @log_journal
 async def check_status(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """

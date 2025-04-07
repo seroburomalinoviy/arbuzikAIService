@@ -10,6 +10,7 @@ import os
 import traceback
 
 from bot.structures.schemas import Payment
+from logic.utils import connection
 
 load_dotenv()
 
@@ -28,7 +29,7 @@ def clean_user_voices():
     logger.info('User voices was cleaned up')
     return True
 
-
+@connection
 @app.task(ignore_result=False)
 def check_pay_aaio(order_id: str):
     AAIO_INFO = os.environ.get("AAIO_INFO")
@@ -125,7 +126,7 @@ def check_pay_aaio(order_id: str):
                     logger.info('Celery task was successfully sent to rabbitmq')
                 return msg
 
-
+@connection
 @app.task(ignore_result=False)
 def check_pay_ukassa(order_id: str, payment_id: str, timer:int):
     SERVICE = 'ukassa'

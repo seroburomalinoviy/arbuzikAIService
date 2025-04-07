@@ -5,7 +5,7 @@ from telegram.constants import ParseMode
 import os
 from dotenv import load_dotenv
 
-from bot.logic.utils import log_journal
+from bot.logic.utils import log_journal, connection
 from bot.logic import message_text
 from bot.logic.constants import *
 from bot.logic.amqp.driver import push_amqp_message
@@ -23,6 +23,7 @@ from bot.models import Subscription
 from user.models import User, Order
 
 
+@connection
 @log_journal
 async def show_paid_subscriptions(update: Update, context: ContextTypes.DEFAULT_TYPE, offer=None):
     """
@@ -84,6 +85,7 @@ async def show_paid_subscriptions(update: Update, context: ContextTypes.DEFAULT_
     return BASE_STATES
 
 
+@connection
 @log_journal
 async def preview_paid_subscription(update: Update, context: ContextTypes.DEFAULT_TYPE, subscription_title=None, offer=None):
     """
@@ -146,6 +148,7 @@ async def preview_paid_subscription(update: Update, context: ContextTypes.DEFAUL
     return BASE_STATES
 
 
+@connection
 @log_journal
 async def buy_subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
