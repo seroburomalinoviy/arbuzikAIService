@@ -10,7 +10,7 @@ import os
 import traceback
 
 from bot.structures.schemas import Payment
-from logic.utils import connection
+from bot.logic.utils import connection
 
 load_dotenv()
 
