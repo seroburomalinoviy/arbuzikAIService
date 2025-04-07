@@ -18,9 +18,9 @@ logger = logging.getLogger(__name__)
 
 
 def connection(func):
-    def wrapper(*args, **kwargs):
+    async def wrapper(*args, **kwargs):
         try:
-            result = func(*args, **kwargs)
+            result = await func(*args, **kwargs)
         except Exception as e:
             result = "Db error"
             logger.error(f"Error due to execute db query: {e}")
