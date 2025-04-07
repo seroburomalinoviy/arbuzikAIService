@@ -8,7 +8,7 @@ import django
 from datetime import timedelta
 
 from bot.logic import message_text, keyboards
-from bot.logic.utils import get_moscow_time
+from bot.logic.utils import get_moscow_time, connection
 from bot.structures.schemas import PayUrl, RVCData, Payment
 from bot.tasks import check_pay_ukassa
 
@@ -20,6 +20,7 @@ from user.models import Order
 logger = logging.getLogger(__name__)
 
 
+@connection
 async def send_payment_answer(data: str):
     """
     Send answer from Payment to Bot after got payment
@@ -61,6 +62,7 @@ async def send_payment_answer(data: str):
         )
 
 
+@connection
 async def send_payment_url(data: str):
     """
     Send the generated url for payment to Bot
@@ -88,6 +90,7 @@ async def send_payment_url(data: str):
     )
 
 
+@connection
 async def send_rvc_answer(data: str):
     """
     Send the answer from RVC to Bot
