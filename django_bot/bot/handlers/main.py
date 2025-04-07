@@ -116,7 +116,7 @@ def check_subscription(user_model: User) -> tuple[str, bool]:
 
 
 
-# @log_journal
+@log_journal
 @connection
 async def subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
@@ -170,7 +170,7 @@ async def subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return BASE_STATES
 
 
-# @log_journal
+@log_journal
 @connection
 async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
@@ -235,7 +235,7 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 
-# @log_journal
+@log_journal
 @connection
 async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
