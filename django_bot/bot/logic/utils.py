@@ -8,7 +8,7 @@ import asyncio
 from pydub import AudioSegment
 from pathlib import Path
 import os
-from django.db import connections
+from django.db import connection as conn
 
 from telegram import Voice as TelegramVoice
 from telegram import Audio as TelegramAudio
@@ -25,8 +25,7 @@ def connection(func):
             result = "Db error"
             logger.error(f"Error due to execute db query: {e}")
         finally:
-            for conn in connections.all():
-                conn.close()
+            conn.close()
         return result
     return wrapper
 

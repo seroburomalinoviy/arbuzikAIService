@@ -115,8 +115,9 @@ def check_subscription(user_model: User) -> tuple[str, bool]:
     return user_model.subscription.title, user_model.subscription_status
 
 
+
+# @log_journal
 @connection
-@log_journal
 async def subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Подписка на канал
@@ -169,8 +170,8 @@ async def subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return BASE_STATES
 
 
+# @log_journal
 @connection
-@log_journal
 async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Главное меню / Категории
@@ -233,8 +234,9 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return BASE_STATES
 
 
+
+# @log_journal
 @connection
-@log_journal
 async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Подкатегории

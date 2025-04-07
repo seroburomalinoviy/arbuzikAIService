@@ -21,9 +21,8 @@ logger = logging.getLogger(__name__)
 
 load_dotenv()
 
-
-@connection
 @log_journal
+@connection
 async def inline_searching(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Поиск по всем голосам
