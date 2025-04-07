@@ -13,7 +13,7 @@ services:
       - type: volume
         source: pg_data
         target: /var/lib/postgresql/data
-      - /home/postgres/backups:/backups
+      - /home/porstgres/backups:/backups
     networks:
       - everywhere_overlay
     deploy:
