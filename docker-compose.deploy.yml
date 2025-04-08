@@ -597,12 +597,15 @@ services:
   loki:
     image: grafana/loki:3.4.1
     container_name: loki
+    user: root
     configs:
       - source: loki_config
         target: /etc/loki/loki.yml
     command:
       - "--config.file=/etc/loki/loki.yml"
       - "--config.expand-env=true"
+    volumes:
+      - loki_data:/data
     deploy:
       mode: replicated
       replicas: 1
