@@ -600,8 +600,6 @@ services:
     configs:
       - source: loki_config
         target: /etc/loki/loki.yml
-    volumes:
-      - loki_data:/loki
     command:
       - "--config.file=/etc/loki/loki.yml"
       - "--config.expand-env=true"
