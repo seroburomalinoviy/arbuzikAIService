@@ -617,6 +617,8 @@ services:
       resources:
         limits:
           memory: 1024M
+    networks:
+      - everywhere_overlay
 
   promtail:
     image: grafana/promtail:3.4.1
@@ -640,6 +642,8 @@ services:
       resources:
         limits:
           memory: 512M
+    networks:
+      - everywhere_overlay
 
 
 configs:
