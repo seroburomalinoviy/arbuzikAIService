@@ -14,7 +14,7 @@ from telegram import (
 from telegram.constants import ParseMode
 from telegram.ext import ContextTypes, ConversationHandler
 
-from bot.logic.utils import log_journal, connection
+from bot.logic.utils import log_journal
 from bot.logic.constants import *
 from bot.logic import message_text
 
@@ -28,21 +28,18 @@ from user.models import User
 load_dotenv()
 
 
-@connection
 @sync_to_async
 def voice_add_favorite(user, voice):
     user.favorites.add(voice)
     return
 
 
-@connection
 @sync_to_async
 def voice_remove_favorite(user, voice):
     user.favorites.remove(voice)
     return
 
 
-@connection
 @log_journal
 async def add(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
@@ -73,7 +70,6 @@ async def add(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return BASE_STATES
 
 
-@connection
 @log_journal
 async def remove(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
@@ -104,7 +100,6 @@ async def remove(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return BASE_STATES
 
 
-@connection
 @log_journal
 async def roll_out(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.inline_query.query

@@ -5,7 +5,7 @@ from telegram.constants import ParseMode
 import os
 from dotenv import load_dotenv
 
-from bot.logic.utils import log_journal, connection
+from bot.logic.utils import log_journal
 from bot.logic import message_text
 from bot.logic.constants import *
 from bot.logic.amqp.driver import push_amqp_message

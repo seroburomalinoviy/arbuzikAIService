@@ -8,7 +8,7 @@ import traceback
 from telegram import Update, InlineQueryResultArticle, InputTextMessageContent
 from telegram.ext import ContextTypes, ConversationHandler
 
-from bot.logic.utils import log_journal, connection
+from bot.logic.utils import log_journal
 from bot.logic.constants import *
 
 
@@ -22,7 +22,6 @@ logger = logging.getLogger(__name__)
 load_dotenv()
 
 @log_journal
-@connection
 async def inline_searching(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Поиск по всем голосам

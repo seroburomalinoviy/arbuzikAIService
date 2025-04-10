@@ -14,21 +14,6 @@ from telegram import Audio as TelegramAudio
 from telegram import Document as TelegramDocument
 
 logger = logging.getLogger(__name__)
-from contextlib import asynccontextmanager
-#
-# @asynccontextmanager
-# async def connection(func):
-#
-#
-# def connection(func):
-#     async def wrapper(*args, **kwargs):
-#         try:
-#             return await func(*args, **kwargs)
-#         except Exception as e:
-#             logger.error(f"Error due to execute db query: {e}")
-#         finally:
-#             conn.close()
-#     return wrapper
 
 
 def get_moscow_time() -> datetime:

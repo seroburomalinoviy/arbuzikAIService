@@ -12,7 +12,7 @@ from bot.logic.constants import *
 from bot.logic.utils import get_moscow_time, log_journal
 from bot.handlers.paid_subscription import preview_paid_subscription, show_paid_subscriptions
 from bot.structures.schemas import RVCData
-from bot.logic.utils import PreparedFile, connection
+from bot.logic.utils import PreparedFile
 
 from telegram.constants import ParseMode
 from telegram.ext import ContextTypes, ConversationHandler, ApplicationHandlerStop
