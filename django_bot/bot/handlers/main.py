@@ -4,6 +4,7 @@ from asgiref.sync import sync_to_async
 import django
 import logging
 from uuid import uuid4
+from django.db import connection as conn
 
 from bot.logic import message_text, keyboards
 from bot.logic.amqp.driver import push_amqp_message
@@ -41,7 +42,6 @@ allowed_user_statuses = ["member", "creator", "administrator"]
 unresolved_user_statuses = ["kicked", "restricted", "left"]
 
 
-@connection
 async def set_demo_to_user(user: User, update: Update) -> None:
     demo_subscription: Subscription = await Subscription.objects.aget(
         title=os.environ.get("DEFAULT_SUBSCRIPTION")
@@ -64,7 +64,6 @@ async def set_demo_to_user(user: User, update: Update) -> None:
     await user.asave()
 
 
-@connection
 async def update_subscription(user: User):
     demo = os.environ.get("DEFAULT_SUBSCRIPTION")
     if user.subscription.title == demo:
@@ -72,7 +71,6 @@ async def update_subscription(user: User):
         await user.asave()
 
 
-@connection
 def is_valid_subscription(user: User) -> bool:
     demo = os.environ.get("DEFAULT_SUBSCRIPTION")
     if not user.subscription_status:
@@ -90,7 +88,6 @@ def is_valid_subscription(user: User) -> bool:
                 return True
 
 
-@connection
 @sync_to_async
 def check_subscription(user_model: User) -> tuple[str, bool]:
     """
@@ -115,9 +112,7 @@ def check_subscription(user_model: User) -> tuple[str, bool]:
     return user_model.subscription.title, user_model.subscription_status
 
 
-
 @log_journal
-@connection
 async def subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Подписка на канал
@@ -159,7 +154,7 @@ async def subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
             message_text.demo_rights,
             reply_markup=InlineKeyboardMarkup(keyboards.is_subscribed),
         )
-
+        conn.close()
         return BASE_STATES
     elif is_member.status in unresolved_user_statuses:
         await query.answer(text="Сначала подпишись :)")
@@ -167,11 +162,11 @@ async def subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
             message_text.subscription_check,
             reply_markup=InlineKeyboardMarkup(keyboards.check_subscription),
         )
+        conn.close()
         return BASE_STATES
 
 
 @log_journal
-@connection
 async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Главное меню / Категории
@@ -230,13 +225,12 @@ async def category_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
             reply_markup=InlineKeyboardMarkup(keyboard),
             parse_mode=ParseMode.HTML,
         )
-
+    conn.close()
     return BASE_STATES
 
 
 
 @log_journal
-@connection
 async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Подкатегории
@@ -277,11 +271,11 @@ async def subcategory_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup=InlineKeyboardMarkup(keyboard),
         parse_mode=ParseMode.HTML,
     )
-
+    conn.close()
     return BASE_STATES
 
 
-@connection
+
 @log_journal
 async def voice_inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
@@ -311,10 +305,11 @@ async def voice_inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE)
             )
         )
     await update.inline_query.answer(results, cache_time=300, auto_pagination=True)
+    conn.close()
     return ConversationHandler.END
 
 
-@connection
+
 @log_journal
 async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
@@ -335,6 +330,7 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
             text="Такой модели не существует попробуйте еще раз",
             reply_markup=InlineKeyboardMarkup(keyboards.is_subscribed),
         )
+        conn.close()
         return BASE_STATES
 
     voice = await Voice.objects.aget(slug=slug_voice)
@@ -383,10 +379,11 @@ async def voice_preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
             ]
         ),
     )
+    conn.close()
     return BASE_STATES
 
 
-@connection
+
 @log_journal
 async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
@@ -409,6 +406,7 @@ async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
         user.subscription_status = False
         await user.asave()
         await show_paid_subscriptions(update, context, offer=True)
+        conn.close()
         return BASE_STATES
 
     slug_voice = context.user_data.get("slug_voice")
@@ -417,6 +415,7 @@ async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
         voice__slug=slug_voice, title=user.subscription.title
     ).acount():
         await preview_paid_subscription(update, context, subscription_title='violetvip', offer=True)
+        conn.close()
         return BASE_STATES
 
     context.user_data["processing_permission"] = True
@@ -445,10 +444,11 @@ async def voice_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
             ]
         ),
     )
+    conn.close()
     return BASE_STATES
 
 
-@connection
+
 @log_journal
 async def voice_set_0(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
@@ -466,11 +466,11 @@ async def voice_set_0(update: Update, context: ContextTypes.DEFAULT_TYPE):
         else "0"
     )
     await query.answer(f"Тональность {pitch}")
-
+    conn.close()
     return BASE_STATES
 
 
-@connection
+
 @log_journal
 async def pitch_setting(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
@@ -513,10 +513,11 @@ async def pitch_setting(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 ]
             ),
         )
+    conn.close()
     return BASE_STATES
 
 
-@connection
+
 @log_journal
 async def voice_audio_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
@@ -537,6 +538,7 @@ async def voice_audio_process(update: Update, context: ContextTypes.DEFAULT_TYPE
             message_text.audio_permission_denied,
             reply_markup=InlineKeyboardMarkup(keyboards.is_subscribed),
         )
+        conn.close()
         return BASE_STATES
 
     user = await User.objects.select_related("subscription").aget(
@@ -546,6 +548,7 @@ async def voice_audio_process(update: Update, context: ContextTypes.DEFAULT_TYPE
         user.subscription_status = False
         await user.asave()
         await show_paid_subscriptions(update, context, offer=True)
+        conn.close()
         return BASE_STATES
 
     file = PreparedFile(update, context, user, uuid4())
@@ -555,12 +558,14 @@ async def voice_audio_process(update: Update, context: ContextTypes.DEFAULT_TYPE
         await update.message.reply_text(
             message_text.undefined_type
         )
+        conn.close()
         return BASE_STATES
 
     if not await file.is_valid_size():
         await update.message.reply_text(
             message_text.too_heavy_file
         )
+        conn.close()
         return BASE_STATES
 
     await file.download()
@@ -595,11 +600,11 @@ async def voice_audio_process(update: Update, context: ContextTypes.DEFAULT_TYPE
     await push_amqp_message(payload.model_dump(), routing_key="bot-to-rvc")
 
     await update_subscription(user)
-
+    conn.close()
     return BASE_STATES
 
 
-@connection
+
 @log_journal
 async def check_status(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """

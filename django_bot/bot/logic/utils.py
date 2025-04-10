@@ -8,26 +8,27 @@ import asyncio
 from pydub import AudioSegment
 from pathlib import Path
 import os
-from django.db import connection as conn
 
 from telegram import Voice as TelegramVoice
 from telegram import Audio as TelegramAudio
 from telegram import Document as TelegramDocument
 
 logger = logging.getLogger(__name__)
-
-
-def connection(func):
-    async def wrapper(*args, **kwargs):
-        try:
-            result = await func(*args, **kwargs)
-        except Exception as e:
-            result = "Db error"
-            logger.error(f"Error due to execute db query: {e}")
-        finally:
-            conn.close()
-        return result
-    return wrapper
+from contextlib import asynccontextmanager
+#
+# @asynccontextmanager
+# async def connection(func):
+#
+#
+# def connection(func):
+#     async def wrapper(*args, **kwargs):
+#         try:
+#             return await func(*args, **kwargs)
+#         except Exception as e:
+#             logger.error(f"Error due to execute db query: {e}")
+#         finally:
+#             conn.close()
+#     return wrapper
 
 
 def get_moscow_time() -> datetime:
