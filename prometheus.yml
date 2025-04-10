@@ -35,16 +35,3 @@ scrape_configs:
     static_configs:
       - targets: [ 'gpu-exporter:9400' ]
 
-
-#  # docker daemon (https://docs.docker.com/config/daemon/prometheus/)
-#  - job_name: 'docker'
-#    static_configs:
-#    - targets: ['192.168.100.2:9323', '192.168.100.4:9323', ] # локальные ip серверов
-
-  - job_name: 'django'
-    static_configs:
-    - targets: ['django:8000']
-
-  - job_name: 'db'
-    static_configs:
-    - targets: ['db:5432']
