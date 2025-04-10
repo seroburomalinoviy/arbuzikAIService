@@ -90,8 +90,8 @@ ASGI_APPLICATION = "config.asgi.application"
 
 DATABASES = {
     "default": {
-        # "ENGINE": "django.db.backends.postgresql",
-        "ENGINE": "django.db.backends.asyncpg",
+        "ENGINE": "django.db.backends.postgresql",
+        # "ENGINE": "django.db.backends.asyncpg",
         # "ENGINE": "dj_db_conn_pool.backends.postgresql",
         "NAME": os.environ.get("POSTGRES_DB"),
         "USER": os.environ.get("POSTGRES_USER"),
