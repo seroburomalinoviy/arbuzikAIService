@@ -48,3 +48,4 @@ django-db-connection-pool
 aiofiles
 python-json-logger
 sentry-sdk
+asyncpg
